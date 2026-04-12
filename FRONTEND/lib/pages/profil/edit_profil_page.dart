@@ -38,9 +38,9 @@ class EditProfilPage extends StatelessWidget {
             SizedBox(height: 32),
 
             // FORM EDIT DATA
-            _buildTextField("Nama Lengkap", "Alex Morgan"),
+            _buildTextField("Nama Lengkap", "Arya"),
             SizedBox(height: 16),
-            _buildTextField("Email", "alex@email.com"),
+            _buildTextField("Email", "Arya@email.com"),
             SizedBox(height: 16),
             _buildTextField("Nomor HP", "+62 812-3456-7890"),
             SizedBox(height: 40),
