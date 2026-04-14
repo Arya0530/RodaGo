@@ -40,12 +40,12 @@ class DetailMobilPage extends StatelessWidget {
 
             // SPESIFIKASI
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
                 _buildSpecItem(Icons.event_seat, "4 Kursi"),
                 _buildSpecItem(Icons.settings, "Otomatis"),
-                _buildSpecItem(Icons.local_gas_station, "Bensin"),
-                _buildSpecItem(Icons.ac_unit, "AC Dingin"),
+                _buildSpecItem(Icons.local_gas_station, "BBM Full"), // Teks bensin lebih pendek
+                _buildSpecItem(Icons.bolt, "Hybrid"), // Pengganti AC, pake icon petir/listrik
               ],
             ),
             SizedBox(height: 32),
@@ -54,9 +54,10 @@ class DetailMobilPage extends StatelessWidget {
             Text("Deskripsi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)),
             SizedBox(height: 12),
             Text(
-              "Mobil $namaMobil ini sangat cocok untuk perjalanan dalam dan luar kota. Kondisi mesin prima, interior bersih dan wangi. Kendaraan rutin diservis sehingga aman untuk disewa.",
-              style: TextStyle(color: Colors.grey[600], height: 1.5),
-            ),
+                "Mobil $namaMobil ini merupakan varian mesin Hybrid yang sangat irit bahan bakar. "
+                "Cocok untuk perjalanan jauh tanpa pusing biaya bensin. Kondisi mesin prima dan siap pakai.",
+                style: TextStyle(color: Colors.grey[600], height: 1.5),
+              ),
             SizedBox(height: 100), 
           ],
         ),

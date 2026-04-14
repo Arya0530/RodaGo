@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'detail_pesanan_masuk_page.dart';
 
 class OwnerDashboardPage extends StatelessWidget {
   @override
@@ -23,7 +24,7 @@ class OwnerDashboardPage extends StatelessWidget {
           // Kartu Statistik Pendapatan & Pesanan
           Row(
             children: [
-              Expanded(child: _buildStatCard("Total Pendapatan", "Rp 4.5M", Icons.account_balance_wallet, Colors.green)),
+              Expanded(child: _buildStatCard("Total Pendapatan", "Rp 5 JT", Icons.account_balance_wallet, Colors.green)),
               SizedBox(width: 16),
               Expanded(child: _buildStatCard("Mobil Aktif", "8", Icons.car_rental, Colors.orange)),
             ],
@@ -35,12 +36,11 @@ class OwnerDashboardPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text("Pesanan Masuk", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)),
-              Text("Lihat Semua", style: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold, fontSize: 12)),
             ],
           ),
           SizedBox(height: 16),
-          _buildRequestCard("Toyota Camry Hybrid", "Alex ", "15 Apr - 18 Apr"),
-          _buildRequestCard("Mitsubishi Xpander", "Budi Santoso", "16 Apr - 17 Apr"),
+         _buildRequestCard(context, "Toyota Camry Hybrid", "Alex Morgan", "15 Apr - 18 Apr"),
+         _buildRequestCard(context, "Mitsubishi Xpander", "Budi Santoso", "16 Apr - 17 Apr"),
         ],
       ),
     );
@@ -69,62 +69,54 @@ class OwnerDashboardPage extends StatelessWidget {
   }
 
   // Desain Kartu Permintaan Sewa Baru
-  Widget _buildRequestCard(String mobil, String penyewa, String tanggal) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 16),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white, 
-        borderRadius: BorderRadius.circular(20), 
-        border: Border.all(color: Colors.grey[200]!)
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(mobil, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(color: Colors.orange[50], borderRadius: BorderRadius.circular(8)),
-                child: Text("Baru", style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold, fontSize: 10)),
-              ),
-            ],
-          ),
-          SizedBox(height: 8),
-          Text("Penyewa: $penyewa", style: TextStyle(color: Colors.grey[600], fontSize: 13)),
-          Text("Tanggal: $tanggal", style: TextStyle(color: Colors.grey[600], fontSize: 13)),
-          Divider(height: 24, color: Colors.grey[100]),
-          
-          // Tombol Terima & Tolak
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () {},
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: Colors.red[300]!), 
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))
-                  ),
-                  child: Text("Tolak", style: TextStyle(color: Colors.red)),
-                ),
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal, 
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    elevation: 0,
-                  ),
-                  child: Text("Terima", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                ),
-              ),
-            ],
+// Desain Kartu Permintaan Sewa Baru (SEKARANG BISA DIKLIK!)
+  Widget _buildRequestCard(BuildContext context, String mobil, String penyewa, String tanggal) {
+    return GestureDetector(
+      onTap: () {
+        // Pas diklik, pindah ke halaman Detail buat ngecek KTP & SIM!
+        Navigator.push(
+          context, 
+          MaterialPageRoute(
+            builder: (context) => DetailPesananMasukPage(namaPenyewa: penyewa, namaMobil: mobil, tanggal: tanggal)
           )
-        ],
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.only(bottom: 16),
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white, 
+          borderRadius: BorderRadius.circular(20), 
+          border: Border.all(color: Colors.grey[200]!)
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(mobil, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(color: Colors.orange[50], borderRadius: BorderRadius.circular(8)),
+                  child: Text("Cek Dokumen", style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold, fontSize: 10)),
+                ),
+              ],
+            ),
+            SizedBox(height: 8),
+            Text("Penyewa: $penyewa", style: TextStyle(color: Colors.grey[600], fontSize: 13)),
+            Text("Tanggal: $tanggal", style: TextStyle(color: Colors.grey[600], fontSize: 13)),
+            SizedBox(height: 8),
+            // Tombol Terima/Tolak di sini UDAH DIHAPUS, dipindah ke halaman detail!
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text("Ketuk untuk detail", style: TextStyle(color: Colors.teal, fontSize: 12, fontWeight: FontWeight.bold)),
+                Icon(Icons.arrow_forward_ios, size: 12, color: Colors.teal),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
