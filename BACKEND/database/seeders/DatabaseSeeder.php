@@ -15,13 +15,16 @@ class DatabaseSeeder extends Seeder
         $admin = User::create([
             'name' => 'Super Admin',
             'email' => 'admin@rodago.id',
+            'phone' => '08123456789',
             'password' => bcrypt('password'),
             'role' => 'admin'
+            
         ]);
 
         $owner1 = User::create([
             'name' => 'Budi Sudarsono',
             'email' => 'budi@gmail.com',
+            'phone' => '08123456789',
             'password' => bcrypt('password'),
             'role' => 'owner'
         ]);
@@ -29,6 +32,7 @@ class DatabaseSeeder extends Seeder
         $owner2 = User::create([
             'name' => 'Arya Nugraha',
             'email' => 'arya@gmail.com',
+            'phone' => '08123456789',
             'password' => bcrypt('password'),
             'role' => 'owner'
         ]);
@@ -36,6 +40,7 @@ class DatabaseSeeder extends Seeder
         User::create([
             'name' => 'Naufal Penyewa',
             'email' => 'naufal@gmail.com',
+            'phone' => '08123456789',
             'password' => bcrypt('password'),
             'role' => 'user'
         ]);

@@ -9,15 +9,15 @@ use Illuminate\Support\Facades\Auth;
 
 class ApiAuthController extends Controller
 {
-    // FUNGSI REGISTER KHUSUS FLUTTER
+    // REGISTER
     public function register(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'phone' => 'required|string', // Sesuai desain UI lu
+            'phone' => 'required|string',
             'password' => 'required|string|min:8',
-            'role' => 'required|in:user,owner' // Pilihan dari Flutter
+            'role' => 'required|in:user,owner'
         ]);
 
         $user = User::create([
@@ -28,17 +28,14 @@ class ApiAuthController extends Controller
             'role' => $request->role,
         ]);
 
-        // Bikin tiket masuk (Token Sanctum)
-        $token = $user->createToken('auth_token')->plainTextToken;
-
         return response()->json([
-            'message' => 'Berhasil mendaftar!',
+            'message' => 'Register berhasil!',
             'user' => $user,
-            'token' => $token
+            'token' => ''
         ], 201);
     }
 
-    // FUNGSI LOGIN KHUSUS FLUTTER
+    // LOGIN
     public function login(Request $request)
     {
         $request->validate([
@@ -48,25 +45,16 @@ class ApiAuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        // Cek email ada nggak, dan passwordnya bener nggak
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Email atau Password salah!'], 401);
+            return response()->json([
+                'message' => 'Email atau Password salah!'
+            ], 401);
         }
-        
-        // Bikin tiket masuk (Token)
-        $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'message' => 'Login sukses!',
             'user' => $user,
-            'token' => $token
+            'token' => ''
         ]);
-    }
-
-    // FUNGSI LOGOUT KHUSUS FLUTTER
-    public function logout(Request $request)
-    {
-        $request->user()->currentAccessToken()->delete();
-        return response()->json(['message' => 'Berhasil logout dari HP']);
     }
 }

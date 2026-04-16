@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -8,6 +9,11 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   bool _obscurePassword = true;
   String _selectedRole = 'user'; // Defaultnya jadi user biasa
+
+  final TextEditingController _nameController = TextEditingController();
+final TextEditingController _emailController = TextEditingController();
+final TextEditingController _phoneController = TextEditingController();
+final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +52,7 @@ class _RegisterPageState extends State<RegisterPage> {
               Text("Full Name", style: TextStyle(fontWeight: FontWeight.bold)),
               SizedBox(height: 8),
               TextFormField(
+                controller: _nameController,
                 decoration: InputDecoration(
                   hintText: "Enter your full name",
                   prefixIcon: Icon(Icons.person_outline, color: Colors.grey),
@@ -63,6 +70,7 @@ class _RegisterPageState extends State<RegisterPage> {
               Text("Email Address", style: TextStyle(fontWeight: FontWeight.bold)),
               SizedBox(height: 8),
               TextFormField(
+                controller: _emailController,
                 decoration: InputDecoration(
                   hintText: "Enter your email",
                   prefixIcon: Icon(Icons.email_outlined, color: Colors.grey),
@@ -80,6 +88,7 @@ class _RegisterPageState extends State<RegisterPage> {
               Text("Phone Number", style: TextStyle(fontWeight: FontWeight.bold)),
               SizedBox(height: 8),
               TextFormField(
+                controller: _phoneController,
                 keyboardType: TextInputType.phone,
                 decoration: InputDecoration(
                   hintText: "Enter your phone number",
@@ -98,6 +107,7 @@ class _RegisterPageState extends State<RegisterPage> {
               Text("Password", style: TextStyle(fontWeight: FontWeight.bold)),
               SizedBox(height: 8),
               TextFormField(
+                controller: _passwordController,
                 obscureText: _obscurePassword,
                 decoration: InputDecoration(
                   hintText: "Create a password",
@@ -154,9 +164,27 @@ class _RegisterPageState extends State<RegisterPage> {
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton(
-                  onPressed: () {
-                    print("Tombol Sign Up ditekan, Role: $_selectedRole");
-                  },
+                  onPressed: () async {
+  final result = await ApiService.register(
+    _nameController.text,
+    _emailController.text,
+    _phoneController.text,
+    _passwordController.text,
+    _selectedRole,
+  );
+
+  if (result['success']) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Register berhasil")),
+    );
+
+    Navigator.pop(context); // balik ke login
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(result['message'])),
+    );
+  }
+},
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.teal,
                     shape: RoundedRectangleBorder(
