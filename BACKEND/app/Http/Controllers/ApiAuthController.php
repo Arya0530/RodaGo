@@ -28,10 +28,13 @@ class ApiAuthController extends Controller
             'role' => $request->role,
         ]);
 
+        // Generate token menggunakan Sanctum
+        $token = $user->createToken('auth_token')->plainTextToken;
+
         return response()->json([
             'message' => 'Register berhasil!',
             'user' => $user,
-            'token' => ''
+            'token' => $token
         ], 201);
     }
 
@@ -51,10 +54,23 @@ class ApiAuthController extends Controller
             ], 401);
         }
 
+        // Generate token menggunakan Sanctum
+        $token = $user->createToken('auth_token')->plainTextToken;
+
         return response()->json([
             'message' => 'Login sukses!',
             'user' => $user,
-            'token' => ''
+            'token' => $token
+        ]);
+    }
+
+    // LOGOUT
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'message' => 'Logout berhasil!'
         ]);
     }
 }

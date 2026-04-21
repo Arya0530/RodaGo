@@ -47,8 +47,8 @@
     {{-- GAMBAR MOBIL --}}
     <div class="w-full h-56 md:h-72 bg-gray-100 rounded-2xl overflow-hidden mb-8 shadow-sm">
         <img 
-            src="{{ $mobil['img'] }}?q=80&w=800&auto=format&fit=crop" 
-            alt="{{ $mobil['nama'] }}"
+            src="{{ $mobil->gambar ?? 'https://via.placeholder.com/800x400?text=' . urlencode($mobil->nama) }}?q=80&w=800&auto=format&fit=crop" 
+            alt="{{ $mobil->nama }}"
             class="w-full h-full object-cover"
             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
         >
@@ -64,9 +64,9 @@
 
     {{-- NAMA & HARGA --}}
     <div class="mb-8">
-        <h2 class="text-2xl md:text-3xl font-extrabold text-gray-800 mb-2">{{ $mobil['nama'] }}</h2>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-gray-800 mb-2">{{ $mobil->nama }}</h2>
         <p class="text-2xl font-extrabold text-emerald-500">
-            Rp {{ number_format($mobil['harga'], 0, ',', '.') }}
+            Rp {{ number_format($mobil->harga, 0, ',', '.') }}
             <span class="text-base font-normal text-gray-400">/ hari</span>
         </p>
     </div>
@@ -75,10 +75,10 @@
     <div class="grid grid-cols-4 gap-3 mb-10">
         @php
             $specs = [
-                ['icon' => 'seat',   'label' => $mobil['kursi'] . ' Kursi'],
-                ['icon' => 'gear',   'label' => $mobil['transmisi']],
-                ['icon' => 'fuel',   'label' => $mobil['bahan_bakar']],
-                ['icon' => 'ac',     'label' => $mobil['fitur']],
+                ['icon' => 'seat',   'label' => $mobil->kursi . ' Kursi'],
+                ['icon' => 'gear',   'label' => $mobil->transmisi],
+                ['icon' => 'fuel',   'label' => $mobil->bahan_bakar],
+                ['icon' => 'ac',     'label' => $mobil->fitur],
             ];
         @endphp
 
@@ -113,7 +113,7 @@
     {{-- DESKRIPSI --}}
     <div class="mb-6">
         <h3 class="text-lg font-extrabold text-gray-800 mb-3">Deskripsi</h3>
-        <p class="text-gray-500 leading-relaxed">{{ $mobil['deskripsi'] }}</p>
+        <p class="text-gray-500 leading-relaxed">{{ $mobil->deskripsi ?? 'Mobil berkualitas tinggi dengan kondisi prima.' }}</p>
     </div>
 
     {{-- INFO TAMBAHAN --}}
@@ -231,7 +231,7 @@
 
         <h3 class="text-xl font-extrabold text-gray-800 mb-2">Pemesanan Berhasil!</h3>
         <p class="text-gray-500 leading-relaxed text-sm mb-7">
-            Jadwal sewa <strong>{{ $mobil['nama'] }}</strong> Anda telah dikonfirmasi. Silakan cek menu Pesanan.
+            Jadwal sewa <strong>{{ $mobil->nama }}</strong> Anda telah dikonfirmasi. Silakan cek menu Pesanan.
         </p>
 
         <button 
@@ -246,8 +246,8 @@
 
 <script>
     // Harga mobil dari PHP (dalam rupiah)
-    const hargaPerHari = {{ $mobil['harga'] }};
-
+    // ignore: unused_import const hargaPerHari = @json($mobil->harga);
+    
     // Set tanggal minimum = hari ini
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('tanggal-ambil').min = today;

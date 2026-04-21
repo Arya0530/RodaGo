@@ -3,20 +3,20 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MobilController; // <-- TAMBAHAN BARU
 
 // ============================================================
-// PUBLIC PAGES (TIDAK BERUBAH)
+// PUBLIC PAGES
 // ============================================================
-Route::get('/', fn() => view('home'));
+Route::get('/', [HomeController::class, 'index']);
 Route::get('/features', fn() => view('features'));
 Route::get('/about', fn() => view('about'));
 Route::get('/contact', fn() => view('contact'));
 
 // ============================================================
-// ROUTE DETAIL MOBIL (TAMBAHAN BARU)
-// URL: /mobil/toyota-avanza-veloz → MobilController@show
-// {slug} adalah bagian dinamis yang otomatis dikirim ke method show()
+// ROUTE DETAIL MOBIL
+// URL: /mobil/{slug} → MobilController@show
 // ============================================================
 Route::get('/mobil/{slug}', [MobilController::class, 'show'])->name('mobil.detail');
 

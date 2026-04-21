@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'detail_pesanan_masuk_page.dart';
+import 'kelola_mobil_page.dart';
 
 class OwnerDashboardPage extends StatelessWidget {
   @override
@@ -29,6 +30,10 @@ class OwnerDashboardPage extends StatelessWidget {
               Expanded(child: _buildStatCard("Mobil Aktif", "8", Icons.car_rental, Colors.orange)),
             ],
           ),
+          SizedBox(height: 16),
+          
+          // Tombol Akses Cepat ke Kelola Armada
+          _buildQuickAccessCard(context),
           SizedBox(height: 32),
 
           // Daftar Pesanan Masuk yang butuh Persetujuan
@@ -120,4 +125,50 @@ class OwnerDashboardPage extends StatelessWidget {
       ),
     );
   }
-}
+
+  // Widget Akses Cepat ke Kelola Armada
+  Widget _buildQuickAccessCard(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => KelolaMobilPage()),
+        );
+      },
+      child: Container(
+        padding: EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.grey[200]!),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.teal[50],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(Icons.directions_car, color: Colors.teal, size: 28),
+                ),
+                SizedBox(width: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Kelola Armada", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black87)),
+                    Text("Tambah, edit, atau hapus mobil", style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+                  ],
+                ),
+              ],
+            ),
+            Icon(Icons.arrow_forward_ios, color: Colors.teal, size: 16),
+          ],
+        ),
+      ),
+    );
+  }
+} 

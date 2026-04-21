@@ -1,21 +1,8 @@
-// ============================================================
-// FILE DIUPDATE: lib/pages/dashboard/home_page.dart
-// ============================================================
-// APA YANG BERUBAH DARI VERSI LAMA?
-//
-// Hanya 2 baris yang berubah di bagian HEADER:
-//   - "Good Morning 👋" → tetap sama
-//   - Teks "Arya" (hardcode) diganti dengan UserSession.nama
-//     sehingga nama yang tampil sesuai dengan siapa yang login
-//
-// Semua tampilan, logika filter kategori, pencarian, kartu mobil
-// dll TIDAK ADA YANG BERUBAH sama sekali.
-// ============================================================
-
 import 'package:flutter/material.dart';
 import 'detail_mobil_page.dart';
 import '../auth/login_page.dart';
-import '../services/user_session.dart'; // <-- TAMBAHAN BARU
+import '../services/user_session.dart';
+import '../../service/mobil_service.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -24,25 +11,49 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedCategoryIndex = 0;
-  final List<String> _categories = ["All", "Economy", "MPV", "Luxury"];
+  final List<String> _categories = ["All", "Economy", "MPV", "SUV", "Luxury"];
   final TextEditingController _lokasiController = TextEditingController();
   DateTime? _tanggalCari;
   bool _isLoadingCari = false;
 
-  final List<Map<String, String>> _allCars = [
-    {"name": "Toyota Camry Hybrid", "type": "Luxury", "price": "Rp 1.500.000 / hari"},
-    {"name": "Mitsubishi Xpander", "type": "MPV", "price": "Rp 450.000 / hari"},
-    {"name": "Honda Brio", "type": "Economy", "price": "Rp 300.000 / hari"},
-    {"name": "Toyota Alphard", "type": "Luxury", "price": "Rp 2.500.000 / hari"},
-    {"name": "Daihatsu Xenia", "type": "MPV", "price": "Rp 400.000 / hari"},
-  ];
+  // ========== PERUBAHAN: Ganti dummy dengan list dari API ==========
+  List<dynamic> _allCars = [];          // Sekarang menyimpan data dari API
+  bool _isLoadingMobil = true;           // Loading awal saat fetch mobil
+  // =================================================================
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchMobil(); // Panggil API saat halaman pertama kali dibuka
+  }
+
+  Future<void> _fetchMobil() async {
+    try {
+      final data = await MobilService.getMobilPublic();
+      setState(() {
+        _allCars = data;
+        _isLoadingMobil = false;
+      });
+    } catch (e) {
+      setState(() => _isLoadingMobil = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal memuat data mobil: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Jika masih loading, tampilkan indikator
+    if (_isLoadingMobil) {
+      return Center(child: CircularProgressIndicator());
+    }
+
+    // Filter mobil berdasarkan kategori yang dipilih
     String activeCategory = _categories[_selectedCategoryIndex];
-    List<Map<String, String>> filteredCars = activeCategory == "All"
+    List<dynamic> filteredCars = activeCategory == "All"
         ? _allCars
-        : _allCars.where((car) => car["type"] == activeCategory).toList();
+        : _allCars.where((car) => car['tipe'] == activeCategory).toList();
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -50,7 +61,7 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // HEADER & LOGOUT
+            // HEADER & LOGOUT (TIDAK BERUBAH)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -67,10 +78,6 @@ class _HomePageState extends State<HomePage> {
                         Text("Good Morning 👋",
                             style:
                                 TextStyle(color: Colors.grey[500], fontSize: 12)),
-                        // ===========================================================
-                        // PERUBAHAN: Dari hardcode "Arya" → pakai UserSession.nama
-                        // Kalau nama kosong (belum login), tampilkan "User" sebagai fallback
-                        // ===========================================================
                         Text(
                           UserSession.nama.isNotEmpty ? UserSession.nama : 'User',
                           style: TextStyle(
@@ -78,14 +85,13 @@ class _HomePageState extends State<HomePage> {
                               fontSize: 16,
                               color: Colors.black87),
                         ),
-                        // ===========================================================
                       ],
                     ),
                   ],
                 ),
                 GestureDetector(
                   onTap: () {
-                    UserSession.hapus(); // <-- TAMBAHAN BARU: bersihkan session saat logout
+                    UserSession.hapus();
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => LoginPage()),
@@ -130,16 +136,14 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 children: [
                   Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     decoration: BoxDecoration(
                         color: Colors.grey[50],
                         borderRadius: BorderRadius.circular(16)),
                     child: TextField(
                       controller: _lokasiController,
                       decoration: InputDecoration(
-                        icon: Icon(Icons.location_on_outlined,
-                            color: Colors.teal),
+                        icon: Icon(Icons.location_on_outlined, color: Colors.teal),
                         border: InputBorder.none,
                         hintText: "Lokasi Rental",
                         hintStyle: TextStyle(color: Colors.grey[400]),
@@ -148,8 +152,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   SizedBox(height: 12),
                   Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     decoration: BoxDecoration(
                         color: Colors.grey[50],
                         borderRadius: BorderRadius.circular(16)),
@@ -169,8 +172,7 @@ class _HomePageState extends State<HomePage> {
                         }
                       },
                       decoration: InputDecoration(
-                        icon: Icon(Icons.calendar_month_outlined,
-                            color: Colors.teal),
+                        icon: Icon(Icons.calendar_month_outlined, color: Colors.teal),
                         border: InputBorder.none,
                         hintText: _tanggalCari != null
                             ? "${_tanggalCari!.day}/${_tanggalCari!.month}/${_tanggalCari!.year}"
@@ -194,24 +196,20 @@ class _HomePageState extends State<HomePage> {
                     height: 50,
                     child: ElevatedButton(
                       onPressed: () {
-                        if (_lokasiController.text.isEmpty ||
-                            _tanggalCari == null) {
+                        if (_lokasiController.text.isEmpty || _tanggalCari == null) {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text("Isi lokasi dan tanggal dulu ya!"),
                               backgroundColor: Colors.red));
                           return;
                         }
-                        setState(() {
-                          _isLoadingCari = true;
-                        });
+                        setState(() => _isLoadingCari = true);
                         Future.delayed(Duration(seconds: 1), () {
-                          setState(() {
-                            _isLoadingCari = false;
-                          });
+                          setState(() => _isLoadingCari = false);
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text(
                                   "Menampilkan mobil di ${_lokasiController.text}"),
                               backgroundColor: Colors.teal));
+                          // Nanti bisa ditambahkan logika filter lokasi sungguhan
                         });
                       },
                       style: ElevatedButton.styleFrom(
@@ -255,17 +253,21 @@ class _HomePageState extends State<HomePage> {
             ),
             SizedBox(height: 24),
 
-            // DAFTAR MOBIL (TIDAK BERUBAH)
+            // DAFTAR MOBIL (DARI API)
             Text("Rekomendasi Mobil",
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87)),
             SizedBox(height: 16),
-            ...filteredCars
-                .map((car) => _buildCarCard(
-                    context, car["name"]!, car["type"]!, car["price"]!))
-                .toList(),
+            ...filteredCars.map((car) => _buildCarCard(
+                context,
+                car['nama'] ?? '',
+                car['tipe'] ?? '',
+                'Rp ${_formatCurrency(car['harga'] ?? 0)} / hari',
+                car['gambar'] ?? '',
+                car
+            )).toList(),
             if (filteredCars.isEmpty)
               Center(
                   child: Padding(
@@ -293,15 +295,13 @@ class _HomePageState extends State<HomePage> {
         decoration: BoxDecoration(
           color: isSelected ? Colors.teal : Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border:
-              Border.all(color: isSelected ? Colors.teal : Colors.grey[200]!),
+          border: Border.all(color: isSelected ? Colors.teal : Colors.grey[200]!),
         ),
         child: Text(
           _categories[index],
           style: TextStyle(
             color: isSelected ? Colors.white : Colors.black87,
-            fontWeight:
-                isSelected ? FontWeight.bold : FontWeight.normal,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
         ),
       ),
@@ -309,13 +309,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildCarCard(
-      BuildContext context, String name, String type, String price) {
+      BuildContext context, String name, String type, String price, String imageUrl, dynamic carData) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => DetailMobilPage(namaMobil: name)));
+                builder: (context) => DetailMobilPage(namaMobil: name, carData: carData)));
       },
       child: Container(
         margin: EdgeInsets.only(bottom: 16),
@@ -333,9 +333,19 @@ class _HomePageState extends State<HomePage> {
               decoration: BoxDecoration(
                   color: Colors.grey[100],
                   borderRadius: BorderRadius.circular(12)),
-              child: Image.network(
-                  "https://tse1.mm.bing.net/th/id/OIP.DsOCw4WiRonNlhEHqCEjJgHaE8?w=720&h=480&rs=1&pid=ImgDetMain&o=7&rm=3",
-                  fit: BoxFit.cover),
+              child: imageUrl.isNotEmpty
+                  ? Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Center(
+                          child: Icon(Icons.directions_car, color: Colors.grey),
+                        );
+                      },
+                    )
+                  : Center(
+                      child: Icon(Icons.directions_car, color: Colors.grey),
+                    ),
             ),
             SizedBox(width: 16),
             Expanded(
@@ -349,8 +359,7 @@ class _HomePageState extends State<HomePage> {
                           color: Colors.black87)),
                   SizedBox(height: 4),
                   Text(type,
-                      style:
-                          TextStyle(color: Colors.grey[500], fontSize: 12)),
+                      style: TextStyle(color: Colors.grey[500], fontSize: 12)),
                   SizedBox(height: 8),
                   Text(price,
                       style: TextStyle(
@@ -365,5 +374,12 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  String _formatCurrency(dynamic value) {
+    int harga = value is int ? value : int.tryParse(value.toString()) ?? 0;
+    return harga.toString().replaceAllMapped(
+        RegExp(r'\B(?=(\d{3})+(?!\d))'),
+        (Match m) => '.');
   }
 }

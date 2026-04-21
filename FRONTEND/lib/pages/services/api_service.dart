@@ -17,9 +17,8 @@ import 'package:http/http.dart' as http;
 import 'user_session.dart'; // <-- TAMBAHAN BARU: import file session kita
 
 class ApiService {
-  // Kalau Ngrok mati, ganti URL di sini saja
-  static const String baseUrl =
-      'https://yi-unplayful-undevastatingly.ngrok-free.dev/api';
+  // Base URL untuk API Laravel
+  static const String baseUrl = 'http://localhost:8000/api'; 
 
   // ============================================================
   // FUNGSI LOGIN (DIUPDATE)

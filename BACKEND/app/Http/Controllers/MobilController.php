@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Mobil;
 use Illuminate\Http\Request;
 
 class MobilController extends Controller
@@ -154,15 +155,8 @@ class MobilController extends Controller
      */
     public function show(string $slug)
     {
-        $daftarMobil = $this->getDaftarMobil();
-
-        // Cari mobil berdasarkan slug
-        $mobil = collect($daftarMobil)->firstWhere('slug', $slug);
-
-        // Kalau slug tidak ditemukan, lempar halaman 404
-        if (!$mobil) {
-            abort(404, 'Mobil tidak ditemukan.');
-        }
+        // Cari mobil berdasarkan slug dari database Mobil model
+        $mobil = Mobil::where('slug', $slug)->firstOrFail();
 
         // Kirim variabel $mobil ke view resources/views/mobil/detail.blade.php
         return view('mobil.detail', compact('mobil'));
