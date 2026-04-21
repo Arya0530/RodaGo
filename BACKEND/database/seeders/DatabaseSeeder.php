@@ -63,5 +63,8 @@ class DatabaseSeeder extends Seeder
             'brand_name' => 'Auto Sultan Rent',
             'city' => 'Jakarta Selatan'
         ]);
+
+        // 4. BIKIN MOBIL DUMMY
+        $this->call(MobilSeeder::class);
     }
 }

@@ -1,44 +1,118 @@
 import 'package:flutter/material.dart';
+import '../../service/mobil_service.dart';
+import '../auth/login_page.dart';
+import '../services/user_session.dart';
 
 class EditMobilPage extends StatefulWidget {
   final String namaMobil;
   final String hargaSewa;
+  final int mobilId;
+  final String tipe;
+  final int kursi;
+  final String transmisi;
+  final String bahan_bakar;
 
-  // Constructor buat nangkep data mobil yang mau diedit
-  EditMobilPage({required this.namaMobil, required this.hargaSewa});
+  EditMobilPage({
+    required this.mobilId,
+    required this.namaMobil,
+    required this.hargaSewa,
+    required this.tipe,
+    required this.kursi,
+    required this.transmisi,
+    required this.bahan_bakar,
+  });
 
   @override
   _EditMobilPageState createState() => _EditMobilPageState();
 }
 
 class _EditMobilPageState extends State<EditMobilPage> {
-  // Controller buat ngisi textfield otomatis
   late TextEditingController _namaController;
   late TextEditingController _hargaController;
+  late TextEditingController _deskripsiController;
 
-  // State Dropdown (Defaultnya kita samain aja buat MVP)
-  String _kategori = 'Economy';
-  String _transmisi = 'Otomatis';
-  String _kursi = '4 Kursi';
-  String _bbmPolicy = 'Kembali Full';
-  String _isHybrid = 'Non-Hybrid';
+  late String _tipe;
+  late String _transmisi;
+  late String _kursi;
+  late String _bahan_bakar;
+
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    // Isi otomatis textfield pake data yang dilempar
     _namaController = TextEditingController(text: widget.namaMobil);
-    
-    // Bersihin teks harga (misal "Rp 450.000 / hari" jadi "450000" doang)
     String hargaBersih = widget.hargaSewa.replaceAll(RegExp(r'[^0-9]'), '');
     _hargaController = TextEditingController(text: hargaBersih);
+    _deskripsiController = TextEditingController();
+
+    _tipe = widget.tipe;
+    _transmisi = widget.transmisi;
+    _kursi = widget.kursi.toString();
+    _bahan_bakar = widget.bahan_bakar;
   }
 
   @override
   void dispose() {
     _namaController.dispose();
     _hargaController.dispose();
+    _deskripsiController.dispose();
     super.dispose();
+  }
+
+  Future<void> _simpanPerubahan() async {
+    if (_namaController.text.isEmpty || _hargaController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Nama dan harga harus diisi!'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      await MobilService.updateMobil(
+        widget.mobilId,
+        {
+          'nama': _namaController.text,
+          'harga': int.parse(_hargaController.text),
+          'tipe': _tipe,
+          'kursi': int.parse(_kursi),
+          'transmisi': _transmisi,
+          'bahan_bakar': _bahan_bakar,
+          'deskripsi': _deskripsiController.text,
+        },
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Mobil berhasil diperbarui!'), backgroundColor: Colors.teal),
+      );
+      Navigator.pop(context);
+    } catch (e) {
+      final errorMessage = e.toString();
+      
+      // Handle authentication errors
+      if (errorMessage.contains('Unauthorized') || errorMessage.contains('401')) {
+        UserSession.hapus();
+        if (mounted) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => LoginPage()),
+            (route) => false,
+          );
+        }
+      } else if (errorMessage.contains('Anda tidak memiliki akses') || errorMessage.contains('403')) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Anda tidak memiliki akses untuk mengubah mobil ini'), backgroundColor: Colors.red),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $errorMessage'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -60,14 +134,13 @@ class _EditMobilPageState extends State<EditMobilPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // KOTAK UPLOAD FOTO (Pura-puranya udah ada fotonya)
             Container(
               width: double.infinity,
               height: 160,
               decoration: BoxDecoration(
                 color: Colors.grey[50],
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.teal, width: 2), // Border teal tanda udah ada foto
+                border: Border.all(color: Colors.teal, width: 2),
               ),
               child: Stack(
                 alignment: Alignment.center,
@@ -86,7 +159,6 @@ class _EditMobilPageState extends State<EditMobilPage> {
             ),
             SizedBox(height: 32),
 
-            // FORM INPUT TEXT (Udah keisi otomatis!)
             _buildInputField("Nama Mobil", _namaController, isNumber: false),
             SizedBox(height: 16),
             _buildInputField("Harga Sewa per Hari (Rp)", _hargaController, isNumber: true),
@@ -95,44 +167,49 @@ class _EditMobilPageState extends State<EditMobilPage> {
             Text("Spesifikasi Mobil", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)),
             SizedBox(height: 16),
 
-            // FORM DROPDOWN 👇
-            _buildDropdownField("Kategori", ["Economy", "MPV", "Luxury"], _kategori, (val) => setState(() => _kategori = val!)),
+            _buildDropdownField("Kategori", ["Economy", "MPV", "Luxury", "SUV"], _tipe, (val) => setState(() => _tipe = val!)),
             SizedBox(height: 16),
             
             Row(
               children: [
                 Expanded(child: _buildDropdownField("Transmisi", ["Otomatis", "Manual"], _transmisi, (val) => setState(() => _transmisi = val!))),
                 SizedBox(width: 16),
-                Expanded(child: _buildDropdownField("Kapasitas", ["4 Kursi", "6 Kursi", "8 Kursi"], _kursi, (val) => setState(() => _kursi = val!))),
+                Expanded(child: _buildDropdownField("Kapasitas", ["4", "5", "6", "7", "8"], _kursi, (val) => setState(() => _kursi = val!))),
               ],
             ),
             SizedBox(height: 16),
 
-            Row(
-              children: [
-                Expanded(child: _buildDropdownField("Kebijakan BBM", ["Kembali Full", "Sesuai Pemakaian"], _bbmPolicy, (val) => setState(() => _bbmPolicy = val!))),
-                SizedBox(width: 16),
-                Expanded(child: _buildDropdownField("Jenis Mesin", ["Non-Hybrid", "Hybrid"], _isHybrid, (val) => setState(() => _isHybrid = val!))),
-              ],
+            _buildDropdownField("Bahan Bakar", ["Bensin", "Diesel", "Hybrid"], _bahan_bakar, (val) => setState(() => _bahan_bakar = val!)),
+            SizedBox(height: 24),
+
+            Text("Deskripsi Mobil", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
+            SizedBox(height: 8),
+            TextField(
+              controller: _deskripsiController,
+              maxLines: 4,
+              decoration: InputDecoration(
+                hintText: "Tuliskan deskripsi atau catatan...",
+                hintStyle: TextStyle(color: Colors.grey[400]),
+                filled: true,
+                fillColor: Colors.grey[50],
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
+              ),
             ),
+            
             SizedBox(height: 40),
 
-            // TOMBOL SIMPAN
             SizedBox(
               width: double.infinity,
               height: 55,
               child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Perubahan data mobil berhasil disimpan!"), backgroundColor: Colors.teal)
-                  );
-                  Navigator.pop(context);
-                },
+                onPressed: _isLoading ? null : _simpanPerubahan,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.teal,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                 ),
-                child: Text("Simpan Perubahan", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                child: _isLoading
+                    ? CircularProgressIndicator(color: Colors.white)
+                    : Text("Simpan Perubahan", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
               ),
             ),
             SizedBox(height: 20),
@@ -142,7 +219,6 @@ class _EditMobilPageState extends State<EditMobilPage> {
     );
   }
 
-  // FUNGSI PEMBANTU BUAT TEXT FIELD (Pake Controller)
   Widget _buildInputField(String label, TextEditingController controller, {bool isNumber = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,7 +226,7 @@ class _EditMobilPageState extends State<EditMobilPage> {
         Text(label, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
         SizedBox(height: 8),
         TextField(
-          controller: controller, // <-- Nyambungin datanya di sini
+          controller: controller,
           keyboardType: isNumber ? TextInputType.number : TextInputType.text,
           decoration: InputDecoration(
             filled: true,
@@ -162,7 +238,6 @@ class _EditMobilPageState extends State<EditMobilPage> {
     );
   }
 
-  // FUNGSI PEMBANTU BUAT DROPDOWN
   Widget _buildDropdownField(String label, List<String> items, String selectedValue, ValueChanged<String?> onChanged) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

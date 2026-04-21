@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class DetailMobilPage extends StatelessWidget {
   final String namaMobil;
+  final dynamic carData;
 
-  DetailMobilPage({required this.namaMobil});
+  DetailMobilPage({required this.namaMobil, this.carData});
 
   @override
   Widget build(BuildContext context) {
@@ -28,24 +29,38 @@ class DetailMobilPage extends StatelessWidget {
             Container(
               width: double.infinity, height: 220,
               decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(20)),
-              child: Icon(Icons.directions_car, size: 100, color: Colors.grey[400]),
+              child: carData != null && carData['gambar'] != null && carData['gambar'].toString().isNotEmpty
+                  ? Image.network(
+                      carData['gambar'],
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(Icons.directions_car, size: 100, color: Colors.grey[400]);
+                      },
+                    )
+                  : Icon(Icons.directions_car, size: 100, color: Colors.grey[400]),
             ),
             SizedBox(height: 24),
 
             // NAMA & HARGA
-            Text(namaMobil, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black87)),
+            Text(
+              carData != null ? (carData['nama'] ?? namaMobil) : namaMobil,
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black87)
+            ),
             SizedBox(height: 8),
-            Text("Rp 1.500.000 / hari", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.teal)),
+            Text(
+              carData != null ? 'Rp ${_formatCurrency(carData['harga'] ?? 0)} / hari' : 'Rp 1.500.000 / hari',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.teal)
+            ),
             SizedBox(height: 24),
 
             // SPESIFIKASI
             Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                _buildSpecItem(Icons.event_seat, "4 Kursi"),
-                _buildSpecItem(Icons.settings, "Otomatis"),
-                _buildSpecItem(Icons.local_gas_station, "BBM Full"), // Teks bensin lebih pendek
-                _buildSpecItem(Icons.bolt, "Hybrid"), // Pengganti AC, pake icon petir/listrik
+                _buildSpecItem(Icons.event_seat, carData != null ? '${carData['kursi'] ?? 4} Kursi' : "4 Kursi"),
+                _buildSpecItem(Icons.settings, carData != null ? (carData['transmisi'] ?? 'Otomatis') : "Otomatis"),
+                _buildSpecItem(Icons.local_gas_station, carData != null ? (carData['bahan_bakar'] ?? 'BBM Full') : "BBM Full"),
+                _buildSpecItem(Icons.bolt, carData != null ? (carData['fitur'] ?? 'Hybrid') : "Hybrid"),
               ],
             ),
             SizedBox(height: 32),
@@ -54,8 +69,10 @@ class DetailMobilPage extends StatelessWidget {
             Text("Deskripsi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)),
             SizedBox(height: 12),
             Text(
-                "Mobil $namaMobil ini merupakan varian mesin Hybrid yang sangat irit bahan bakar. "
-                "Cocok untuk perjalanan jauh tanpa pusing biaya bensin. Kondisi mesin prima dan siap pakai.",
+                carData != null && carData['deskripsi'] != null
+                    ? carData['deskripsi']
+                    : "Mobil $namaMobil ini merupakan varian mesin Hybrid yang sangat irit bahan bakar. "
+                      "Cocok untuk perjalanan jauh tanpa pusing biaya bensin. Kondisi mesin prima dan siap pakai.",
                 style: TextStyle(color: Colors.grey[600], height: 1.5),
               ),
             SizedBox(height: 100), 
@@ -258,5 +275,12 @@ class DetailMobilPage extends StatelessWidget {
         );
       },
     );
+  }
+
+  String _formatCurrency(dynamic value) {
+    int harga = value is int ? value : int.tryParse(value.toString()) ?? 0;
+    return harga.toString().replaceAllMapped(
+        RegExp(r'\B(?=(\d{3})+(?!\d))'),
+        (Match m) => '.');
   }
 }
