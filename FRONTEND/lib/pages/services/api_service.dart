@@ -17,15 +17,15 @@ import 'package:http/http.dart' as http;
 import 'user_session.dart'; // <-- TAMBAHAN BARU: import file session kita
 
 class ApiService {
-  // Base URL untuk API Laravel
-  static const String baseUrl = 'http://localhost:8000/api'; 
+  // Base URL untuk API Laravel (tanpa /api suffix - akan ditambah di setiap endpoint)
+  static const String baseUrl = 'http://localhost:8000'; 
 
   // ============================================================
   // FUNGSI LOGIN (DIUPDATE)
   // ============================================================
   static Future<Map<String, dynamic>> login(
       String email, String password) async {
-    final url = Uri.parse('$baseUrl/login');
+    final url = Uri.parse('$baseUrl/api/login');
 
     try {
       final response = await http.post(
@@ -80,7 +80,7 @@ class ApiService {
     String password,
     String role,
   ) async {
-    final url = Uri.parse('$baseUrl/register');
+    final url = Uri.parse('$baseUrl/api/register');
 
     try {
       final response = await http.post(
