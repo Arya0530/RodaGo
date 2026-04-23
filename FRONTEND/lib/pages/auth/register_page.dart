@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/api_service.dart';
+import '../../service/api_service.dart';
 
 class RegisterPage extends StatefulWidget {
   @override

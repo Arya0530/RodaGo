@@ -1,36 +1,112 @@
-import 'package:flutter/foundation.dart';
+// ============================================================
+// FILE DIUPDATE: lib/services/api_service.dart
+// ============================================================
+// APA YANG BERUBAH DARI VERSI LAMA?
+//
+// Fungsi login() sekarang melakukan 2 hal setelah sukses:
+//   1. Ambil data user (nama, email, phone, role) dari response API
+//   2. Simpan data itu ke UserSession supaya bisa dipakai seluruh app
+//
+// Versi lama hanya return {'success': true, 'data': ...} tanpa
+// menyimpan ke mana pun. Akibatnya halaman lain tidak bisa tahu
+// siapa yang sedang login.
+// ============================================================
+
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'user_session.dart'; // <-- TAMBAHAN BARU: import file session kita
 
 class ApiService {
-  // Base URL untuk API Laravel
-  // - Android Emulator: http://10.0.2.2:8000 (10.0.2.2 = host machine loopback)
-  // - Web/Chrome: http://localhost:8000
-  // - Physical device: http://<your-machine-ip>:8000
-  
-  static const String _androidEmulatorUrl = 'http://10.0.2.2:8000';
-  static const String _localhostUrl = 'http://localhost:8000';
-  
-  static String get baseUrl {
-    // Di development, gunakan localhost
-    // Untuk production, sesuaikan dengan server URL
-    return _localhostUrl;
-  }
-  
-  // Alternative: jika ingin auto-detect platform
-  static String get baseUrlAuto {
-    if (kIsWeb) {
-      // Web/Chrome
-      return _localhostUrl;
-    } else {
-      // Android/iOS - gunakan 10.0.2.2 untuk Android emulator, atau bisa set IP device
-      return _androidEmulatorUrl;
+  // Base URL untuk API Laravel (tanpa /api suffix - akan ditambah di setiap endpoint)
+  static const String baseUrl = 'http://localhost:8000'; 
+
+  // ============================================================
+  // FUNGSI LOGIN (DIUPDATE)
+  // ============================================================
+  static Future<Map<String, dynamic>> login(
+      String email, String password) async {
+    final url = Uri.parse('$baseUrl/api/login');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': email,
+          'password': password,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        print("DATA API: $data");
+  print("USER: ${data['user']}");
+  print("ROLE: ${data['user']['role']}");
+        final user = data['user'];
+        final token = data['token'] ?? '';
+
+        UserSession.simpan(
+          nama: user['name'] ?? '',
+          email: user['email'] ?? '',
+          phone: user['phone'] ?? '',
+          role: user['role'] ?? 'user',
+          token: token,
+        );
+        // -------------------------------------------------------
+
+        return {'success': true, 'data': data};
+      } else {
+        return {
+          'success': false,
+          'message': jsonDecode(response.body)['message']
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Gagal konek ke server. Cek jaringan/Ngrok lu bro!'
+      };
     }
   }
-  
-  // Untuk testing/development, bisa override base URL
-  static String customBaseUrl = '';
-  
-  static String getApiUrl(String endpoint) {
-    final base = customBaseUrl.isNotEmpty ? customBaseUrl : baseUrl;
-    return '$base/api$endpoint';
+
+  // ============================================================
+  // FUNGSI REGISTER (TIDAK ADA PERUBAHAN)
+  // ============================================================
+  static Future<Map<String, dynamic>> register(
+    String name,
+    String email,
+    String phone,
+    String password,
+    String role,
+  ) async {
+    final url = Uri.parse('$baseUrl/api/register');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'name': name,
+          'email': email,
+          'phone': phone,
+          'password': password,
+          'role': role,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        return {'success': true, 'data': jsonDecode(response.body)};
+      } else {
+        return {
+          'success': false,
+          'message': jsonDecode(response.body)['message']
+        };
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Server error'};
+    }
   }
+
+  // --- NANTI FUNGSI LAIN DIBIKIN DI BAWAH SINI ---
 }
