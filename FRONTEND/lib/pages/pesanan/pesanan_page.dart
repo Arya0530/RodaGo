@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'proses_pembayaran_page.dart';
 
 class PesananPage extends StatefulWidget {
   @override
@@ -198,30 +199,33 @@ class _PesananPageState extends State<PesananPage> {
       ),
     );
   }
+// FUNGSI NAVIGASI KE HALAMAN PEMBAYARAN
+  void _prosesPembayaran(int index) async {
+    var pesanan = _daftarPesanan[index];
 
-  // FUNGSI ANIMASI PURA-PURA BAYAR (MVP MAGIC ✨)
-  void _prosesPembayaran(int index) {
-    // 1. Munculin loading muter-muter
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Center(child: CircularProgressIndicator(color: Colors.teal)),
+    // Buka halaman pembayaran, dan tunggu dia balik bawa nilai apa (true/false)
+    bool? hasilBayar = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProsesPembayaranPage(
+          namaMobil: pesanan['mobil'],
+          totalHarga: pesanan['harga'],
+        ),
+      ),
     );
 
-    // 2. Tunggu 2 detik, seolah-olah lagi ngecek saldo Gopay/M-Banking
-    Future.delayed(Duration(seconds: 2), () {
-      Navigator.pop(context); // Tutup loadingnya
-      
-      // 3. Ubah status data dari "unpaid" jadi "active"
+    // Kalau baliknya bawa nilai "true" (artinya user ngeklik tombol konfirmasi bayar)
+    if (hasilBayar == true) {
       setState(() {
+        // Ubah status pesanan jadi LUNAS (active)
         _daftarPesanan[index]['status'] = 'active'; 
       });
 
-      // 4. Munculin notif berhasil!
+      // Munculin notif sukses
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Pembayaran Berhasil! Tiket diterbitkan."), backgroundColor: Colors.teal)
       );
-    });
+    }
   }
 
   void _tampilkanTiketQR(BuildContext context) {
