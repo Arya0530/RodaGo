@@ -115,13 +115,19 @@ class _KelolaMobilPageState extends State<KelolaMobilPage> {
     );
   }
 
-  Widget _buildCarItem(BuildContext context, Map<String, dynamic> mobil) {
-    int id = mobil['id'];
-    String name = mobil['nama'];
-    String price = "Rp ${_formatCurrency(mobil['harga'])} / hari";
-    String imageUrl = mobil['gambar'] ?? '';
-    String status = mobil['tersedia'] == 1 ? "Tersedia" : "Disewa";
-    Color statusColor = mobil['tersedia'] == 1 ? Colors.green : Colors.orange;
+ Widget _buildCarItem(BuildContext context, Map<String, dynamic> mobil) {
+  int id = mobil['id'];
+  String name = mobil['nama'];
+  String price = "Rp ${_formatCurrency(mobil['harga'])} / hari";
+  String imageUrl = mobil['gambar'] ?? '';
+
+  final isAvailable =
+      mobil['tersedia'] == true ||
+      mobil['tersedia'] == 1 ||
+      mobil['tersedia'].toString() == '1';
+
+  String status = isAvailable ? "Tersedia" : "Disewa";
+  Color statusColor = isAvailable ? Colors.green : Colors.orange;
 
     return Container(
       margin: EdgeInsets.only(bottom: 16),

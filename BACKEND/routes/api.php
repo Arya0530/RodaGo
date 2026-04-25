@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiAuthController; // Manggil Controller API
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\MobilController;
+use App\Http\Controllers\Api\BookingController;
 
 
 
@@ -26,4 +27,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Mobil routes - Protected dengan auth:sanctum
     Route::apiResource('mobil', MobilController::class);
+
+    Route::get('/bookings', [BookingController::class, 'index']);
+Route::post('/bookings', [BookingController::class, 'store']);
+Route::delete('/bookings/{id}/cancel', [BookingController::class, 'cancel']);
+
+Route::get('/owner/bookings', [BookingController::class, 'ownerBookings']);
+Route::post('/owner/bookings/{id}/terima', [BookingController::class, 'terima']);
+Route::post('/owner/bookings/{id}/tolak', [BookingController::class, 'tolak']);
+
+Route::post('/bookings/{id}/pay', [BookingController::class, 'pay']);
 });

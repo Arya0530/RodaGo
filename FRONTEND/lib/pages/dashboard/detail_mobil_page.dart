@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../service/api_service.dart';
+import '../pesanan/pesanan_page.dart';
+import '../dashboard/main_layout.dart';
+
 
 class DetailMobilPage extends StatelessWidget {
   final String namaMobil;
@@ -91,7 +95,6 @@ class DetailMobilPage extends StatelessWidget {
           width: double.infinity, height: 55,
           child: ElevatedButton(
             onPressed: () {
-              // ALURNYA KITA UBAH! Sekarang buka Form Tanggal dulu, bukan langsung sukses 👇
               _tampilkanFormJadwal(context);
             },
             style: ElevatedButton.styleFrom(
@@ -119,23 +122,22 @@ class DetailMobilPage extends StatelessWidget {
     );
   }
 
-  // 1. FORM PILIH JADWAL (MUNCUL DARI BAWAH)
- // 1. FORM PILIH JADWAL (DENGAN FITUR KALENDER / DATE PICKER)
-  void _tampilkanFormJadwal(BuildContext context) {
-    // Bikin variabel buat nyimpen tanggal yang dipilih
+  void _tampilkanFormJadwal(BuildContext pageContext) { // ✅ terima pageContext dari build()
+    final ambilController = TextEditingController();
+    final kembaliController = TextEditingController();
+
     DateTime? tanggalAmbil;
     DateTime? tanggalKembali;
 
     showModalBottomSheet(
-      context: context,
+      context: pageContext,
       isScrollControlled: true, 
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-      builder: (BuildContext context) {
-        // Pake StatefulBuilder biar formnya bisa ngerubah teks pas kalender diklik
+      builder: (BuildContext sheetContext) { // ✅ context bottomsheet diberi nama berbeda
         return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
+          builder: (BuildContext sheetContext, StateSetter setState) {
             return Padding(
-              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 24, right: 24, top: 24),
+              padding: EdgeInsets.only(bottom: MediaQuery.of(sheetContext).viewInsets.bottom, left: 24, right: 24, top: 24),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,80 +145,97 @@ class DetailMobilPage extends StatelessWidget {
                   Text("Atur Jadwal Sewa", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87)),
                   SizedBox(height: 24),
                   
-                  // INPUT TANGGAL AMBIL (KALENDER) 👇
+                  // INPUT TANGGAL AMBIL (KALENDER)
                   TextField(
-                    readOnly: true, // Biar keyboard nggak muncul pas diklik
+                    controller: ambilController,
+                    readOnly: true,
                     onTap: () async {
-                      // Munculin Kalender Bawaan Flutter
                       DateTime? pickedDate = await showDatePicker(
-                        context: context,
+                        context: sheetContext,
                         initialDate: DateTime.now(),
-                        firstDate: DateTime.now(), // Nggak bisa pilih tanggal kemarin
+                        firstDate: DateTime.now(),
                         lastDate: DateTime(2030),
                       );
-                      
-                      // Kalau user milih tanggal, simpen datanya
+
                       if (pickedDate != null) {
                         setState(() {
                           tanggalAmbil = pickedDate;
+                          ambilController.text =
+                              "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
                         });
                       }
                     },
                     decoration: InputDecoration(
                       labelText: "Tanggal Ambil",
-                      // Ngecek kalau udah milih tanggal, tampilin. Kalau belum, tampilin hint.
-                      hintText: tanggalAmbil != null 
-                          ? "${tanggalAmbil!.day}/${tanggalAmbil!.month}/${tanggalAmbil!.year}" 
-                          : "Pilih Tanggal di Kalender",
-                      hintStyle: TextStyle(color: tanggalAmbil != null ? Colors.black87 : Colors.grey[400], fontWeight: tanggalAmbil != null ? FontWeight.bold : FontWeight.normal),
                       prefixIcon: Icon(Icons.calendar_today, color: Colors.teal),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                       filled: true,
                       fillColor: Colors.grey[50],
                     ),
                   ),
                   SizedBox(height: 16),
 
-                  // INPUT TANGGAL KEMBALI (KALENDER) 👇
+                  // INPUT TANGGAL KEMBALI (KALENDER)
                   TextField(
-                    readOnly: true, 
-                    onTap: () async {
-                      DateTime? pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: tanggalAmbil ?? DateTime.now(), // Mulainya dari tanggal ambil
-                        firstDate: tanggalAmbil ?? DateTime.now(), // Nggak bisa balikin sebelum tanggal ambil
-                        lastDate: DateTime(2030),
-                      );
-                      
-                      if (pickedDate != null) {
-                        setState(() {
-                          tanggalKembali = pickedDate;
-                        });
-                      }
-                    },
-                    decoration: InputDecoration(
-                      labelText: "Tanggal Kembali",
-                      hintText: tanggalKembali != null 
-                          ? "${tanggalKembali!.day}/${tanggalKembali!.month}/${tanggalKembali!.year}" 
-                          : "Pilih Tanggal di Kalender",
-                      hintStyle: TextStyle(color: tanggalKembali != null ? Colors.black87 : Colors.grey[400], fontWeight: tanggalKembali != null ? FontWeight.bold : FontWeight.normal),
-                      prefixIcon: Icon(Icons.event_available, color: Colors.teal),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
-                      filled: true,
-                      fillColor: Colors.grey[50],
-                    ),
-                  ),
+  controller: kembaliController,
+  readOnly: true,
+  onTap: () async {
+    DateTime? pickedDate = await showDatePicker(
+      context: sheetContext,
+      initialDate: tanggalAmbil ?? DateTime.now(),
+      firstDate: tanggalAmbil ?? DateTime.now(),
+      lastDate: DateTime(2030),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        tanggalKembali = pickedDate;
+        kembaliController.text =
+            "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
+      });
+    }
+  },
+  decoration: InputDecoration(
+    labelText: "Tanggal Kembali",
+    prefixIcon: Icon(Icons.event_available, color: Colors.teal),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(16),
+    ),
+    filled: true,
+    fillColor: Colors.grey[50],
+  ),
+),
                   SizedBox(height: 32),
 
                   // Tombol Konfirmasi Bayar
                   SizedBox(
                     width: double.infinity, height: 55,
                     child: ElevatedButton(
-                      // Validasi: Tombol baru bisa diklik kalau kedua tanggal udah diisi
-                      onPressed: (tanggalAmbil != null && tanggalKembali != null) ? () {
-                        Navigator.pop(context); // Tutup Form
-                        _tampilkanPopupBerhasil(context); // Buka Popup
-                      } : null,
+                      onPressed: (tanggalAmbil != null && tanggalKembali != null)
+                          ? () async {
+                              final mulai =
+                                  "${tanggalAmbil!.year}-${tanggalAmbil!.month.toString().padLeft(2,'0')}-${tanggalAmbil!.day.toString().padLeft(2,'0')}";
+                              final selesai =
+                                  "${tanggalKembali!.year}-${tanggalKembali!.month.toString().padLeft(2,'0')}-${tanggalKembali!.day.toString().padLeft(2,'0')}";
+
+                              final result = await ApiService.createBooking(
+                                mobilId: carData['id'],
+                                tanggalMulai: mulai,
+                                tanggalSelesai: selesai,
+                              );
+
+                              if (result['success']) {
+                                Navigator.pop(sheetContext); // ✅ tutup bottomsheet pakai sheetContext
+                                _tampilkanPopupBerhasil(pageContext); // ✅ tampilkan popup pakai pageContext halaman asli
+                              } else {
+                                ScaffoldMessenger.of(sheetContext).showSnackBar(
+                                  SnackBar(content: Text(result['message'])),
+                                );
+                              }
+                            }
+                          : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.teal,
                         disabledBackgroundColor: Colors.grey[300],
@@ -243,7 +262,7 @@ class DetailMobilPage extends StatelessWidget {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) {
+      builder: (BuildContext dialogContext) { // ✅ context dialog diberi nama berbeda
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           contentPadding: EdgeInsets.all(24),
@@ -260,8 +279,13 @@ class DetailMobilPage extends StatelessWidget {
                 width: double.infinity, height: 45,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(context); // Tutup Popup
-                    Navigator.pop(context); // Balik ke Beranda
+                    // ✅ Pakai dialogContext (context milik AlertDialog) untuk navigasi
+                    Navigator.of(dialogContext, rootNavigator: true).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                        builder: (_) => MainLayout(initialIndex: 1),
+                      ),
+                      (route) => false,
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.teal,
