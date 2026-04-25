@@ -24,22 +24,35 @@ import 'package:frontend/pages/chatbot/chatbot_page.dart';
 import '../../service/user_session.dart'; // <-- TAMBAHAN BARU
 
 class MainLayout extends StatefulWidget {
+  final int initialIndex;
+
+  const MainLayout({
+    Key? key,
+    this.initialIndex = 0,
+  }) : super(key: key);
+
   @override
   _MainLayoutState createState() => _MainLayoutState();
 }
 
 class _MainLayoutState extends State<MainLayout> {
-  int _selectedIndex = 0;
+  late int _selectedIndex;
+
+  @override
+void initState() {
+  super.initState();
+  _selectedIndex = widget.initialIndex;
+}
 
   // ===========================================================
   // PERUBAHAN: isOwner tidak lagi hardcode false,
   // tapi dibaca dari UserSession
   // ===========================================================
-  final List<Widget> _pages = [
-    HomePage(),
-    PesananPage(),
-    ProfilPage(isOwner: false), // MainLayout hanya dipakai user, aman pakai false
-  ];
+  List<Widget> get _pages => [
+  HomePage(),
+  PesananPage(),
+  ProfilPage(isOwner: false),
+];
   // ===========================================================
 
   void _onItemTapped(int index) {
