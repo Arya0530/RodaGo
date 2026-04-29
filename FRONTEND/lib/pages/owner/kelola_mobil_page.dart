@@ -30,14 +30,14 @@ class _KelolaMobilPageState extends State<KelolaMobilPage> {
     } catch (e) {
       setState(() => _isLoading = false);
       final errorMessage = e.toString();
-      
-      // Handle authentication errors
-      if (errorMessage.contains('Unauthorized') || errorMessage.contains('401')) {
+
+      if (errorMessage.contains('Unauthorized') ||
+          errorMessage.contains('401')) {
         UserSession.hapus();
         if (mounted) {
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => LoginPage()),
+            MaterialPageRoute(builder: (_) => LoginPage()),
             (route) => false,
           );
         }
@@ -50,19 +50,19 @@ class _KelolaMobilPageState extends State<KelolaMobilPage> {
   }
 
   void _hapusMobil(int id, String nama) async {
-    // konfirmasi dialog
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text("Hapus Mobil?"),
         content: Text("Yakin mau menghapus $nama?"),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text("Batal")),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx), child: Text("Batal")),
           TextButton(
             onPressed: () async {
               Navigator.pop(ctx);
               await MobilService.hapusMobil(id);
-              _fetchMobil(); // refresh list
+              _fetchMobil();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text("$nama dihapus")),
               );
@@ -76,58 +76,58 @@ class _KelolaMobilPageState extends State<KelolaMobilPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Text("Kelola Armada", style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold)),
-        centerTitle: true,
-      ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : _mobilList.isEmpty
-              ? _buildEmptyState()
-              : ListView.builder(
-                  padding: EdgeInsets.all(24),
-                  itemCount: _mobilList.length,
-                  itemBuilder: (context, index) {
-                    final mobil = _mobilList[index];
-                    return _buildCarItem(
-                      context,
-                      mobil,
-                    );
-                  },
-                ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          // Panggil halaman tambah, lalu refresh setelah kembali
-          await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => TambahMobilPage()),
-          );
-          _fetchMobil();
-        },
-        backgroundColor: Colors.teal,
-        icon: Icon(Icons.add, color: Colors.white),
-        label: Text("Tambah Mobil", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-      ),
+    // ✅ Tidak pakai Scaffold/AppBar — sudah dihandle OwnerMainLayout
+    return Stack(
+      children: [
+        Container(
+          color: Colors.grey[50],
+          child: _isLoading
+              ? Center(child: CircularProgressIndicator())
+              : _mobilList.isEmpty
+                  ? _buildEmptyState()
+                  : ListView.builder(
+                      padding: EdgeInsets.fromLTRB(24, 24, 24, 100),
+                      itemCount: _mobilList.length,
+                      itemBuilder: (context, index) {
+                        return _buildCarItem(context, _mobilList[index]);
+                      },
+                    ),
+        ),
+        // FAB manual di pojok kanan bawah
+        Positioned(
+          bottom: 24,
+          right: 24,
+          child: FloatingActionButton.extended(
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => TambahMobilPage()),
+              );
+              _fetchMobil();
+            },
+            backgroundColor: Colors.teal,
+            icon: Icon(Icons.add, color: Colors.white),
+            label: Text("Tambah Mobil",
+                style: TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold)),
+          ),
+        ),
+      ],
     );
   }
 
- Widget _buildCarItem(BuildContext context, Map<String, dynamic> mobil) {
-  int id = mobil['id'];
-  String name = mobil['nama'];
-  String price = "Rp ${_formatCurrency(mobil['harga'])} / hari";
-  String imageUrl = mobil['gambar'] ?? '';
+  Widget _buildCarItem(BuildContext context, Map<String, dynamic> mobil) {
+    int id = mobil['id'];
+    String name = mobil['nama'];
+    String price = "Rp ${_formatCurrency(mobil['harga'])} / hari";
+    String imageUrl = mobil['gambar'] ?? '';
 
-  final isAvailable =
-      mobil['tersedia'] == true ||
-      mobil['tersedia'] == 1 ||
-      mobil['tersedia'].toString() == '1';
+    final isAvailable = mobil['tersedia'] == true ||
+        mobil['tersedia'] == 1 ||
+        mobil['tersedia'].toString() == '1';
 
-  String status = isAvailable ? "Tersedia" : "Disewa";
-  Color statusColor = isAvailable ? Colors.green : Colors.orange;
+    String status = isAvailable ? "Tersedia" : "Disewa";
+    Color statusColor = isAvailable ? Colors.green : Colors.orange;
 
     return Container(
       margin: EdgeInsets.only(bottom: 16),
@@ -140,33 +140,47 @@ class _KelolaMobilPageState extends State<KelolaMobilPage> {
       child: Row(
         children: [
           Container(
-            width: 80, height: 60,
-            decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(12)),
+            width: 80,
+            height: 60,
+            decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(12)),
             child: imageUrl.isNotEmpty
-                ? Image.network(
-                    imageUrl,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Center(
-                        child: Icon(Icons.directions_car, color: Colors.grey[400]),
-                      );
-              
-                    },
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Center(
+                        child:
+                            Icon(Icons.directions_car, color: Colors.grey[400]),
+                      ),
+                    ),
                   )
                 : Center(
-                    child: Icon(Icons.directions_car, color: Colors.grey[400]),
-                  ),
+                    child:
+                        Icon(Icons.directions_car, color: Colors.grey[400])),
           ),
           SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                Text(name,
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16)),
                 SizedBox(height: 4),
-                Text(price, style: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold, fontSize: 12)),
+                Text(price,
+                    style: TextStyle(
+                        color: Colors.teal,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12)),
                 SizedBox(height: 8),
-                Text(status, style: TextStyle(color: statusColor, fontSize: 12, fontWeight: FontWeight.bold)),
+                Text(status,
+                    style: TextStyle(
+                        color: statusColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold)),
               ],
             ),
           ),
@@ -175,15 +189,17 @@ class _KelolaMobilPageState extends State<KelolaMobilPage> {
             onPressed: () async {
               await Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => EditMobilPage(
-                  mobilId: mobil['id'],
-                  namaMobil: mobil['nama'],
-                  hargaSewa: mobil['harga'].toString(),
-                  tipe: mobil['tipe'] ?? 'Economy',
-                  kursi: mobil['kursi'] ?? 4,
-                  transmisi: mobil['transmisi'] ?? 'Otomatis',
-                  bahan_bakar: mobil['bahan_bakar'] ?? 'Bensin',
-                )),
+                MaterialPageRoute(
+                  builder: (_) => EditMobilPage(
+                    mobilId: mobil['id'],
+                    namaMobil: mobil['nama'],
+                    hargaSewa: mobil['harga'].toString(),
+                    tipe: mobil['tipe'] ?? 'Economy',
+                    kursi: mobil['kursi'] ?? 4,
+                    transmisi: mobil['transmisi'] ?? 'Otomatis',
+                    bahan_bakar: mobil['bahan_bakar'] ?? 'Bensin',
+                  ),
+                ),
               );
               _fetchMobil();
             },
@@ -198,10 +214,12 @@ class _KelolaMobilPageState extends State<KelolaMobilPage> {
   }
 
   String _formatCurrency(dynamic value) {
-    int harga = value is int ? value : int.tryParse(value.toString()) ?? 0;
-    return harga.toString().replaceAllMapped(
-        RegExp(r'\B(?=(\d{3})+(?!\d))'),
-        (Match m) => '.');
+    int harga =
+        value is int ? value : int.tryParse(value.toString()) ?? 0;
+    return harga
+        .toString()
+        .replaceAllMapped(
+            RegExp(r'\B(?=(\d{3})+(?!\d))'), (Match m) => '.');
   }
 
   Widget _buildEmptyState() {
@@ -209,33 +227,19 @@ class _KelolaMobilPageState extends State<KelolaMobilPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.directions_car_outlined, size: 80, color: Colors.grey[300]),
+          Icon(Icons.directions_car_outlined,
+              size: 80, color: Colors.grey[300]),
           SizedBox(height: 24),
-          Text(
-            'Belum Ada Armada',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
-          ),
+          Text('Belum Ada Armada',
+              style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87)),
           SizedBox(height: 8),
           Text(
-            'Mulai tambahkan kendaraan Anda untuk memulai perjalanan bisnis rental',
+            'Mulai tambahkan kendaraan Anda\nuntuk memulai bisnis rental',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-          ),
-          SizedBox(height: 32),
-          ElevatedButton.icon(
-            onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => TambahMobilPage()),
-              );
-              _fetchMobil();
-            },
-            icon: Icon(Icons.add, color: Colors.white),
-            label: Text('Tambah Armada Pertama', style: TextStyle(color: Colors.white)),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.teal,
-              padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-            ),
           ),
         ],
       ),

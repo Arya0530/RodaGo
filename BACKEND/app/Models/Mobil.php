@@ -1,18 +1,17 @@
 <?php
+// LOKASI: app/Models/Mobil.php
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-// Simpan di: app/Models/Mobil.php
-
 class Mobil extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'user_id',       // ← WAJIB: supaya MobilController bisa filter & simpan
+        'user_id',      // ← owner / pemilik mobil
         'nama',
         'slug',
         'tipe',
@@ -27,14 +26,17 @@ class Mobil extends Model
 
     protected $casts = [
         'tersedia' => 'boolean',
+        'harga'    => 'integer',
+        'kursi'    => 'integer',
     ];
 
+    // Mobil punya banyak booking
     public function bookings()
     {
         return $this->hasMany(Booking::class);
     }
 
-    // Relasi ke user (owner pemilik mobil ini)
+    // Mobil dimiliki satu owner (user)
     public function user()
     {
         return $this->belongsTo(User::class);

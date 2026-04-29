@@ -1,23 +1,35 @@
 import 'package:flutter/material.dart';
-import 'pages/auth/login_page.dart'; // Pastiin file login_page.dart lu ada di folder lib
+import 'service/user_session.dart';
+import 'pages/auth/login_page.dart';
+import 'pages/dashboard/main_layout.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  // Wajib ada sebelum SharedPreferences diakses
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Coba muat sesi yang tersimpan di device
+  final adaSesi = await UserSession.muat();
+
+  runApp(MyApp(adaSesi: adaSesi));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool adaSesi;
+  const MyApp({required this.adaSesi});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'RodaGo',
-      debugShowCheckedModeBanner: false, // Ngilangin pita "DEBUG" merah di pojok kanan atas
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.teal,
-        scaffoldBackgroundColor: Colors.white,
+        fontFamily: 'Poppins',
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
+        useMaterial3: false,
       ),
-      home: LoginPage(), // NAH INI YANG BIKIN DIA BUKA LOGIN DULUAN
+      // Semua role (user maupun owner) masuk ke MainLayout yang sama.
+      // Perbedaan owner hanya muncul di halaman Profile (ada menu Dashboard Owner).
+      home: adaSesi ? MainLayout() : LoginPage(),
     );
   }
 }

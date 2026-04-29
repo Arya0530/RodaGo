@@ -386,20 +386,21 @@ class _PesananPageState extends State<PesananPage> {
   }
 
   void _prosesPembayaran(Map<String, dynamic> booking) async {
-    bool? hasil = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ProsesPembayaranPage(
-          namaMobil:  booking['nama_mobil'] ?? '-',
-          totalHarga: _formatHarga(booking['total_harga']),
-        ),
+  bool? hasil = await Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => ProsesPembayaranPage(
+        namaMobil:  booking['nama_mobil'] ?? '-',
+        totalHarga: _formatHarga(booking['total_harga']),
+        bookingId:  booking['id'] as int, // ✅ TAMBAHAN
       ),
-    );
-    if (hasil == true) {
-      _showSnackbar('Pembayaran berhasil! Tiket diterbitkan. 🎉', Colors.teal);
-      _loadBookings();
-    }
+    ),
+  );
+  if (hasil == true) {
+    _showSnackbar('Pembayaran berhasil! Tiket diterbitkan. 🎉', Colors.teal);
+    _loadBookings(); // otomatis refresh → pesanan masuk tab Completed
   }
+}
 
   void _tampilkanTiketQR(int bookingId) {
     showDialog(

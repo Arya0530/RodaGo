@@ -4,7 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\MobilController; // <-- TAMBAHAN BARU
+use App\Http\Controllers\MobilController;
+use App\Http\Controllers\CityController; // <-- TAMBAHAN BARU
 
 // ============================================================
 // PUBLIC PAGES
@@ -46,4 +47,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/cities', [AdminController::class, 'storeCity']);
     Route::put('/admin/cities/{id}', [AdminController::class, 'updateCity']);
     Route::delete('/admin/cities/{id}', [AdminController::class, 'destroyCity']);
+
+    Route::get('/admin/cities',         [CityController::class, 'index']);
+    Route::post('/admin/cities',        [CityController::class, 'store']);
+    Route::put('/admin/cities/{id}',    [CityController::class, 'update']);
+    Route::delete('/admin/cities/{id}', [CityController::class, 'destroy']);
 });

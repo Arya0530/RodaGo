@@ -73,8 +73,10 @@ class AdminController extends Controller
     // FUNGSI TAB RENTALS
     public function rentals() {
         $rentals = Rental::with('user')->orderBy('created_at', 'desc')->get(); // Narik data beserta nama pemiliknya
-        $owners = User::where('role', 'owner')->get(); // Buat pilihan siapa pemilik rentalnya di form
-        return view('admin.rentals', compact('rentals', 'owners'));
+        $owners = User::where('role', 'owner')->get();
+        $cities  = \App\Models\City::orderBy('name')->get();
+        // Buat pilihan siapa pemilik rentalnya di form
+        return view('admin.rentals', compact('rentals', 'owners', 'cities'));
     }
 
     public function storeRental(Request $request) {

@@ -230,21 +230,29 @@ public function pay(Request $request, $id)
     if ($booking->status !== 'unpaid') {
         return response()->json([
             'success' => false,
-            'message' => 'Booking belum siap dibayar'
+            'message' => 'Booking belum siap dibayar atau sudah diproses'
         ], 422);
     }
 
-    $booking->update([
-        'status' => 'active'
-    ]);
+    // ✅ Update status pesanan jadi completed
+    $booking->update(['status' => 'completed']);
 
-    $booking->mobil->update([
-        'tersedia' => false
-    ]);
+    // ✅ Update mobil jadi "Sedang Disewa" (tersedia = false)
+    if ($booking->mobil) {
+        $booking->mobil->update(['tersedia' => false]);
+    }
+
+    // ✅ Generate kode tiket unik dari booking ID
+    $kodeTiket = 'RDG-' . strtoupper(str_pad($booking->id, 6, '0', STR_PAD_LEFT));
 
     return response()->json([
-        'success' => true,
-        'message' => 'Pembayaran berhasil, mobil sekarang disewa'
+        'success'     => true,
+        'message'     => 'Pembayaran berhasil!',
+        'booking_id'  => $booking->id,
+        'kode_tiket'  => $kodeTiket,
+        'nama_mobil'  => $booking->mobil->nama ?? '-',
+        'tanggal_mulai'   => $booking->tanggal_mulai->format('d M Y'),
+        'tanggal_selesai' => $booking->tanggal_selesai->format('d M Y'),
     ]);
 }
 }

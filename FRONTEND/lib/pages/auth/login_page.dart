@@ -1,27 +1,8 @@
-// ============================================================
-// FILE DIUPDATE: lib/pages/auth/login_page.dart
-// ============================================================
-// APA YANG BERUBAH DARI VERSI LAMA?
-//
-// Tombol "Sign In" yang lama langsung loncat ke MainLayout
-// TANPA cek email/password sama sekali (hardcode).
-//
-// Sekarang tombol Sign In:
-//   1. Panggil ApiService.login() dengan email & password asli
-//   2. Kalau gagal → tampilkan SnackBar pesan error
-//   3. Kalau berhasil → cek UserSession.role
-//      - Kalau 'owner' → masuk ke OwnerMainLayout
-//      - Kalau 'user'  → masuk ke MainLayout (user biasa)
-//
-// Tampilan tidak berubah sama sekali, hanya logika tombol.
-// ============================================================
-
 import 'package:flutter/material.dart';
 import 'register_page.dart';
 import '../dashboard/main_layout.dart';
-import '../owner/owner_main_layout.dart';
-import '../../service/api_service.dart';    // <-- TAMBAHAN BARU
-import '../../service/user_session.dart';   // <-- TAMBAHAN BARU
+import '../../service/api_service.dart';
+import '../../service/user_session.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -30,10 +11,59 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool _obscurePassword = true;
-  bool _isLoading = false; // <-- TAMBAHAN BARU: buat animasi loading tombol
+  bool _isLoading = false;
 
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _emailController    = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleLogin() async {
+    // Validasi kosong di sisi Flutter (sebelum hit API)
+    if (_emailController.text.trim().isEmpty) {
+      _showSnackBar('Email wajib diisi!', Colors.red);
+      return;
+    }
+    if (_passwordController.text.isEmpty) {
+      _showSnackBar('Password wajib diisi!', Colors.red);
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    final result = await ApiService.login(
+      _emailController.text.trim(),
+      _passwordController.text,
+    );
+
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+
+    if (result['success'] == true) {
+      // ✅ Semua role (user & owner) masuk ke MainLayout yang sama.
+      // Perbedaan owner hanya tampil di halaman Profile.
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => MainLayout()),
+      );
+    } else {
+      _showSnackBar(
+        result['message']?.toString() ?? 'Login gagal, coba lagi',
+        Colors.red,
+      );
+    }
+  }
+
+  void _showSnackBar(String message, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: color),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 50),
-              // Judul & Subjudul (TIDAK BERUBAH)
+
               Text(
                 "Welcome Back",
                 style: TextStyle(
@@ -62,16 +92,16 @@ class _LoginPageState extends State<LoginPage> {
               ),
               SizedBox(height: 40),
 
-              // Form Email (TIDAK BERUBAH)
+              // Form Email
               Text("Email Address",
                   style: TextStyle(fontWeight: FontWeight.bold)),
               SizedBox(height: 8),
               TextFormField(
                 controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   hintText: "Enter your email",
-                  prefixIcon:
-                      Icon(Icons.email_outlined, color: Colors.grey),
+                  prefixIcon: Icon(Icons.email_outlined, color: Colors.grey),
                   filled: true,
                   fillColor: Colors.grey[100],
                   border: OutlineInputBorder(
@@ -82,28 +112,23 @@ class _LoginPageState extends State<LoginPage> {
               ),
               SizedBox(height: 20),
 
-              // Form Password (TIDAK BERUBAH)
-              Text("Password", style: TextStyle(fontWeight: FontWeight.bold)),
+              // Form Password
+              Text("Password",
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               SizedBox(height: 8),
               TextFormField(
                 controller: _passwordController,
                 obscureText: _obscurePassword,
                 decoration: InputDecoration(
                   hintText: "Enter your password",
-                  prefixIcon:
-                      Icon(Icons.lock_outline, color: Colors.grey),
+                  prefixIcon: Icon(Icons.lock_outline, color: Colors.grey),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscurePassword
-                          ? Icons.visibility_off
-                          : Icons.visibility,
+                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
                       color: Colors.grey,
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
+                    onPressed: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
                   ),
                   filled: true,
                   fillColor: Colors.grey[100],
@@ -114,113 +139,62 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
 
-              // Lupa Password (TIDAK BERUBAH)
+              // Lupa Password
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text(
-                            "Fitur ini sedang maintenance. Hubungi Admin."),
-                        backgroundColor: Colors.orange));
+                    _showSnackBar(
+                      'Fitur ini sedang maintenance. Hubungi Admin.',
+                      Colors.orange,
+                    );
                   },
                   child: Text("Forgot Password?",
                       style: TextStyle(color: Colors.teal)),
                 ),
               ),
 
-              // ===========================================================
-              // TOMBOL LOGIN (BAGIAN YANG DIUPDATE)
-              // ===========================================================
+              // Tombol Sign In
               SizedBox(
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: _isLoading
-                      ? null // Kalau lagi loading, tombol dikunci
-                      : () async {
-                          // Validasi sederhana: jangan sampai kosong
-                          if (_emailController.text.isEmpty ||
-                              _passwordController.text.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content:
-                                    Text("Email dan password wajib diisi!"),
-                                backgroundColor: Colors.red));
-                            return;
-                          }
-
-                          // Aktifkan loading spinner
-                          setState(() => _isLoading = true);
-
-                          // Panggil API login
-                          final result = await ApiService.login(
-                            _emailController.text.trim(),
-                            _passwordController.text,
-                          );
-                         
-
-                          // Matikan loading spinner
-                          setState(() => _isLoading = false);
-
-                          if (result['success']) {
-                            // LOGIN BERHASIL!
-                            // UserSession sudah terisi otomatis di dalam ApiService.login()
-                            // Sekarang tinggal cek role-nya untuk menentukan mau ke mana
-
-                            if (result['success']) {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(builder: (context) => MainLayout()),
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                  content: Text(result['message'] ?? 'Login gagal, coba lagi'),
-                                  backgroundColor: Colors.red));
-                            }
-                          } else {
-                            // LOGIN GAGAL → Tampilkan pesan error dari API
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content: Text(result['message'] ??
-                                    'Login gagal, coba lagi'),
-                                backgroundColor: Colors.red));
-                          }
-                        },
+                  onPressed: _isLoading ? null : _handleLogin,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.teal,
+                    disabledBackgroundColor: Colors.grey[300],
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16)),
                   ),
-                  // Kalau loading, tampilkan spinner. Kalau tidak, tampilkan teks.
                   child: _isLoading
                       ? SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
                               color: Colors.white, strokeWidth: 2))
-                      : Text("Sign In",
+                      : Text(
+                          "Sign In",
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
-                              color: Colors.white)),
+                              color: Colors.white),
+                        ),
                 ),
               ),
-              // ===========================================================
+
               SizedBox(height: 30),
 
-              // Link ke Register (TIDAK BERUBAH)
+              // Link ke Register
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text("Don't have an account? ",
                       style: TextStyle(color: Colors.grey[600])),
                   GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => RegisterPage()),
-                      );
-                    },
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => RegisterPage()),
+                    ),
                     child: Text(
                       "Sign Up",
                       style: TextStyle(
