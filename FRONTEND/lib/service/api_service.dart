@@ -330,4 +330,34 @@ class ApiService {
       return {'success': false, 'message': 'Gagal konek: $e'};
     }
   }
+
+  // ════════════════════════════════════════════════════════════
+  // OWNER DASHBOARD
+  //
+  // GET /api/owner/dashboard
+  // Ambil statistik ringkasan bisnis owner:
+  //   - total_pendapatan    : total uang masuk dari booking completed
+  //   - jumlah_pesanan_masuk: jumlah pesanan aktif (pending+unpaid+active)
+  //
+  // Response server:
+  // {
+  //   "success": true,
+  //   "data": {
+  //     "total_pendapatan": 3500000,
+  //     "jumlah_pesanan_masuk": 4
+  //   }
+  // }
+  // ════════════════════════════════════════════════════════════
+  static Future<Map<String, dynamic>> getOwnerDashboard() async {
+    try {
+      final res = await http
+          .get(Uri.parse('$baseUrl/api/owner/dashboard'), headers: _authHeaders)
+          .timeout(const Duration(seconds: 15));
+      final body = jsonDecode(res.body) as Map<String, dynamic>;
+      if (res.statusCode == 200) return {'success': true, 'data': body['data']};
+      return {'success': false, 'message': body['message'] ?? 'Gagal load dashboard'};
+    } catch (e) {
+      return {'success': false, 'message': 'Gagal konek: $e'};
+    }
+  }
 }

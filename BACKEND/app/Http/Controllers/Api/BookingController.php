@@ -20,22 +20,25 @@ class BookingController extends Controller
     public function index(Request $request)
     {
         $bookings = Booking::with('mobil')
-            ->where('user_id', $request->user()->id) // ← hanya milik user ini
+            ->where('user_id', $request->user()->id)
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($b) {
                 return [
-                    'id'             => $b->id,
-                    'mobil_id'       => $b->mobil_id,
-                    'nama_mobil'     => $b->mobil->nama ?? '-',
-                    'gambar_mobil'   => $b->mobil->gambar ?? null,
-                    'tanggal_mulai'  => $b->tanggal_mulai->format('d M Y'),
-                    'tanggal_selesai'=> $b->tanggal_selesai->format('d M Y'),
-                    'total_harga'    => $b->total_harga,
-                    'status'         => $b->status,
-                    'cancelled_by'   => $b->cancelled_by,
+                    'id'              => $b->id,
+                    'mobil_id'        => $b->mobil_id,
+                    'nama_mobil'      => $b->mobil->nama ?? '-',
+                    'gambar_mobil'    => $b->mobil->gambar ?? null,
+                    'tanggal_mulai'   => $b->tanggal_mulai->format('d M Y'),
+                    'tanggal_selesai' => $b->tanggal_selesai->format('d M Y'),
+                    'total_harga'     => $b->total_harga,
+                    'status'          => $b->status,
+                    'cancelled_by'    => $b->cancelled_by,
+                    // ✅ TAMBAHAN — Flutter bisa deteksi cancel oleh admin
+                    'cancelled_at'    => $b->cancelled_at?->toIso8601String(),
+                    'cancel_reason'   => $b->cancel_reason,
                     // deadline_bayar dihitung dari accepted_at + 24 jam
-                    'deadline_bayar' => $b->status === 'unpaid' && $b->accepted_at
+                    'deadline_bayar'  => $b->status === 'unpaid' && $b->accepted_at
                         ? $b->accepted_at->addHours(24)->toIso8601String()
                         : null,
                 ];
@@ -69,7 +72,7 @@ class BookingController extends Controller
         $mulai      = Carbon::parse($request->tanggal_mulai);
         $selesai    = Carbon::parse($request->tanggal_selesai);
         $jumlahHari = $mulai->diffInDays($selesai);
-        $totalHarga = $jumlahHari * $mobil->harga; // kolom 'harga' sesuai tabel mobils
+        $totalHarga = $jumlahHari * $mobil->harga;
 
         // Cek bentrok jadwal di mobil yang sama
         $bentrok = Booking::where('mobil_id', $request->mobil_id)
@@ -129,130 +132,151 @@ class BookingController extends Controller
         $booking->update([
             'status'       => 'cancelled',
             'cancelled_by' => 'user',
+            'cancelled_at' => now(), // ✅ TAMBAHAN
         ]);
 
         return response()->json(['success' => true, 'message' => 'Pesanan berhasil dibatalkan.']);
     }
-   public function ownerBookings(Request $request)
-{
-    $ownerId = $request->user()->id;
 
-    $bookings = Booking::with(['mobil', 'user'])
-        ->whereHas('mobil', function ($q) use ($ownerId) {
-            $q->where('user_id', $ownerId);
-        })
-        ->whereIn('status', ['pending', 'unpaid', 'active'])
-        ->orderBy('created_at', 'desc')
-        ->get()
-        ->map(function ($b) {
-            return [
-                'id' => $b->id,
+    // =========================================================================
+    // GET /api/owner/bookings
+    // =========================================================================
+    public function ownerBookings(Request $request)
+    {
+        $ownerId = $request->user()->id;
 
-                'nama_penyewa' => $b->user->name ?? '-',
-                'email_penyewa' => $b->user->email ?? '-',
-                'phone_penyewa' => $b->user->phone ?? '-',
+        $bookings = Booking::with(['mobil', 'user'])
+            ->whereHas('mobil', function ($q) use ($ownerId) {
+                $q->where('user_id', $ownerId);
+            })
+            ->whereIn('status', ['pending', 'unpaid', 'active'])
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($b) {
+                return [
+                    'id'             => $b->id,
+                    'nama_penyewa'   => $b->user->name ?? '-',
+                    'email_penyewa'  => $b->user->email ?? '-',
+                    'phone_penyewa'  => $b->user->phone ?? '-',
+                    'nama_mobil'     => $b->mobil->nama ?? '-',
+                    'tanggal_mulai'  => Carbon::parse($b->tanggal_mulai)->format('d M Y'),
+                    'tanggal_selesai'=> Carbon::parse($b->tanggal_selesai)->format('d M Y'),
+                    'total_harga'    => $b->total_harga,
+                    'status'         => $b->status,
+                ];
+            });
 
-                'nama_mobil' => $b->mobil->nama ?? '-',
+        return response()->json(['success' => true, 'data' => $bookings]);
+    }
 
-                'tanggal_mulai' => Carbon::parse($b->tanggal_mulai)->format('d M Y'),
-                'tanggal_selesai' => Carbon::parse($b->tanggal_selesai)->format('d M Y'),
+    // =========================================================================
+    // POST /api/owner/bookings/{id}/terima
+    // =========================================================================
+    public function terima(Request $request, $id)
+    {
+        $booking = Booking::find($id);
 
-                'total_harga' => $b->total_harga,
-                'status' => $b->status,
-            ];
-        });
+        if (!$booking) {
+            return response()->json(['success' => false, 'message' => 'Pesanan tidak ditemukan'], 404);
+        }
 
-    return response()->json([
-        'success' => true,
-        'data' => $bookings
-    ]);
-}
-public function terima(Request $request, $id)
-{
-    $booking = Booking::find($id);
+        $booking->update([
+            'status'      => 'unpaid',
+            'accepted_at' => now(),
+        ]);
 
-    if (!$booking) {
+        return response()->json(['success' => true, 'message' => 'Pesanan diterima']);
+    }
+
+    // =========================================================================
+    // POST /api/owner/bookings/{id}/tolak
+    // =========================================================================
+    public function tolak(Request $request, $id)
+    {
+        $booking = Booking::find($id);
+
+        if (!$booking) {
+            return response()->json(['success' => false, 'message' => 'Pesanan tidak ditemukan'], 404);
+        }
+
+        if ($booking->status !== 'pending') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pesanan tidak bisa ditolak karena sudah diproses',
+            ], 422);
+        }
+
+        $booking->update([
+            'status'       => 'cancelled',
+            'cancelled_by' => 'owner',
+            'cancelled_at' => now(), // ✅ TAMBAHAN
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Pesanan ditolak']);
+    }
+
+    // =========================================================================
+    // GET /api/owner/dashboard
+    // =========================================================================
+    public function ownerDashboard(Request $request)
+    {
+        $ownerId = $request->user()->id;
+
+        $totalPendapatan = Booking::whereHas('mobil', function ($q) use ($ownerId) {
+                $q->where('user_id', $ownerId);
+            })
+            ->where('status', 'completed')
+            ->sum('total_harga');
+
+        $jumlahPesananMasuk = Booking::whereHas('mobil', function ($q) use ($ownerId) {
+                $q->where('user_id', $ownerId);
+            })
+            ->whereIn('status', ['pending', 'unpaid', 'active'])
+            ->count();
+
         return response()->json([
-            'success' => false,
-            'message' => 'Pesanan tidak ditemukan'
-        ], 404);
+            'success' => true,
+            'data'    => [
+                'total_pendapatan'     => $totalPendapatan,
+                'jumlah_pesanan_masuk' => $jumlahPesananMasuk,
+            ],
+        ]);
     }
 
-    $booking->update([
-        'status' => 'unpaid',
-        'accepted_at' => now(),
-    ]);
+    // =========================================================================
+    // POST /api/bookings/{id}/pay
+    // =========================================================================
+    public function pay(Request $request, $id)
+    {
+        $booking = Booking::with('mobil')->find($id);
 
-    return response()->json([
-        'success' => true,
-        'message' => 'Pesanan diterima'
-    ]);
-}
-public function tolak(Request $request, $id)
-{
-    $booking = Booking::find($id);
+        if (!$booking) {
+            return response()->json(['success' => false, 'message' => 'Booking tidak ditemukan'], 404);
+        }
 
-    if (!$booking) {
+        if ($booking->status !== 'unpaid') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Booking belum siap dibayar atau sudah diproses',
+            ], 422);
+        }
+
+        $booking->update(['status' => 'active']); // ✅ FIX: harusnya 'active' bukan 'completed'
+
+        if ($booking->mobil) {
+            $booking->mobil->update(['tersedia' => false]);
+        }
+
+        $kodeTiket = 'RDG-' . strtoupper(str_pad($booking->id, 6, '0', STR_PAD_LEFT));
+
         return response()->json([
-            'success' => false,
-            'message' => 'Pesanan tidak ditemukan'
-        ], 404);
+            'success'         => true,
+            'message'         => 'Pembayaran berhasil!',
+            'booking_id'      => $booking->id,
+            'kode_tiket'      => $kodeTiket,
+            'nama_mobil'      => $booking->mobil->nama ?? '-',
+            'tanggal_mulai'   => $booking->tanggal_mulai->format('d M Y'),
+            'tanggal_selesai' => $booking->tanggal_selesai->format('d M Y'),
+        ]);
     }
-
-    if ($booking->status !== 'pending') {
-        return response()->json([
-            'success' => false,
-            'message' => 'Pesanan tidak bisa ditolak karena sudah diproses'
-        ], 422);
-    }
-
-    $booking->update([
-        'status' => 'cancelled',
-        'cancelled_by' => 'owner',
-    ]);
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Pesanan ditolak'
-    ]);
-}
-public function pay(Request $request, $id)
-{
-    $booking = Booking::with('mobil')->find($id);
-
-    if (!$booking) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Booking tidak ditemukan'
-        ], 404);
-    }
-
-    if ($booking->status !== 'unpaid') {
-        return response()->json([
-            'success' => false,
-            'message' => 'Booking belum siap dibayar atau sudah diproses'
-        ], 422);
-    }
-
-    // ✅ Update status pesanan jadi completed
-    $booking->update(['status' => 'completed']);
-
-    // ✅ Update mobil jadi "Sedang Disewa" (tersedia = false)
-    if ($booking->mobil) {
-        $booking->mobil->update(['tersedia' => false]);
-    }
-
-    // ✅ Generate kode tiket unik dari booking ID
-    $kodeTiket = 'RDG-' . strtoupper(str_pad($booking->id, 6, '0', STR_PAD_LEFT));
-
-    return response()->json([
-        'success'     => true,
-        'message'     => 'Pembayaran berhasil!',
-        'booking_id'  => $booking->id,
-        'kode_tiket'  => $kodeTiket,
-        'nama_mobil'  => $booking->mobil->nama ?? '-',
-        'tanggal_mulai'   => $booking->tanggal_mulai->format('d M Y'),
-        'tanggal_selesai' => $booking->tanggal_selesai->format('d M Y'),
-    ]);
-}
 }

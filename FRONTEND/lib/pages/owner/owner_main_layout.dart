@@ -11,11 +11,16 @@ class OwnerMainLayout extends StatefulWidget {
 
 class _OwnerMainLayoutState extends State<OwnerMainLayout> {
   int _currentIndex = 0;
+  void changeTab(int index) {
+  setState(() {
+    _currentIndex = index;
+  });
+}
 
-  final List<Widget> _pages = [
-    OwnerDashboardPage(),
-    KelolaMobilPage(),
-  ];
+  late final List<Widget> _pages = [
+  OwnerDashboardPage(onNavigate: changeTab),
+  KelolaMobilPage(),
+];
 
   final List<String> _titles = [
     'Dashboard Owner',

@@ -6,6 +6,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MobilController;
 use App\Http\Controllers\CityController; // <-- TAMBAHAN BARU
+use App\Http\Controllers\AdminBookingController;
+
 
 // ============================================================
 // PUBLIC PAGES
@@ -39,7 +41,6 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/admin/users/{id}', [AdminController::class, 'updateUser']);
     Route::get('/admin/rentals', [AdminController::class, 'rentals']);
     Route::get('/admin/cars', [AdminController::class, 'cars']);
-    Route::get('/admin/bookings', [AdminController::class, 'bookings']);
     Route::get('/admin/cities', [AdminController::class, 'cities']);
     Route::post('/admin/rentals', [AdminController::class, 'storeRental']);
     Route::put('/admin/rentals/{id}', [AdminController::class, 'updateRental']);
@@ -47,6 +48,15 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/cities', [AdminController::class, 'storeCity']);
     Route::put('/admin/cities/{id}', [AdminController::class, 'updateCity']);
     Route::delete('/admin/cities/{id}', [AdminController::class, 'destroyCity']);
+
+    Route::get('/admin/bookings', [AdminBookingController::class, 'index']);
+    Route::get('/admin/bookings/{id}', [AdminBookingController::class, 'show']);
+    Route::put('/admin/bookings/{id}', [AdminBookingController::class, 'update']);
+    Route::delete('/admin/bookings/{id}', [AdminBookingController::class, 'destroy']);
+
+    Route::post('/admin/bookings/{id}/force-cancel',
+    [AdminBookingController::class, 'forceCancel']
+);
 
     Route::get('/admin/cities',         [CityController::class, 'index']);
     Route::post('/admin/cities',        [CityController::class, 'store']);

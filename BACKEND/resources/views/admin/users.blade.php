@@ -131,6 +131,10 @@
                     <input type="email" name="email" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none">
                 </div>
                 <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Nomor Telepon</label>
+                    <input type="text" name="phone" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl">
+                </div>
+                <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">Password</label>
                     <input type="password" name="password" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none">
                 </div>
