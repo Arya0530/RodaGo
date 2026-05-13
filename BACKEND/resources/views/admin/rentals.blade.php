@@ -1,3 +1,5 @@
+{{-- LOKASI FILE: resources/views/admin/rentals.blade.php --}}
+
 @extends('layouts.admin')
 
 @section('title', 'Penyedia Rental - Admin RodaGo')
@@ -59,7 +61,15 @@
                                         </div>
                                         <div>
                                             <label class="block text-sm font-bold text-gray-700 mb-1">Kota Operasional</label>
-                                            <input type="text" name="city" value="{{ $rental->city }}" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500">
+                                            {{-- ← DIUBAH: dari input text menjadi dropdown kota dari database --}}
+                                            <select name="city" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500">
+                                                <option value="" disabled>-- Pilih Kota --</option>
+                                                @foreach($cities as $city)
+                                                    <option value="{{ $city->name }}" {{ $rental->city == $city->name ? 'selected' : '' }}>
+                                                        {{ $city->name }} - {{ $city->province }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
                                         </div>
                                         <div class="flex gap-3 mt-6">
                                             <button type="button" onclick="document.getElementById('modalEdit{{ $rental->id }}').classList.add('hidden')" class="flex-1 bg-gray-100 text-gray-600 font-bold py-3 rounded-xl">Batal</button>
@@ -95,7 +105,13 @@
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">Kota</label>
-                    <input type="text" name="city" placeholder="Surabaya / Jakarta" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500">
+                    {{-- ← DIUBAH: dari input text menjadi dropdown kota dari database --}}
+                    <select name="city" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500">
+                        <option value="" disabled selected>-- Pilih Kota --</option>
+                        @foreach($cities as $city)
+                            <option value="{{ $city->name }}">{{ $city->name }} - {{ $city->province }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="flex gap-3 mt-6">
                     <button type="button" onclick="document.getElementById('modalTambah').classList.add('hidden')" class="flex-1 bg-gray-100 text-gray-600 font-bold py-3 rounded-xl">Batal</button>

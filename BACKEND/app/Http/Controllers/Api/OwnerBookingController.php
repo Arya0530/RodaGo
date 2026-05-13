@@ -14,20 +14,17 @@ class OwnerBookingController extends Controller
 {
     // =========================================================================
     // GET /api/owner/bookings
-    // Tampilkan pesanan PENDING yang masuk ke mobil milik owner ini
-    // Dipanggil: owner_dashboard_page.dart → _loadPesanan()
-    //
-    // PENTING: Setelah migration alter_mobils_add_user_id sudah dijalankan,
-    // pastikan data mobil lama sudah di-set user_id-nya (lihat instruksi di bawah)
+    // ✅ FIX: Hanya tampilkan status PENDING — yang butuh aksi owner
+    //         Setelah user bayar (active), pesanan HILANG dari dashboard owner
     // =========================================================================
     public function index(Request $request)
     {
-        // Ambil ID semua mobil milik owner yang sedang login
         $mobilIds = Mobil::where('user_id', $request->user()->id)
                          ->pluck('id');
 
         $bookings = Booking::with(['mobil', 'user'])
             ->whereIn('mobil_id', $mobilIds)
+            // ✅ FIX: Hanya 'pending' yang perlu tindakan owner (terima/tolak)
             ->where('status', 'pending')
             ->orderBy('created_at', 'desc')
             ->get()
@@ -39,6 +36,7 @@ class OwnerBookingController extends Controller
     // =========================================================================
     // GET /api/owner/bookings/semua
     // Tampilkan SEMUA pesanan untuk mobil milik owner (semua status)
+    // Bisa dipakai untuk halaman histori pesanan owner
     // =========================================================================
     public function semua(Request $request)
     {
@@ -57,7 +55,6 @@ class OwnerBookingController extends Controller
     // =========================================================================
     // POST /api/owner/bookings/{id}/terima
     // Terima pesanan → status: pending → unpaid, mulai hitung 24 jam
-    // Dipanggil: detail_pesanan_masuk_page.dart → _handleTerima()
     // =========================================================================
     public function terima(Request $request, $id)
     {
@@ -70,7 +67,6 @@ class OwnerBookingController extends Controller
             ], 404);
         }
 
-        // Pastikan mobil ini memang milik owner yang sedang login
         if ($booking->mobil && $booking->mobil->user_id !== $request->user()->id) {
             return response()->json([
                 'success' => false,
@@ -95,7 +91,6 @@ class OwnerBookingController extends Controller
     // =========================================================================
     // POST /api/owner/bookings/{id}/tolak
     // Tolak pesanan → status: pending → cancelled
-    // Dipanggil: detail_pesanan_masuk_page.dart → _handleTolak()
     // =========================================================================
     public function tolak(Request $request, $id)
     {
@@ -108,7 +103,6 @@ class OwnerBookingController extends Controller
             ], 404);
         }
 
-        // Pastikan mobil ini memang milik owner yang sedang login
         if ($booking->mobil && $booking->mobil->user_id !== $request->user()->id) {
             return response()->json([
                 'success' => false,
@@ -119,6 +113,7 @@ class OwnerBookingController extends Controller
         $booking->update([
             'status'       => 'cancelled',
             'cancelled_by' => 'owner',
+            'cancelled_at' => now(),
         ]);
 
         return response()->json(['success' => true, 'message' => 'Pesanan berhasil ditolak.']);
