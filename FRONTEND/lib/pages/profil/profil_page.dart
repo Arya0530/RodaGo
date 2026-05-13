@@ -1,19 +1,12 @@
-// ============================================================
-// FILE DIUPDATE: lib/pages/profil/profil_page.dart
-// ============================================================
-// APA YANG BERUBAH DARI VERSI LAMA?
+// LOKASI: lib/pages/profil/profil_page.dart
 //
-// 1. Nama "Arya" (hardcode) → diganti UserSession.nama
-// 2. Email "Arya@email.com | +62..." → diganti UserSession.email & phone
-// 3. Menu "Masuk Mode Owner (Admin)" → sekarang HANYA MUNCUL
-//    kalau UserSession.isOwner == true (role = 'owner')
-//    Kalau login sebagai user biasa, menu ini TERSEMBUNYI otomatis.
-// 4. Tombol logout sekarang memanggil UserSession.hapus() dulu
-//    sebelum redirect ke LoginPage
-//
-// Semua tampilan lain (KYC banner, menu edit profil, dll)
-// TIDAK BERUBAH sama sekali.
-// ============================================================
+// PERUBAHAN DARI VERSI LAMA:
+//   - Banner KYC sekarang DINAMIS sesuai status dari API:
+//       unverified → banner oranye "Verifikasi Akun" (sama seperti sebelumnya)
+//       pending    → banner biru "Sedang Ditinjau"
+//       rejected   → banner merah "Dokumen Ditolak"
+//       verified   → banner TIDAK MUNCUL (sudah beres)
+//   - Semua bagian lain (nama, email, menu, logout) TIDAK BERUBAH
 
 import 'package:flutter/material.dart';
 import 'edit_profil_page.dart';
@@ -23,12 +16,36 @@ import 'pembayaran_page.dart';
 import '../auth/login_page.dart';
 import 'kyc_page.dart';
 import '../owner/owner_main_layout.dart';
-import '../../service/user_session.dart'; // <-- TAMBAHAN BARU
+import '../../service/user_session.dart';
+import '../../service/api_service.dart';
 
-class ProfilPage extends StatelessWidget {
+class ProfilPage extends StatefulWidget {
   final bool isOwner;
-
   const ProfilPage({super.key, required this.isOwner});
+
+  @override
+  State<ProfilPage> createState() => _ProfilPageState();
+}
+
+class _ProfilPageState extends State<ProfilPage> {
+  // Status KYC: loading | unverified | pending | verified | rejected
+  String _kycStatus = 'loading';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadKycStatus();
+  }
+
+  Future<void> _loadKycStatus() async {
+    final result = await ApiService.getKycStatus();
+    if (!mounted) return;
+    setState(() {
+      _kycStatus = result['success'] == true
+          ? (result['data']['status'] ?? 'unverified')
+          : 'unverified';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,16 +54,17 @@ class ProfilPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Text("Profil Saya",
-            style: TextStyle(
-                color: Colors.black87, fontWeight: FontWeight.bold)),
+        title: Text(
+          'Profil Saya',
+          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(24.0),
         child: Column(
           children: [
-            // HEADER PROFIL
+            // ── Header profil (tidak berubah) ──────────────────────
             Center(
               child: Column(
                 children: [
@@ -56,9 +74,6 @@ class ProfilPage extends StatelessWidget {
                     child: Icon(Icons.person, size: 50, color: Colors.teal),
                   ),
                   SizedBox(height: 16),
-                  // ===========================================================
-                  // PERUBAHAN: Nama & email dari UserSession, bukan hardcode
-                  // ===========================================================
                   Text(
                     UserSession.nama.isNotEmpty ? UserSession.nama : 'User',
                     style: TextStyle(
@@ -70,92 +85,28 @@ class ProfilPage extends StatelessWidget {
                     '${UserSession.email} | ${UserSession.phone}',
                     style: TextStyle(color: Colors.grey[500]),
                   ),
-                  // ===========================================================
                 ],
               ),
             ),
             SizedBox(height: 32),
 
-            // BANNER KYC (TIDAK BERUBAH)
-            Container(
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.orange[50],
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.orange[200]!),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.warning_amber_rounded,
-                      color: Colors.orange, size: 32),
-                  SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Verifikasi Akun (KYC)",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.orange[800],
-                                fontSize: 16)),
-                        SizedBox(height: 4),
-                        Text(
-                            "Upload KTP & SIM agar bisa mulai menyewa mobil.",
-                            style: TextStyle(
-                                color: Colors.orange[700], fontSize: 12)),
-                      ],
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => KycPage()));
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                    ),
-                    child: Text("Verifikasi",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold)),
-                  )
-                ],
-              ),
-            ),
-            SizedBox(height: 32),
+            // ── Banner KYC — tampil sesuai status ──────────────────
+            _buildKycBanner(),
+            if (_kycStatus != 'verified') SizedBox(height: 32),
+            if (_kycStatus == 'verified') SizedBox(height: 16),
 
-            // MENU SETTINGS (TIDAK BERUBAH)
-            _buildMenuOption(
-                context, Icons.person_outline, "Edit Profil", EditProfilPage()),
-            _buildMenuOption(context, Icons.credit_card_outlined,
-                "Metode Pembayaran", PembayaranPage()),
-            _buildMenuOption(context, Icons.lock_outline,
-                "Pengaturan Keamanan", KeamananPage()),
-            _buildMenuOption(
-                context, Icons.help_outline, "Pusat Bantuan", BantuanPage()),
+            // ── Menu Settings (tidak berubah) ──────────────────────
+            _buildMenuOption(context, Icons.person_outline,      'Edit Profil',             EditProfilPage()),
+            _buildMenuOption(context, Icons.credit_card_outlined, 'Metode Pembayaran',       PembayaranPage()),
+            _buildMenuOption(context, Icons.lock_outline,         'Pengaturan Keamanan',     KeamananPage()),
+            _buildMenuOption(context, Icons.help_outline,         'Pusat Bantuan',           BantuanPage()),
 
-            // ===========================================================
-            // PERUBAHAN: Menu Owner hanya tampil kalau role = 'owner'
-            // Sebelumnya selalu tampil untuk semua user.
-            // Sekarang pakai UserSession.isOwner sebagai kondisi.
-            // ===========================================================
             if (UserSession.isOwner)
-              _buildMenuOption(
-                context,
-                Icons.admin_panel_settings,
-                "Dashboard Owner",
-                OwnerMainLayout(),
-              ),
-            // ===========================================================
+              _buildMenuOption(context, Icons.admin_panel_settings, 'Dashboard Owner', OwnerMainLayout()),
 
             SizedBox(height: 32),
 
-            // TOMBOL LOGOUT (DIUPDATE: tambah UserSession.hapus())
+            // ── Logout (tidak berubah) ─────────────────────────────
             ListTile(
               leading: Container(
                 padding: EdgeInsets.all(10),
@@ -164,16 +115,14 @@ class ProfilPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10)),
                 child: Icon(Icons.logout, color: Colors.red),
               ),
-              title: Text("Keluar Akun",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.red)),
-              trailing:
-                  Icon(Icons.arrow_forward_ios, size: 16, color: Colors.red[200]),
+              title: Text('Keluar Akun',
+                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
+              trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.red[200]),
               onTap: () {
-                UserSession.hapus(); // <-- TAMBAHAN BARU: bersihkan session
+                UserSession.hapus();
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
+                  MaterialPageRoute(builder: (_) => LoginPage()),
                   (route) => false,
                 );
               },
@@ -184,18 +133,124 @@ class ProfilPage extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuOption(
-      BuildContext context, IconData icon, String title, Widget? pageLanjutan) {
+  // ── Banner KYC dinamis ───────────────────────────────────────────
+  Widget _buildKycBanner() {
+    if (_kycStatus == 'loading') {
+      return Container(
+        height: 80,
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Center(child: CircularProgressIndicator(color: Colors.teal, strokeWidth: 2)),
+      );
+    }
+
+    // Sudah verified → tidak tampilkan banner sama sekali
+    if (_kycStatus == 'verified') {
+      return SizedBox.shrink();
+    }
+
+    // Konfigurasi tampilan per status
+    Color  bgColor;
+    Color  borderColor;
+    Color  iconColor;
+    IconData icon;
+    String judul;
+    String pesan;
+    String tombolLabel;
+    Color  tombolColor;
+
+    switch (_kycStatus) {
+      case 'pending':
+        bgColor     = Colors.blue[50]!;
+        borderColor = Colors.blue[200]!;
+        iconColor   = Colors.blue;
+        icon        = Icons.hourglass_top_rounded;
+        judul       = 'Sedang Ditinjau';
+        pesan       = 'Dokumen Anda sedang diperiksa tim kami.';
+        tombolLabel = 'Lihat Status';
+        tombolColor = Colors.blue;
+        break;
+      case 'rejected':
+        bgColor     = Colors.red[50]!;
+        borderColor = Colors.red[200]!;
+        iconColor   = Colors.red;
+        icon        = Icons.cancel_outlined;
+        judul       = 'Dokumen Ditolak';
+        pesan       = 'Silakan upload ulang dokumen Anda.';
+        tombolLabel = 'Upload Ulang';
+        tombolColor = Colors.red;
+        break;
+      default: // unverified
+        bgColor     = Colors.orange[50]!;
+        borderColor = Colors.orange[200]!;
+        iconColor   = Colors.orange;
+        icon        = Icons.warning_amber_rounded;
+        judul       = 'Verifikasi Akun (KYC)';
+        pesan       = 'Upload KTP & SIM agar bisa mulai menyewa mobil.';
+        tombolLabel = 'Verifikasi';
+        tombolColor = Colors.orange;
+    }
+
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: borderColor),
+      ),
+      child: Row(children: [
+        Icon(icon, color: iconColor, size: 32),
+        SizedBox(width: 16),
+        Expanded(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(
+              judul,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: iconColor,
+                fontSize: 15,
+              ),
+            ),
+            SizedBox(height: 4),
+            Text(
+              pesan,
+              style: TextStyle(color: iconColor.withOpacity(0.85), fontSize: 12),
+            ),
+          ]),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => KycPage()),
+            );
+            // Setelah kembali dari KycPage, refresh status
+            _loadKycStatus();
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: tombolColor,
+            elevation: 0,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+          child: Text(
+            tombolLabel,
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ]),
+    );
+  }
+
+  Widget _buildMenuOption(BuildContext context, IconData icon, String title, Widget? pageLanjutan) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: () async {
           await Future.delayed(Duration(milliseconds: 100));
           if (pageLanjutan != null) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => pageLanjutan),
-            );
+            Navigator.push(context, MaterialPageRoute(builder: (_) => pageLanjutan));
           }
         },
         child: ListTile(

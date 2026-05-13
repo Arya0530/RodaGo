@@ -1,35 +1,58 @@
+// LOKASI: lib/service/mobil_service.dart
+//
+// FIX: Tambah header 'ngrok-skip-browser-warning': 'true' di SEMUA request.
+// Tanpa header ini, ngrok menampilkan halaman HTML interstitial sebagai
+// respons, bukan JSON → dart crash saat jsonDecode → "Failed to fetch".
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-// Import ApiService dari service folder
 import './api_service.dart';
-
-// Import UserSession untuk mendapatkan token
 import './user_session.dart';
 
 class MobilService {
-  /// Helper function untuk mendapatkan headers dengan token
+  // ── Header JSON + token + ngrok bypass ──────────────────────────
   static Map<String, String> _getHeaders() {
     return {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${UserSession.token}',
+      'Content-Type'              : 'application/json',
+      'Accept'                    : 'application/json',
+      'Authorization'             : 'Bearer ${UserSession.token}',
+      'ngrok-skip-browser-warning': 'true',   // ← WAJIB untuk ngrok
     };
   }
 
-  /// GET /api/mobil/public - Ambil daftar mobil publik untuk customer (NO AUTH)
+  // Header tanpa auth (untuk endpoint publik)
+  static Map<String, String> _getPublicHeaders() {
+    return {
+      'Accept'                    : 'application/json',
+      'ngrok-skip-browser-warning': 'true',   // ← WAJIB untuk ngrok
+    };
+  }
+
+  // ══════════════════════════════════════════════════════════════
+  // GET /api/mobil/public — daftar mobil publik (tanpa auth)
+  // ══════════════════════════════════════════════════════════════
   static Future<List<dynamic>> getMobilPublic() async {
     try {
-      final url = Uri.parse('${ApiService.baseUrl}/api/mobil/public');
-      final response = await http.get(url);
-      
+      final url      = Uri.parse('${ApiService.baseUrl}/api/mobil/public');
+      final response = await http
+          .get(url, headers: _getPublicHeaders())
+          .timeout(const Duration(seconds: 15));
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        if (data is List) {
-          return data;
-        } else if (data is Map && data.containsKey('data')) {
-          return data['data'] as List<dynamic>;
-        }
-        return data;
+        List<dynamic> list = data is List
+            ? data
+            : (data is Map && data.containsKey('data')
+                ? data['data'] as List<dynamic>
+                : []);
+
+        return list.map((item) {
+          if (item is Map<String, dynamic> && item['gambar'] != null) {
+            item['gambar'] = ApiService.perbaikiUrlGambar(item['gambar'].toString());
+          }
+          return item;
+        }).toList();
       } else {
         throw Exception('Gagal load mobil: ${response.statusCode}');
       }
@@ -38,24 +61,30 @@ class MobilService {
     }
   }
 
-  /// GET /api/mobil - Ambil daftar mobil milik user yang login
+  // ══════════════════════════════════════════════════════════════
+  // GET /api/mobil — daftar mobil milik owner yang login
+  // ══════════════════════════════════════════════════════════════
   static Future<List<dynamic>> getMobil() async {
     try {
-      final url = Uri.parse('${ApiService.baseUrl}/api/mobil');
-      final response = await http.get(
-        url,
-        headers: _getHeaders(),
-      );
-      
+      final url      = Uri.parse('${ApiService.baseUrl}/api/mobil');
+      final response = await http
+          .get(url, headers: _getHeaders())
+          .timeout(const Duration(seconds: 15));
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        // API Laravel biasanya return array langsung atau wrapped dalam object
-        if (data is List) {
-          return data;
-        } else if (data is Map && data.containsKey('data')) {
-          return data['data'] as List<dynamic>;
-        }
-        return data;
+        List<dynamic> list = data is List
+            ? data
+            : (data is Map && data.containsKey('data')
+                ? data['data'] as List<dynamic>
+                : []);
+
+        return list.map((item) {
+          if (item is Map<String, dynamic> && item['gambar'] != null) {
+            item['gambar'] = ApiService.perbaikiUrlGambar(item['gambar'].toString());
+          }
+          return item;
+        }).toList();
       } else if (response.statusCode == 401) {
         throw Exception('Unauthorized - Silahkan login kembali');
       } else {
@@ -66,18 +95,24 @@ class MobilService {
     }
   }
 
-  /// GET /api/mobil/{id} - Ambil detail mobil by ID
+  // ══════════════════════════════════════════════════════════════
+  // GET /api/mobil/{id} — detail mobil by ID
+  // ══════════════════════════════════════════════════════════════
   static Future<Map<String, dynamic>> getMobilById(int id) async {
     try {
-      final url = Uri.parse('${ApiService.baseUrl}/api/mobil/$id');
-      final response = await http.get(
-        url,
-        headers: _getHeaders(),
-      );
-      
+      final url      = Uri.parse('${ApiService.baseUrl}/api/mobil/$id');
+      final response = await http
+          .get(url, headers: _getHeaders())
+          .timeout(const Duration(seconds: 15));
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return data is Map ? data : data['data'];
+        final Map<String, dynamic> item =
+            data is Map ? Map<String, dynamic>.from(data) : data['data'];
+        if (item['gambar'] != null) {
+          item['gambar'] = ApiService.perbaikiUrlGambar(item['gambar'].toString());
+        }
+        return item;
       } else if (response.statusCode == 401) {
         throw Exception('Unauthorized - Silahkan login kembali');
       } else if (response.statusCode == 403) {
@@ -90,16 +125,16 @@ class MobilService {
     }
   }
 
-  /// POST /api/mobil - Tambah mobil baru untuk user yang login
+  // ══════════════════════════════════════════════════════════════
+  // POST /api/mobil — tambah mobil (JSON tanpa gambar)
+  // ══════════════════════════════════════════════════════════════
   static Future<Map<String, dynamic>> tambahMobil(Map<String, dynamic> data) async {
     try {
-      final url = Uri.parse('${ApiService.baseUrl}/api/mobil');
-      final response = await http.post(
-        url,
-        headers: _getHeaders(),
-        body: jsonEncode(data),
-      );
-      
+      final url      = Uri.parse('${ApiService.baseUrl}/api/mobil');
+      final response = await http
+          .post(url, headers: _getHeaders(), body: jsonEncode(data))
+          .timeout(const Duration(seconds: 15));
+
       if (response.statusCode == 201 || response.statusCode == 200) {
         return jsonDecode(response.body);
       } else if (response.statusCode == 401) {
@@ -112,16 +147,38 @@ class MobilService {
     }
   }
 
-  /// PUT /api/mobil/{id} - Update mobil (hanya owner yang bisa update mobilnya sendiri)
+  // ══════════════════════════════════════════════════════════════
+  // UPDATE MOBIL DENGAN GAMBAR (multipart/form-data)
+  // gambarBytes null = tidak ganti gambar
+  // ══════════════════════════════════════════════════════════════
+  static Future<Map<String, dynamic>> updateMobilDenganGambar({
+    required int mobilId,
+    required Map<String, dynamic> data,
+    List<int>? gambarBytes,
+    String?    gambarName,
+  }) async {
+    final result = await ApiService.updateMobilDenganGambar(
+      mobilId    : mobilId,
+      data       : data,
+      gambarBytes: gambarBytes,
+      gambarName : gambarName,
+    );
+    if (result['success'] == true) {
+      return result['data'] as Map<String, dynamic>;
+    }
+    throw Exception(result['message'] ?? 'Gagal update mobil');
+  }
+
+  // ══════════════════════════════════════════════════════════════
+  // PUT /api/mobil/{id} — update mobil tanpa ganti gambar (JSON)
+  // ══════════════════════════════════════════════════════════════
   static Future<Map<String, dynamic>> updateMobil(int id, Map<String, dynamic> data) async {
     try {
-      final url = Uri.parse('${ApiService.baseUrl}/api/mobil/$id');
-      final response = await http.put(
-        url,
-        headers: _getHeaders(),
-        body: jsonEncode(data),
-      );
-      
+      final url      = Uri.parse('${ApiService.baseUrl}/api/mobil/$id');
+      final response = await http
+          .put(url, headers: _getHeaders(), body: jsonEncode(data))
+          .timeout(const Duration(seconds: 15));
+
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else if (response.statusCode == 401) {
@@ -136,15 +193,16 @@ class MobilService {
     }
   }
 
-  /// DELETE /api/mobil/{id} - Hapus mobil (hanya owner yang bisa hapus mobilnya sendiri)
+  // ══════════════════════════════════════════════════════════════
+  // DELETE /api/mobil/{id} — hapus mobil
+  // ══════════════════════════════════════════════════════════════
   static Future<void> hapusMobil(int id) async {
     try {
-      final url = Uri.parse('${ApiService.baseUrl}/api/mobil/$id');
-      final response = await http.delete(
-        url,
-        headers: _getHeaders(),
-      );
-      
+      final url      = Uri.parse('${ApiService.baseUrl}/api/mobil/$id');
+      final response = await http
+          .delete(url, headers: _getHeaders())
+          .timeout(const Duration(seconds: 15));
+
       if (response.statusCode != 200 && response.statusCode != 204) {
         if (response.statusCode == 401) {
           throw Exception('Unauthorized - Silahkan login kembali');

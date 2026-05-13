@@ -2,65 +2,71 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Booking;
 use Illuminate\Http\Request;
-
-// Simpan di: app/Http/Controllers/AdminBookingController.php
+use App\Models\Booking;
 
 class AdminBookingController extends Controller
 {
-    // __construct() dihapus — Laravel 12 tidak support $this->middleware() di constructor.
-    // Middleware 'auth' sudah ditangani di routes/web.php (group middleware ['auth'])
-
-    // ===============================
-    // TAMPILKAN SEMUA BOOKING
-    // ===============================
+    // GET /admin/bookings
     public function index()
     {
         $bookings = Booking::with(['user', 'mobil'])
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(20);
 
         return view('admin.bookings', compact('bookings'));
     }
 
-    // ===============================
-    // FORCE CANCEL ADMIN
-    // POST /admin/bookings/{id}/force-cancel
-    // ===============================
-    public function forceCancel(Request $request, $id)
+    // GET /admin/bookings/{id}
+    public function show($id)
     {
         $booking = Booking::with(['user', 'mobil'])->findOrFail($id);
+        return view('admin.booking-detail', compact('booking'));
+    }
 
-        // ❌ Tidak boleh cancel kalau sudah selesai atau sudah dibatalkan
-        if (in_array($booking->status, ['completed', 'cancelled'])) {
-            $pesan = $booking->status === 'completed'
-                ? 'Booking sudah selesai, tidak bisa dibatalkan.'
-                : 'Booking sudah dibatalkan sebelumnya.';
+    // PUT /admin/bookings/{id}  — ubah status manual
+    public function update(Request $request, $id)
+    {
+        $booking = Booking::findOrFail($id);
 
-            return back()->with('error', $pesan);
-        }
-
-        // ✅ Validasi alasan cancel (opsional, tapi disarankan)
         $request->validate([
-            'cancel_reason' => 'nullable|string|max:255',
+            'status' => 'required|in:pending,unpaid,active,completed,cancelled',
         ]);
 
-        // ✅ Update status booking
-        $booking->update([
-            'status'        => 'cancelled',
-            'cancelled_by'  => 'admin',   // bisa juga: auth()->id() untuk simpan ID admin
-            'cancelled_at'  => now(),
-            'cancel_reason' => $request->input('cancel_reason', 'Force cancel oleh admin'),
-        ]);
+        $booking->status = $request->status;
 
-        // ✅ Kembalikan mobil jadi tersedia lagi
-        if ($booking->mobil) {
-            $booking->mobil->update([
-                'tersedia' => true,
-            ]);
+        if ($request->status === 'active' && !$booking->accepted_at) {
+            $booking->accepted_at = now();
         }
 
-        return back()->with('success', "Booking #{$booking->id} berhasil dibatalkan oleh admin.");
+        $booking->save();
+
+        return back()->with('success', 'Status booking berhasil diperbarui!');
+    }
+
+    // DELETE /admin/bookings/{id}
+    public function destroy($id)
+    {
+        Booking::findOrFail($id)->delete();
+        return back()->with('success', 'Booking berhasil dihapus!');
+    }
+
+    // POST /admin/bookings/{id}/force-cancel
+    public function forceCancel(Request $request, $id)
+    {
+        $booking = Booking::findOrFail($id);
+
+        if (!$booking->canForceCancelled()) {
+            return back()->with('error', 'Booking ini tidak bisa dibatalkan (sudah selesai/dibatalkan).');
+        }
+
+        $booking->update([
+            'status'       => 'cancelled',
+            'cancelled_by' => 'admin',
+            'cancelled_at' => now(),
+            'cancel_reason' => $request->input('reason', 'Dibatalkan oleh Admin'),
+        ]);
+
+        return back()->with('success', 'Booking berhasil di-force cancel!');
     }
 }

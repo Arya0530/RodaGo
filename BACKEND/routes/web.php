@@ -1,13 +1,14 @@
 <?php
+// LOKASI: routes/web.php
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MobilController;
-use App\Http\Controllers\CityController; // <-- TAMBAHAN BARU
+use App\Http\Controllers\CityController;
 use App\Http\Controllers\AdminBookingController;
-
+use App\Http\Controllers\KycAdminController;
 
 // ============================================================
 // PUBLIC PAGES
@@ -19,47 +20,61 @@ Route::get('/contact', fn() => view('contact'));
 
 // ============================================================
 // ROUTE DETAIL MOBIL
-// URL: /mobil/{slug} → MobilController@show
 // ============================================================
 Route::get('/mobil/{slug}', [MobilController::class, 'show'])->name('mobil.detail');
 
 // ============================================================
-// AUTH (TIDAK BERUBAH)
+// AUTH
 // ============================================================
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'authenticate']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // ============================================================
-// ADMIN ROUTES (TIDAK BERUBAH)
+// ADMIN ROUTES
 // ============================================================
 Route::middleware(['auth'])->group(function () {
+
+    // --- Dashboard ---
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
-    Route::get('/admin/users', [AdminController::class, 'users']);
-    Route::post('/admin/users', [AdminController::class, 'storeUser']);
+
+    // LIVE STATS API ENDPOINTS (dipanggil AJAX dari dashboard)
+    Route::get('/admin/api/live-stats',      [AdminController::class, 'liveStats']);
+    Route::get('/admin/api/recent-activity', [AdminController::class, 'recentActivity']);
+
+    // --- Users ---
+    Route::get('/admin/users',         [AdminController::class, 'users']);
+    Route::post('/admin/users',        [AdminController::class, 'storeUser']);
+    Route::put('/admin/users/{id}',    [AdminController::class, 'updateUser']);
     Route::delete('/admin/users/{id}', [AdminController::class, 'destroyUser']);
-    Route::put('/admin/users/{id}', [AdminController::class, 'updateUser']);
-    Route::get('/admin/rentals', [AdminController::class, 'rentals']);
-    Route::get('/admin/cars', [AdminController::class, 'cars']);
-    Route::get('/admin/cities', [AdminController::class, 'cities']);
-    Route::post('/admin/rentals', [AdminController::class, 'storeRental']);
-    Route::put('/admin/rentals/{id}', [AdminController::class, 'updateRental']);
+
+    // --- Rentals ---
+    Route::get('/admin/rentals',         [AdminController::class, 'rentals']);
+    Route::post('/admin/rentals',        [AdminController::class, 'storeRental']);
+    Route::put('/admin/rentals/{id}',    [AdminController::class, 'updateRental']);
     Route::delete('/admin/rentals/{id}', [AdminController::class, 'destroyRental']);
-    Route::post('/admin/cities', [AdminController::class, 'storeCity']);
-    Route::put('/admin/cities/{id}', [AdminController::class, 'updateCity']);
-    Route::delete('/admin/cities/{id}', [AdminController::class, 'destroyCity']);
 
-    Route::get('/admin/bookings', [AdminBookingController::class, 'index']);
-    Route::get('/admin/bookings/{id}', [AdminBookingController::class, 'show']);
-    Route::put('/admin/bookings/{id}', [AdminBookingController::class, 'update']);
-    Route::delete('/admin/bookings/{id}', [AdminBookingController::class, 'destroy']);
+    // --- Cars ---
+    Route::get('/admin/cars', [AdminController::class, 'cars']);
 
-    Route::post('/admin/bookings/{id}/force-cancel',
-    [AdminBookingController::class, 'forceCancel']
-);
+    // --- Bookings ---
+    Route::get('/admin/bookings',                    [AdminBookingController::class, 'index']);
+    Route::get('/admin/bookings/{id}',               [AdminBookingController::class, 'show']);
+    Route::put('/admin/bookings/{id}',               [AdminBookingController::class, 'update']);
+    Route::delete('/admin/bookings/{id}',            [AdminBookingController::class, 'destroy']);
+    Route::post('/admin/bookings/{id}/force-cancel', [AdminBookingController::class, 'forceCancel']);
 
-    Route::get('/admin/cities',         [CityController::class, 'index']);
-    Route::post('/admin/cities',        [CityController::class, 'store']);
-    Route::put('/admin/cities/{id}',    [CityController::class, 'update']);
-    Route::delete('/admin/cities/{id}', [CityController::class, 'destroy']);
+    // --- Cities ---
+    Route::get('/admin/cities',          [AdminController::class, 'cities']);
+    Route::post('/admin/cities',         [AdminController::class, 'storeCity']);
+    Route::put('/admin/cities/{id}',     [AdminController::class, 'updateCity']);
+    Route::delete('/admin/cities/{id}',  [AdminController::class, 'destroyCity']);
+
+    // ── KYC Verification ──────────────────────────────────────
+    // GET  /admin/kyc              → list semua pengajuan KYC
+    // POST /admin/kyc/{id}/approve → setujui KYC (status = verified)
+    // POST /admin/kyc/{id}/reject  → tolak KYC (status = rejected + alasan)
+    Route::get('/admin/kyc',                   [KycAdminController::class, 'index'])  ->name('admin.kyc');
+    Route::post('/admin/kyc/{id}/approve',     [KycAdminController::class, 'approve'])->name('admin.kyc.approve');
+    Route::post('/admin/kyc/{id}/reject',      [KycAdminController::class, 'reject']) ->name('admin.kyc.reject');
 });

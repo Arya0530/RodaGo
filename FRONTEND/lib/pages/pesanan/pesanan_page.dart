@@ -1,44 +1,59 @@
 import 'package:flutter/material.dart';
 import 'proses_pembayaran_page.dart';
-import '../../service/api_service.dart'; // Sesuaikan path import project kamu
+import '../../service/api_service.dart';
 
 class PesananPage extends StatefulWidget {
   @override
   _PesananPageState createState() => _PesananPageState();
 }
 
-class _PesananPageState extends State<PesananPage> {
+class _PesananPageState extends State<PesananPage> with WidgetsBindingObserver {
   bool _isLoading = true;
   List<dynamic> _bookings = [];
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadBookings();
   }
 
-  // ── Ambil pesanan dari API (otomatis hanya milik user yang login) ──────────
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  // ✅ Auto-refresh saat user kembali ke halaman ini
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _loadBookings();
+    }
+  }
+
   Future<void> _loadBookings() async {
     setState(() => _isLoading = true);
-
     final result = await ApiService.getMyBookings();
-
     setState(() {
       _isLoading = false;
       _bookings = (result['success'] == true) ? result['data'] ?? [] : [];
     });
   }
 
-  // ── Filter per tab ────────────────────────────────────────────────────────
-  List<dynamic> get _aktif => _bookings
-      .where((b) => ['pending', 'unpaid', 'active'].contains(b['status']))
-      .toList();
+  // ── Filter per tab ──────────────────────────────────────────────────────────
+  // ✅ FIX: Tab Aktif  = pending + unpaid (belum selesai proses)
+  //         Tab Selesai = completed + active (sudah bayar / sedang berjalan)
+  //         Tab Batal  = cancelled
+  List<dynamic> get _aktif =>
+      _bookings.where((b) => ['pending', 'unpaid'].contains(b['status'])).toList();
+
   List<dynamic> get _selesai =>
-      _bookings.where((b) => b['status'] == 'completed').toList();
+      _bookings.where((b) => ['completed', 'active'].contains(b['status'])).toList();
+
   List<dynamic> get _dibatalkan =>
       _bookings.where((b) => b['status'] == 'cancelled').toList();
 
-  // ── Cancel pesanan ────────────────────────────────────────────────────────
   Future<void> _cancelBooking(int id, String namaMobil) async {
     final ok = await showDialog<bool>(
       context: context,
@@ -105,9 +120,9 @@ class _PesananPageState extends State<PesananPage> {
             indicatorColor: Colors.teal,
             indicatorWeight: 3,
             tabs: [
-              Tab(text: 'Active'),
-              Tab(text: 'Completed'),
-              Tab(text: 'Cancelled'),
+              Tab(text: 'Aktif'),
+              Tab(text: 'Selesai'),
+              Tab(text: 'Dibatalkan'),
             ],
           ),
         ),
@@ -153,8 +168,7 @@ class _PesananPageState extends State<PesananPage> {
     final status    = booking['status'] ?? 'pending';
     final id        = booking['id'] as int;
     final namaMobil = booking['nama_mobil'] ?? '-';
-    final tanggal   =
-        '${booking['tanggal_mulai']} - ${booking['tanggal_selesai']}';
+    final tanggal   = '${booking['tanggal_mulai']} - ${booking['tanggal_selesai']}';
     final harga     = _formatHarga(booking['total_harga']);
 
     Color statusColor;
@@ -173,9 +187,10 @@ class _PesananPageState extends State<PesananPage> {
         statusIcon  = Icons.warning_rounded;
         break;
       case 'active':
+        // ✅ active = sudah bayar, masa sewa sedang berjalan
         statusColor = Colors.teal;
-        statusText  = 'Disewa (Lunas)';
-        statusIcon  = Icons.check_circle;
+        statusText  = 'Sedang Berjalan';
+        statusIcon  = Icons.directions_car;
         break;
       case 'completed':
         statusColor = Colors.blue;
@@ -236,10 +251,11 @@ class _PesananPageState extends State<PesananPage> {
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
 
           Row(children: [
-            Icon(Icons.calendar_today, size: 14, color: Colors.grey[500]),
+            Icon(Icons.calendar_today_outlined,
+                size: 14, color: Colors.grey[500]),
             const SizedBox(width: 8),
             Text(tanggal,
                 style: TextStyle(color: Colors.grey[600], fontSize: 13)),
@@ -296,7 +312,8 @@ class _PesananPageState extends State<PesananPage> {
               ),
             ),
 
-          if (status == 'active')
+          // ✅ Tombol lihat tiket untuk completed DAN active
+          if (status == 'completed' || status == 'active')
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
@@ -386,21 +403,21 @@ class _PesananPageState extends State<PesananPage> {
   }
 
   void _prosesPembayaran(Map<String, dynamic> booking) async {
-  bool? hasil = await Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => ProsesPembayaranPage(
-        namaMobil:  booking['nama_mobil'] ?? '-',
-        totalHarga: _formatHarga(booking['total_harga']),
-        bookingId:  booking['id'] as int, // ✅ TAMBAHAN
+    bool? hasil = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ProsesPembayaranPage(
+          namaMobil:  booking['nama_mobil'] ?? '-',
+          totalHarga: _formatHarga(booking['total_harga']),
+          bookingId:  booking['id'] as int,
+        ),
       ),
-    ),
-  );
-  if (hasil == true) {
-    _showSnackbar('Pembayaran berhasil! Tiket diterbitkan. 🎉', Colors.teal);
-    _loadBookings(); // otomatis refresh → pesanan masuk tab Completed
+    );
+    if (hasil == true) {
+      _showSnackbar('Pembayaran berhasil! Tiket diterbitkan. 🎉', Colors.teal);
+      _loadBookings(); // ✅ refresh → pesanan muncul di tab Selesai
+    }
   }
-}
 
   void _tampilkanTiketQR(int bookingId) {
     showDialog(

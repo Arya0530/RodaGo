@@ -15,7 +15,6 @@ class BookingController extends Controller
     // =========================================================================
     // GET /api/bookings
     // Ambil semua pesanan milik user yang sedang login SAJA
-    // Dipanggil: pesanan_page.dart → _loadBookings()
     // =========================================================================
     public function index(Request $request)
     {
@@ -34,10 +33,8 @@ class BookingController extends Controller
                     'total_harga'     => $b->total_harga,
                     'status'          => $b->status,
                     'cancelled_by'    => $b->cancelled_by,
-                    // ✅ TAMBAHAN — Flutter bisa deteksi cancel oleh admin
                     'cancelled_at'    => $b->cancelled_at?->toIso8601String(),
                     'cancel_reason'   => $b->cancel_reason,
-                    // deadline_bayar dihitung dari accepted_at + 24 jam
                     'deadline_bayar'  => $b->status === 'unpaid' && $b->accepted_at
                         ? $b->accepted_at->addHours(24)->toIso8601String()
                         : null,
@@ -50,7 +47,6 @@ class BookingController extends Controller
     // =========================================================================
     // POST /api/bookings
     // User buat pesanan baru → status otomatis: pending
-    // Body: { mobil_id, tanggal_mulai, tanggal_selesai }
     // =========================================================================
     public function store(Request $request)
     {
@@ -74,9 +70,8 @@ class BookingController extends Controller
         $jumlahHari = $mulai->diffInDays($selesai);
         $totalHarga = $jumlahHari * $mobil->harga;
 
-        // Cek bentrok jadwal di mobil yang sama
         $bentrok = Booking::where('mobil_id', $request->mobil_id)
-            ->whereIn('status', ['pending', 'unpaid', 'active'])
+            ->whereIn('status', ['pending', 'unpaid', 'completed'])
             ->where(function ($q) use ($request) {
                 $q->whereBetween('tanggal_mulai',    [$request->tanggal_mulai, $request->tanggal_selesai])
                   ->orWhereBetween('tanggal_selesai', [$request->tanggal_mulai, $request->tanggal_selesai]);
@@ -132,7 +127,7 @@ class BookingController extends Controller
         $booking->update([
             'status'       => 'cancelled',
             'cancelled_by' => 'user',
-            'cancelled_at' => now(), // ✅ TAMBAHAN
+            'cancelled_at' => now(),
         ]);
 
         return response()->json(['success' => true, 'message' => 'Pesanan berhasil dibatalkan.']);
@@ -140,6 +135,7 @@ class BookingController extends Controller
 
     // =========================================================================
     // GET /api/owner/bookings
+    // ✅ FIX: Hanya tampilkan PENDING — yang butuh aksi owner (terima/tolak)
     // =========================================================================
     public function ownerBookings(Request $request)
     {
@@ -149,20 +145,20 @@ class BookingController extends Controller
             ->whereHas('mobil', function ($q) use ($ownerId) {
                 $q->where('user_id', $ownerId);
             })
-            ->whereIn('status', ['pending', 'unpaid', 'active'])
+            ->where('status', 'pending') // ✅ FIX: hanya pending
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($b) {
                 return [
-                    'id'             => $b->id,
-                    'nama_penyewa'   => $b->user->name ?? '-',
-                    'email_penyewa'  => $b->user->email ?? '-',
-                    'phone_penyewa'  => $b->user->phone ?? '-',
-                    'nama_mobil'     => $b->mobil->nama ?? '-',
-                    'tanggal_mulai'  => Carbon::parse($b->tanggal_mulai)->format('d M Y'),
-                    'tanggal_selesai'=> Carbon::parse($b->tanggal_selesai)->format('d M Y'),
-                    'total_harga'    => $b->total_harga,
-                    'status'         => $b->status,
+                    'id'              => $b->id,
+                    'nama_penyewa'    => $b->user->name   ?? '-',
+                    'email_penyewa'   => $b->user->email  ?? '-',
+                    'phone_penyewa'   => $b->user->phone  ?? '-',
+                    'nama_mobil'      => $b->mobil->nama  ?? '-',
+                    'tanggal_mulai'   => Carbon::parse($b->tanggal_mulai)->format('d M Y'),
+                    'tanggal_selesai' => Carbon::parse($b->tanggal_selesai)->format('d M Y'),
+                    'total_harga'     => $b->total_harga,
+                    'status'          => $b->status,
                 ];
             });
 
@@ -176,8 +172,8 @@ class BookingController extends Controller
     {
         $booking = Booking::find($id);
 
-        if (!$booking) {
-            return response()->json(['success' => false, 'message' => 'Pesanan tidak ditemukan'], 404);
+        if (!$booking || $booking->status !== 'pending') {
+            return response()->json(['success' => false, 'message' => 'Pesanan tidak ditemukan atau sudah diproses.'], 404);
         }
 
         $booking->update([
@@ -185,7 +181,7 @@ class BookingController extends Controller
             'accepted_at' => now(),
         ]);
 
-        return response()->json(['success' => true, 'message' => 'Pesanan diterima']);
+        return response()->json(['success' => true, 'message' => 'Pesanan diterima! User punya 24 jam untuk membayar.']);
     }
 
     // =========================================================================
@@ -195,11 +191,7 @@ class BookingController extends Controller
     {
         $booking = Booking::find($id);
 
-        if (!$booking) {
-            return response()->json(['success' => false, 'message' => 'Pesanan tidak ditemukan'], 404);
-        }
-
-        if ($booking->status !== 'pending') {
+        if (!$booking || $booking->status !== 'pending') {
             return response()->json([
                 'success' => false,
                 'message' => 'Pesanan tidak bisa ditolak karena sudah diproses',
@@ -209,7 +201,7 @@ class BookingController extends Controller
         $booking->update([
             'status'       => 'cancelled',
             'cancelled_by' => 'owner',
-            'cancelled_at' => now(), // ✅ TAMBAHAN
+            'cancelled_at' => now(),
         ]);
 
         return response()->json(['success' => true, 'message' => 'Pesanan ditolak']);
@@ -217,21 +209,25 @@ class BookingController extends Controller
 
     // =========================================================================
     // GET /api/owner/dashboard
+    // ✅ FIX: pendapatan dari 'completed' (langsung bertambah setelah user bayar)
+    //         jumlah_pesanan_masuk = hanya 'pending'
     // =========================================================================
     public function ownerDashboard(Request $request)
     {
         $ownerId = $request->user()->id;
 
+        // ✅ FIX: 'completed' langsung terjadi saat user bayar (lihat pay())
         $totalPendapatan = Booking::whereHas('mobil', function ($q) use ($ownerId) {
                 $q->where('user_id', $ownerId);
             })
             ->where('status', 'completed')
             ->sum('total_harga');
 
+        // ✅ FIX: Hanya pending yang butuh aksi owner
         $jumlahPesananMasuk = Booking::whereHas('mobil', function ($q) use ($ownerId) {
                 $q->where('user_id', $ownerId);
             })
-            ->whereIn('status', ['pending', 'unpaid', 'active'])
+            ->where('status', 'pending')
             ->count();
 
         return response()->json([
@@ -245,6 +241,16 @@ class BookingController extends Controller
 
     // =========================================================================
     // POST /api/bookings/{id}/pay
+    //
+    // ✅ FIX UTAMA: Status langsung jadi 'completed' setelah bayar
+    //
+    // Kenapa langsung 'completed'?
+    // - Tab "Completed" di pesanan_page.dart filter b['status'] == 'completed'
+    // - Total pendapatan owner dihitung dari status 'completed'
+    // - Kalau masih 'active', dua hal di atas tidak akan update
+    //
+    // autoComplete() sekarang HANYA bertugas kembalikan mobil → tersedia = true
+    // setelah tanggal_selesai lewat. Status tidak perlu diubah lagi.
     // =========================================================================
     public function pay(Request $request, $id)
     {
@@ -261,8 +267,10 @@ class BookingController extends Controller
             ], 422);
         }
 
-        $booking->update(['status' => 'active']); // ✅ FIX: harusnya 'active' bukan 'completed'
+        // ✅ FIX: Langsung 'completed' setelah bayar
+        $booking->update(['status' => 'completed']);
 
+        // Mobil tidak tersedia selama masa sewa berlangsung
         if ($booking->mobil) {
             $booking->mobil->update(['tersedia' => false]);
         }
@@ -277,6 +285,37 @@ class BookingController extends Controller
             'nama_mobil'      => $booking->mobil->nama ?? '-',
             'tanggal_mulai'   => $booking->tanggal_mulai->format('d M Y'),
             'tanggal_selesai' => $booking->tanggal_selesai->format('d M Y'),
+        ]);
+    }
+
+    // =========================================================================
+    // GET /api/bookings/auto-complete
+    // ✅ FIX: Sekarang HANYA kembalikan mobil jadi tersedia setelah masa sewa habis
+    //         Status booking sudah 'completed' sejak bayar — tidak perlu diubah
+    // =========================================================================
+    public function autoComplete()
+    {
+        // Cari booking completed yang tanggal_selesai sudah lewat
+        // tapi mobilnya masih dikunci (tersedia = false)
+        $bookings = Booking::with('mobil')
+            ->where('status', 'completed')
+            ->whereDate('tanggal_selesai', '<', now()->toDateString())
+            ->whereHas('mobil', function ($q) {
+                $q->where('tersedia', false);
+            })
+            ->get();
+
+        $count = 0;
+        foreach ($bookings as $booking) {
+            if ($booking->mobil) {
+                $booking->mobil->update(['tersedia' => true]);
+                $count++;
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "Auto complete dijalankan: $count mobil dikembalikan ke tersedia",
         ]);
     }
 }

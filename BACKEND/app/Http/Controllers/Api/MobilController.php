@@ -8,40 +8,22 @@ use App\Models\Mobil;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class MobilController extends Controller
 {
-    // =========================================================================
-    // GET /api/mobil/public
-    //
-    // Tampilkan SEMUA mobil yang tersedia = true.
-    // Tidak peduli apakah mobilnya punya user_id atau tidak,
-    // tidak peduli apakah ownernya sudah punya rental atau belum.
-    //
-    // Pakai LEFT JOIN ke users dan rentals supaya:
-    //   - Mobil dengan user_id NULL  → tetap muncul (nama_rental = null)
-    //   - Mobil dengan owner yang belum punya rental → tetap muncul
-    //   - Mobil dengan owner yang sudah punya rental → muncul + ada nama_rental
-    // =========================================================================
+    // ── GET /api/mobil/public ─────────────────────────────────────────────────
     public function publicIndex()
     {
         $mobils = DB::table('mobils')
-            ->leftJoin('users',   'users.id',         '=', 'mobils.user_id')
-            ->leftJoin('rentals', 'rentals.user_id',   '=', 'users.id')
+            ->leftJoin('users',   'users.id',        '=', 'mobils.user_id')
+            ->leftJoin('rentals', 'rentals.user_id', '=', 'users.id')
             ->where('mobils.tersedia', true)
             ->select(
-                'mobils.id',
-                'mobils.nama',
-                'mobils.slug',
-                'mobils.tipe',
-                'mobils.harga',
-                'mobils.kursi',
-                'mobils.transmisi',
-                'mobils.bahan_bakar',
-                'mobils.deskripsi',
-                'mobils.gambar',
-                'mobils.tersedia',
-                'mobils.user_id',
+                'mobils.id', 'mobils.nama', 'mobils.slug', 'mobils.tipe',
+                'mobils.harga', 'mobils.kursi', 'mobils.transmisi',
+                'mobils.bahan_bakar', 'mobils.deskripsi', 'mobils.gambar',
+                'mobils.tersedia', 'mobils.user_id',
                 'rentals.brand_name as nama_rental',
                 'rentals.city       as kota_rental'
             )
@@ -50,26 +32,7 @@ class MobilController extends Controller
         return response()->json($mobils, 200);
     }
 
-    // =========================================================================
-    // GET /api/mobil/search
-    //   ?city_name=Surabaya        ← nama kota (dari rentals.city)
-    //   &tanggal_mulai=2026-05-10
-    //   &tanggal_selesai=2026-05-12
-    //
-    // LOGIKA FILTER:
-    //
-    // 1. Filter Kota (hanya jika city_name dikirim):
-    //    - Pakai LEFT JOIN ke rentals
-    //    - Jika city_name ada → filter WHERE rentals.city = city_name
-    //    - Jika city_name kosong → tampilkan semua (tidak filter kota)
-    //
-    // 2. Filter Tanggal:
-    //    - Exclude mobil yang punya booking AKTIF (pending/unpaid/active)
-    //      yang tanggalnya OVERLAP dengan rentang dicari.
-    //    - Overlap: booking.mulai <= selesaiCari AND booking.selesai >= mulaiCari
-    //
-    // 3. Mobil tersedia = false selalu dikecualikan.
-    // =========================================================================
+    // ── GET /api/mobil/search ─────────────────────────────────────────────────
     public function searchAvailable(Request $request)
     {
         $request->validate([
@@ -82,7 +45,6 @@ class MobilController extends Controller
         $tanggalMulai   = $request->tanggal_mulai;
         $tanggalSelesai = $request->tanggal_selesai;
 
-        // Step 1: Ambil ID mobil yang sudah ada booking aktif di rentang ini
         $mobilDipesan = DB::table('bookings')
             ->whereIn('status', ['pending', 'unpaid', 'active'])
             ->where('tanggal_mulai',   '<=', $tanggalSelesai)
@@ -90,48 +52,31 @@ class MobilController extends Controller
             ->pluck('mobil_id')
             ->toArray();
 
-        // Step 2: Query utama dengan LEFT JOIN
-        // LEFT JOIN supaya mobil tanpa owner/rental tetap bisa muncul
-        // (relevan untuk data seeder / data lama)
         $query = DB::table('mobils')
             ->leftJoin('users',   'users.id',        '=', 'mobils.user_id')
             ->leftJoin('rentals', 'rentals.user_id', '=', 'users.id')
             ->where('mobils.tersedia', true)
             ->whereNotIn('mobils.id', $mobilDipesan)
             ->select(
-                'mobils.id',
-                'mobils.nama',
-                'mobils.slug',
-                'mobils.tipe',
-                'mobils.harga',
-                'mobils.kursi',
-                'mobils.transmisi',
-                'mobils.bahan_bakar',
-                'mobils.deskripsi',
-                'mobils.gambar',
-                'mobils.tersedia',
-                'mobils.user_id',
+                'mobils.id', 'mobils.nama', 'mobils.slug', 'mobils.tipe',
+                'mobils.harga', 'mobils.kursi', 'mobils.transmisi',
+                'mobils.bahan_bakar', 'mobils.deskripsi', 'mobils.gambar',
+                'mobils.tersedia', 'mobils.user_id',
                 'rentals.brand_name as nama_rental',
                 'rentals.city       as kota_rental'
             );
 
-        // Step 3: Filter kota — hanya jika city_name dikirim
-        // Ini filter berdasarkan rentals.city milik owner si mobil
         if (!empty($cityName)) {
             $query->where('rentals.city', $cityName);
         }
 
-        $mobils = $query->orderBy('mobils.nama')->get();
-
         return response()->json([
             'success' => true,
-            'data'    => $mobils,
+            'data'    => $query->orderBy('mobils.nama')->get(),
         ], 200);
     }
 
-    // =========================================================================
-    // GET /api/mobil — daftar mobil milik owner yang login
-    // =========================================================================
+    // ── GET /api/mobil ────────────────────────────────────────────────────────
     public function index(Request $request)
     {
         $user = $request->user();
@@ -141,9 +86,8 @@ class MobilController extends Controller
         return response()->json([]);
     }
 
-    // =========================================================================
-    // POST /api/mobil — owner tambah mobil baru
-    // =========================================================================
+    // ── POST /api/mobil ───────────────────────────────────────────────────────
+    // Terima multipart/form-data (nama, harga, dll + gambar_file opsional)
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -154,8 +98,7 @@ class MobilController extends Controller
             'transmisi'   => 'required|string',
             'bahan_bakar' => 'required|string',
             'deskripsi'   => 'nullable|string',
-            'gambar'      => 'nullable|string',
-            'tersedia'    => 'boolean',
+            'gambar_file' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
 
         $user = $request->user();
@@ -163,17 +106,31 @@ class MobilController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        $validated['user_id']  = $user->id;
-        $validated['slug']     = Str::slug($validated['nama']) . '-' . Str::random(4);
-        $validated['tersedia'] = true;
+        // Proses file gambar jika dikirim
+        $gambarUrl = null;
+        if ($request->hasFile('gambar_file') && $request->file('gambar_file')->isValid()) {
+            $path      = $request->file('gambar_file')->store('mobil', 'public');
+            $gambarUrl = url(Storage::url($path));
+        }
 
-        $mobil = Mobil::create($validated);
+        $mobil = Mobil::create([
+            'user_id'     => $user->id,
+            'nama'        => $validated['nama'],
+            'slug'        => Str::slug($validated['nama']) . '-' . Str::random(4),
+            'tipe'        => $validated['tipe'],
+            'harga'       => $validated['harga'],
+            'kursi'       => $validated['kursi'],
+            'transmisi'   => $validated['transmisi'],
+            'bahan_bakar' => $validated['bahan_bakar'],
+            'deskripsi'   => $validated['deskripsi'] ?? null,
+            'gambar'      => $gambarUrl,
+            'tersedia'    => true,
+        ]);
+
         return response()->json($mobil, 201);
     }
 
-    // =========================================================================
-    // GET /api/mobil/{id}
-    // =========================================================================
+    // ── GET /api/mobil/{id} ───────────────────────────────────────────────────
     public function show(Request $request, $id)
     {
         $mobil = Mobil::findOrFail($id);
@@ -184,9 +141,17 @@ class MobilController extends Controller
         return response()->json($mobil);
     }
 
-    // =========================================================================
-    // PUT /api/mobil/{id}
-    // =========================================================================
+    // ── PUT /api/mobil/{id} ───────────────────────────────────────────────────
+    // Support dua cara:
+    //   1. PUT biasa (JSON)             → untuk update tanpa ganti gambar
+    //   2. POST + _method=PUT (multipart) → untuk update sekaligus ganti gambar
+    //
+    // Laravel otomatis mendeteksi method spoofing via field _method.
+    // Pastikan di routes/api.php terdapat Route::post untuk endpoint ini
+    // ATAU cukup Route::match(['put','post'], ...) — pilih salah satu.
+    //
+    // Cara paling mudah: biarkan Route::apiResource (sudah include PUT),
+    // tambahkan satu route POST spoofing di bawahnya.
     public function update(Request $request, $id)
     {
         $mobil = Mobil::findOrFail($id);
@@ -203,7 +168,7 @@ class MobilController extends Controller
             'transmisi'   => 'sometimes|string',
             'bahan_bakar' => 'sometimes|string',
             'deskripsi'   => 'nullable|string',
-            'gambar'      => 'nullable|string',
+            'gambar_file' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:5120',
             'tersedia'    => 'boolean',
         ]);
 
@@ -211,13 +176,24 @@ class MobilController extends Controller
             $validated['slug'] = Str::slug($validated['nama']) . '-' . Str::random(4);
         }
 
+        // Proses ganti gambar jika ada file baru
+        if ($request->hasFile('gambar_file') && $request->file('gambar_file')->isValid()) {
+            // Hapus gambar lama dari storage
+            if ($mobil->gambar) {
+                $oldPath = ltrim(parse_url($mobil->gambar, PHP_URL_PATH), '/');
+                $oldPath = preg_replace('#^storage/#', '', $oldPath);
+                Storage::disk('public')->delete($oldPath);
+            }
+            $path                  = $request->file('gambar_file')->store('mobil', 'public');
+            $validated['gambar']   = url(Storage::url($path));
+        }
+
+        unset($validated['gambar_file']);
         $mobil->update($validated);
         return response()->json($mobil);
     }
 
-    // =========================================================================
-    // DELETE /api/mobil/{id}
-    // =========================================================================
+    // ── DELETE /api/mobil/{id} ────────────────────────────────────────────────
     public function destroy(Request $request, $id)
     {
         $mobil = Mobil::findOrFail($id);
@@ -225,6 +201,14 @@ class MobilController extends Controller
         if (!$user || $mobil->user_id !== $user->id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
+
+        // Hapus file gambar dari storage
+        if ($mobil->gambar) {
+            $oldPath = ltrim(parse_url($mobil->gambar, PHP_URL_PATH), '/');
+            $oldPath = preg_replace('#^storage/#', '', $oldPath);
+            Storage::disk('public')->delete($oldPath);
+        }
+
         $mobil->delete();
         return response()->json(['message' => 'Mobil dihapus']);
     }

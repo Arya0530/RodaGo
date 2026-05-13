@@ -1,5 +1,13 @@
+// LOKASI: lib/pages/owner/detail_pesanan_masuk_page.dart
+//
+// PERUBAHAN DARI VERSI LAMA:
+//   - Bagian "Dokumen Verifikasi (KYC)" sekarang load gambar KTP & SIM ASLI dari API
+//   - Saat halaman dibuka: GET /api/kyc/booking/{bookingId}
+//   - Gambar ditampilkan dengan Image.network, bukan dummy placeholder
+//   - Semua logika terima/tolak dan tampilan lain TIDAK BERUBAH
+
 import 'package:flutter/material.dart';
-import '../../service/api_service.dart'; // Sesuaikan path project kamu
+import '../../service/api_service.dart';
 
 class DetailPesananMasukPage extends StatefulWidget {
   final int    bookingId;
@@ -26,15 +34,44 @@ class DetailPesananMasukPage extends StatefulWidget {
 }
 
 class _DetailPesananMasukPageState extends State<DetailPesananMasukPage> {
-  bool _isLoading = false;
+  bool    _isLoading    = false;
 
-  // ── Owner TERIMA ────────────────────────────────────────────────────────────
+  // ── State data KYC penyewa ───────────────────────────────────
+  bool    _isKycLoading = true;
+  String  _kycStatus    = 'unverified';
+  String? _ktpUrl;
+  String? _simUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadKycPenyewa();
+  }
+
+  // ── Load KYC penyewa dari API ────────────────────────────────
+  Future<void> _loadKycPenyewa() async {
+    final result = await ApiService.getKycByBooking(widget.bookingId);
+    if (!mounted) return;
+    if (result['success'] == true) {
+      final data = result['data'] as Map<String, dynamic>;
+      setState(() {
+        _kycStatus    = data['status'] ?? 'unverified';
+        _ktpUrl       = data['ktp_url'];
+        _simUrl       = data['sim_url'];
+        _isKycLoading = false;
+      });
+    } else {
+      setState(() => _isKycLoading = false);
+    }
+  }
+
+  // ── Owner TERIMA ─────────────────────────────────────────────
   Future<void> _handleTerima() async {
     final ok = await _konfirmasi(
-      judul: 'Terima Pesanan',
-      isi: 'Terima pesanan dari ${widget.namaPenyewa}?\n\nUser punya 24 jam untuk membayar.',
+      judul : 'Terima Pesanan',
+      isi   : 'Terima pesanan dari ${widget.namaPenyewa}?\n\nUser punya 24 jam untuk membayar.',
       tombol: 'Terima',
-      warna: Colors.teal,
+      warna : Colors.teal,
     );
     if (ok != true) return;
 
@@ -47,19 +84,19 @@ class _DetailPesananMasukPageState extends State<DetailPesananMasukPage> {
       _showSnackbar('Pesanan diterima! User punya 24 jam untuk bayar.', Colors.teal);
       await Future.delayed(const Duration(milliseconds: 600));
       if (!mounted) return;
-      Navigator.pop(context, true); // true = ada perubahan → dashboard refresh
+      Navigator.pop(context, true);
     } else {
       _showSnackbar(result['message'] ?? 'Gagal menerima pesanan', Colors.red);
     }
   }
 
-  // ── Owner TOLAK ─────────────────────────────────────────────────────────────
+  // ── Owner TOLAK ──────────────────────────────────────────────
   Future<void> _handleTolak() async {
     final ok = await _konfirmasi(
-      judul: 'Tolak Pesanan',
-      isi: 'Yakin ingin menolak pesanan dari ${widget.namaPenyewa}?\n\nPesanan akan langsung dibatalkan.',
+      judul : 'Tolak Pesanan',
+      isi   : 'Yakin ingin menolak pesanan dari ${widget.namaPenyewa}?\n\nPesanan akan langsung dibatalkan.',
       tombol: 'Tolak',
-      warna: Colors.red,
+      warna : Colors.red,
     );
     if (ok != true) return;
 
@@ -82,7 +119,7 @@ class _DetailPesananMasukPageState extends State<DetailPesananMasukPage> {
     required String judul,
     required String isi,
     required String tombol,
-    required Color warna,
+    required Color  warna,
   }) {
     return showDialog<bool>(
       context: context,
@@ -123,8 +160,10 @@ class _DetailPesananMasukPageState extends State<DetailPesananMasukPage> {
           icon: const Icon(Icons.arrow_back_ios, color: Colors.black87),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Detail Penyewa',
-            style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Detail Penyewa',
+          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -141,63 +180,103 @@ class _DetailPesananMasukPageState extends State<DetailPesananMasukPage> {
                   borderRadius: BorderRadius.circular(12)),
               child: Text(
                 'Booking #RDG-${widget.bookingId.toString().padLeft(4, '0')}',
-                style: const TextStyle(color: Colors.teal, fontWeight: FontWeight.bold, fontSize: 13),
+                style: const TextStyle(
+                    color: Colors.teal,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13),
                 textAlign: TextAlign.center,
               ),
             ),
             const SizedBox(height: 24),
 
             // Info pesanan
-            const Text('Informasi Pesanan',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87)),
+            const Text(
+              'Informasi Pesanan',
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87),
+            ),
             const SizedBox(height: 12),
-            _buildInfoRow('Mobil', widget.namaMobil, isBold: true),
-            _buildInfoRow('Penyewa', widget.namaPenyewa, isBold: true),
-            _buildInfoRow('Email', widget.emailPenyewa, isBold: true),
-            _buildInfoRow('No. HP', widget.phonePenyewa, isBold: true),
-            _buildInfoRow('Jadwal Sewa', widget.tanggal, isBold: true),
+            _buildInfoRow('Mobil',       widget.namaMobil,            isBold: true),
+            _buildInfoRow('Penyewa',     widget.namaPenyewa,          isBold: true),
+            _buildInfoRow('Email',       widget.emailPenyewa,         isBold: true),
+            _buildInfoRow('No. HP',      widget.phonePenyewa,         isBold: true),
+            _buildInfoRow('Jadwal Sewa', widget.tanggal,              isBold: true),
             _buildInfoRow('Total Harga', _formatHarga(widget.totalHarga), isBold: true),
 
             Divider(height: 40, color: Colors.grey[200], thickness: 1.5),
 
-            // Dokumen KYC
-            const Text('Dokumen Verifikasi (KYC)',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87)),
+            // ── Dokumen KYC ─────────────────────────────────────────
+            const Text(
+              'Dokumen Verifikasi (KYC)',
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87),
+            ),
             const SizedBox(height: 6),
-            Text('Periksa keaslian dokumen sebelum menyetujui pesanan.',
-                style: TextStyle(color: Colors.grey[600], fontSize: 13)),
+
+            // Badge status KYC
+            _buildKycStatusBadge(),
             const SizedBox(height: 16),
 
-            const Text('1. E-KTP', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              'Periksa keaslian dokumen sebelum menyetujui pesanan.',
+              style: TextStyle(color: Colors.grey[600], fontSize: 13),
+            ),
+            const SizedBox(height: 16),
+
+            // ── Gambar KTP ──────────────────────────────────────────
+            const Text('1. E-KTP',
+                style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            _buildDokumenDummy('KTP'),
+            _isKycLoading
+                ? _buildDokumenLoading()
+                : _buildDokumenGambar(_ktpUrl, 'KTP'),
             const SizedBox(height: 20),
 
-            const Text('2. SIM A', style: TextStyle(fontWeight: FontWeight.bold)),
+            // ── Gambar SIM ──────────────────────────────────────────
+            const Text('2. SIM A',
+                style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            _buildDokumenDummy('SIM A'),
+            _isKycLoading
+                ? _buildDokumenLoading()
+                : _buildDokumenGambar(_simUrl, 'SIM A'),
           ],
         ),
       ),
 
-      // Tombol Terima / Tolak di bawah
+      // Tombol Terima / Tolak
       bottomSheet: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.white,
-          boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.1), blurRadius: 12, offset: const Offset(0, -4))],
+          boxShadow: [
+            BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                blurRadius: 12,
+                offset: const Offset(0, -4))
+          ],
         ),
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: Colors.teal))
+            ? const Center(
+                child: CircularProgressIndicator(color: Colors.teal))
             : Row(children: [
                 Expanded(
                   child: OutlinedButton(
                     onPressed: _handleTolak,
                     style: OutlinedButton.styleFrom(
                         side: BorderSide(color: Colors.red[300]!),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        padding: const EdgeInsets.symmetric(vertical: 16)),
-                    child: const Text('Tolak', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 15)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        padding:
+                            const EdgeInsets.symmetric(vertical: 16)),
+                    child: const Text('Tolak',
+                        style: TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15)),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -206,10 +285,16 @@ class _DetailPesananMasukPageState extends State<DetailPesananMasukPage> {
                     onPressed: _handleTerima,
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.teal,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        padding:
+                            const EdgeInsets.symmetric(vertical: 16),
                         elevation: 0),
-                    child: const Text('Terima', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+                    child: const Text('Terima',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15)),
                   ),
                 ),
               ]),
@@ -217,63 +302,170 @@ class _DetailPesananMasukPageState extends State<DetailPesananMasukPage> {
     );
   }
 
- Widget _buildInfoRow(String label, String value, {bool isBold = false}) {
-  return Padding(
-    padding: const EdgeInsets.only(bottom: 14),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Label kiri
-        SizedBox(
-          width: 110,
-          child: Text(
-            label,
+  // ── Badge status KYC penyewa ─────────────────────────────────────
+  Widget _buildKycStatusBadge() {
+    if (_isKycLoading) return SizedBox.shrink();
+
+    Color   bgColor;
+    Color   textColor;
+    IconData icon;
+    String  label;
+
+    switch (_kycStatus) {
+      case 'verified':
+        bgColor   = Colors.teal[50]!;
+        textColor = Colors.teal;
+        icon      = Icons.verified_user;
+        label     = 'Terverifikasi';
+        break;
+      case 'pending':
+        bgColor   = Colors.orange[50]!;
+        textColor = Colors.orange;
+        icon      = Icons.hourglass_top_rounded;
+        label     = 'Menunggu Verifikasi';
+        break;
+      case 'rejected':
+        bgColor   = Colors.red[50]!;
+        textColor = Colors.red;
+        icon      = Icons.cancel_outlined;
+        label     = 'Ditolak';
+        break;
+      default:
+        bgColor   = Colors.grey[100]!;
+        textColor = Colors.grey;
+        icon      = Icons.help_outline;
+        label     = 'Belum Diverifikasi';
+    }
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [
+        Icon(icon, size: 14, color: textColor),
+        SizedBox(width: 6),
+        Text(label,
             style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-            ),
+                color: textColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 12)),
+      ]),
+    );
+  }
+
+  // ── Gambar KYC dari URL ──────────────────────────────────────────
+  Widget _buildDokumenGambar(String? url, String jenis) {
+    if (url == null || url.isEmpty) {
+      // Belum ada dokumen
+      return Container(
+        width: double.infinity,
+        height: 180,
+        decoration: BoxDecoration(
+            color: Colors.grey[100],
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.grey[300]!)),
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Icon(Icons.image_not_supported_outlined,
+              size: 44, color: Colors.grey[400]),
+          const SizedBox(height: 8),
+          Text(
+            'Dokumen $jenis belum diunggah',
+            style: TextStyle(color: Colors.grey[500]),
           ),
-        ),
+        ]),
+      );
+    }
 
-        // Value kanan
-        Expanded(
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: Text(
-              value,
-              textAlign: TextAlign.right,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight:
-                    isBold ? FontWeight.bold : FontWeight.w600,
-
-                // semua bold tetap hitam,
-                // hanya Total yang warna teal
-                color: label == 'Total'
-                    ? Colors.teal
-                    : Colors.black87,
+    // Ada URL → tampilkan gambar
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: Image.network(
+        url,
+        width: double.infinity,
+        height: 220,
+        fit: BoxFit.cover,
+        loadingBuilder: (context, child, progress) {
+          if (progress == null) return child;
+          return Container(
+            width: double.infinity,
+            height: 220,
+            decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(16)),
+            child: Center(
+              child: CircularProgressIndicator(
+                color: Colors.teal,
+                value: progress.expectedTotalBytes != null
+                    ? progress.cumulativeBytesLoaded /
+                        progress.expectedTotalBytes!
+                    : null,
               ),
             ),
-          ),
-        ),
-      ],
-    ),
-  );
-}
+          );
+        },
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            width: double.infinity,
+            height: 220,
+            decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.grey[300]!)),
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.broken_image, size: 44, color: Colors.grey[400]),
+                  SizedBox(height: 8),
+                  Text('Gagal memuat gambar $jenis',
+                      style: TextStyle(color: Colors.grey[500])),
+                ]),
+          );
+        },
+      ),
+    );
+  }
 
-  Widget _buildDokumenDummy(String jenis) {
+  // ── Skeleton loading dokumen ─────────────────────────────────────
+  Widget _buildDokumenLoading() {
     return Container(
       width: double.infinity,
       height: 180,
       decoration: BoxDecoration(
-          color: Colors.grey[100],
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey[300]!)),
-      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Icon(Icons.image_outlined, size: 44, color: Colors.grey[400]),
-        const SizedBox(height: 8),
-        Text('Preview Gambar $jenis', style: TextStyle(color: Colors.grey[500])),
-      ]),
+          color: Colors.grey[200],
+          borderRadius: BorderRadius.circular(16)),
+      child: Center(child: CircularProgressIndicator(color: Colors.teal)),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value, {bool isBold = false}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 110,
+            child: Text(label,
+                style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+          ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                value,
+                textAlign: TextAlign.right,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
+                  color: label == 'Total' ? Colors.teal : Colors.black87,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
