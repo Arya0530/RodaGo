@@ -14,7 +14,7 @@
 
 <div class="max-w-7xl mx-auto animate-fade-in-up">
 
-    <!-- HERO (TIDAK BERUBAH) -->
+    <!-- HERO -->
     <div class="bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-[2rem] p-10 md:p-16 text-center text-white mb-16 shadow-lg shadow-emerald-500/20">
         <h1 class="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
             Sewa Mobil Mudah & Cepat
@@ -32,21 +32,39 @@
         <div class="flex justify-between items-end mb-6 px-2">
             <div>
                 <h2 class="text-2xl font-extrabold text-gray-800">Armada Pilihan Kami</h2>
-                <p class="text-gray-500"></p>
             </div>
-            <button class="text-emerald-500 font-bold hover:text-emerald-600"></button>
         </div>
 
         <div id="slider-mobil" class="flex overflow-x-auto gap-6 pb-8 hide-scrollbar px-2 scroll-smooth">
-            @foreach ($mobilList as $mobil)
+            @forelse ($mobilList as $mobil)
             <a 
                 href="/mobil/{{ $mobil->slug }}" 
                 class="min-w-[280px] md:min-w-[320px] bg-white border border-gray-100 rounded-2xl p-4 snap-center shadow-sm hover:shadow-md transition-shadow group block no-underline"
             >
-                <img src="{{ $mobil->gambar }}?q=80&w=600&auto=format&fit=crop" 
-                     alt="{{ $mobil->nama }}" 
-                     class="w-full h-40 object-cover rounded-xl mb-4 group-hover:scale-[1.02] transition-transform">
-                
+                @php
+                    // Gambar sudah di-build menjadi full URL oleh HomeController
+                    // Tambahkan query Unsplash hanya jika memang dari Unsplash
+                    $isUnsplash = str_contains($mobil->gambar ?? '', 'unsplash.com');
+                    $gambarSrc  = $isUnsplash
+                        ? ($mobil->gambar . '?q=80&w=600&auto=format&fit=crop')
+                        : ($mobil->gambar ?? '');
+                @endphp
+
+                @if($gambarSrc)
+                    <img src="{{ $gambarSrc }}"
+                         alt="{{ $mobil->nama }}"
+                         class="w-full h-40 object-cover rounded-xl mb-4 group-hover:scale-[1.02] transition-transform"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                @endif
+                {{-- Fallback jika gambar gagal load --}}
+                <div class="w-full h-40 rounded-xl mb-4 bg-gray-100 items-center justify-center {{ $gambarSrc ? 'hidden' : 'flex' }}" style="flex-direction:column;">
+                    <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2 2h12l2-2V9a1 1 0 00-1-1h-4l-2-3"/>
+                    </svg>
+                    <span class="text-xs text-gray-400 mt-2">Foto tidak tersedia</span>
+                </div>
+
                 <span class="bg-emerald-100 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-md">{{ $mobil->tersedia ? 'Tersedia' : 'Disewa' }}</span>
                 <h3 class="font-bold text-lg text-gray-800 mt-2">{{ $mobil->nama }}</h3>
                 <p class="text-gray-500 text-sm mb-3">{{ $mobil->transmisi }} • {{ $mobil->kursi }} Kursi • {{ $mobil->bahan_bakar }}</p>
@@ -56,10 +74,6 @@
                         Rp {{ number_format($mobil->harga / 1000, 0) }}k
                         <span class="text-sm text-gray-400">/hari</span>
                     </p>
-                    {{-- 
-                        Tombol Sewa: pakai onclick + stopPropagation biar klik tombol
-                        tidak trigger dua kali (karena sudah ada <a> di parent)
-                    --}}
                     <button 
                         onclick="event.preventDefault(); window.location.href='/mobil/{{ $mobil->slug }}'"
                         class="bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-emerald-600 transition"
@@ -68,11 +82,19 @@
                     </button>
                 </div>
             </a>
-            @endforeach
+            @empty
+            {{-- Tampil jika belum ada mobil sama sekali --}}
+            <div class="w-full text-center py-16 text-gray-400">
+                <svg class="w-16 h-16 mx-auto mb-4 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0zM13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2 2h12l2-2V9a1 1 0 00-1-1h-4l-2-3"/>
+                </svg>
+                <p class="font-semibold">Belum ada armada tersedia.</p>
+            </div>
+            @endforelse
         </div>
     </div>
 
-    <!-- MENGAPA MEMILIH RODAGO (TIDAK BERUBAH) -->
+    <!-- MENGAPA MEMILIH RODAGO -->
     <div class="bg-white border border-gray-100 rounded-[2rem] p-10 md:p-14 shadow-sm mb-10">
         <h2 class="text-3xl font-extrabold text-center text-gray-800 mb-10">Mengapa Memilih RodaGo?</h2>
 
@@ -108,6 +130,7 @@
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     const slider = document.getElementById('slider-mobil');
+    if (!slider || slider.children.length <= 1) return;
     let autoScroll;
 
     function startAutoScroll() {
@@ -121,7 +144,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     startAutoScroll();
-
     slider.addEventListener('mouseenter', () => clearInterval(autoScroll));
     slider.addEventListener('mouseleave', startAutoScroll);
 });

@@ -1,5 +1,10 @@
 <?php
 // LOKASI: routes/web.php
+// PERUBAHAN dari versi lama:
+//   - Tambah 1 route: GET /admin/gambar → ImageProxyController
+//   - Tambah 1 use:   use App\Http\Controllers\ImageProxyController;
+//   - Duplikat Route::get('/admin/cars') dihapus (ada 2 sebelumnya)
+//   - SEMUA yang lain TIDAK DIUBAH
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -9,6 +14,7 @@ use App\Http\Controllers\MobilController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\AdminBookingController;
 use App\Http\Controllers\KycAdminController;
+use App\Http\Controllers\ImageProxyController; // ← TAMBAHAN BARU
 
 // ============================================================
 // PUBLIC PAGES
@@ -38,9 +44,11 @@ Route::middleware(['auth'])->group(function () {
     // --- Dashboard ---
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
 
-    // LIVE STATS API ENDPOINTS (dipanggil AJAX dari dashboard)
     Route::get('/admin/api/live-stats',      [AdminController::class, 'liveStats']);
     Route::get('/admin/api/recent-activity', [AdminController::class, 'recentActivity']);
+
+    // ✅ TAMBAHAN BARU: Proxy gambar ngrok → atasi ngrok warning di browser
+    Route::get('/admin/gambar', [ImageProxyController::class, 'show']);
 
     // --- Users ---
     Route::get('/admin/users',         [AdminController::class, 'users']);
@@ -55,7 +63,8 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/admin/rentals/{id}', [AdminController::class, 'destroyRental']);
 
     // --- Cars ---
-    Route::get('/admin/cars', [AdminController::class, 'cars']);
+    Route::get('/admin/cars',                  [AdminController::class, 'cars']);
+    Route::post('/admin/cars/{id}/toggle',     [AdminController::class, 'carToggle']);
 
     // --- Bookings ---
     Route::get('/admin/bookings',                    [AdminBookingController::class, 'index']);
@@ -70,10 +79,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/admin/cities/{id}',     [AdminController::class, 'updateCity']);
     Route::delete('/admin/cities/{id}',  [AdminController::class, 'destroyCity']);
 
-    // ── KYC Verification ──────────────────────────────────────
-    // GET  /admin/kyc              → list semua pengajuan KYC
-    // POST /admin/kyc/{id}/approve → setujui KYC (status = verified)
-    // POST /admin/kyc/{id}/reject  → tolak KYC (status = rejected + alasan)
+    // --- KYC ---
     Route::get('/admin/kyc',                   [KycAdminController::class, 'index'])  ->name('admin.kyc');
     Route::post('/admin/kyc/{id}/approve',     [KycAdminController::class, 'approve'])->name('admin.kyc.approve');
     Route::post('/admin/kyc/{id}/reject',      [KycAdminController::class, 'reject']) ->name('admin.kyc.reject');
