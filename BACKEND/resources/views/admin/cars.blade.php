@@ -1,10 +1,12 @@
 {{-- LOKASI: resources/views/admin/cars.blade.php --}}
 {{--                                                              --}}
-{{-- PERUBAHAN:                                                    --}}
-{{--   1. Tambah kolom "Foto" di tabel                            --}}
-{{--   2. Gambar support path relatif (data baru) DAN URL lama    --}}
-{{--   3. Modal preview foto (klik gambar → zoom), sama seperti   --}}
-{{--      kyc.blade.php                                           --}}
+{{-- PERUBAHAN (revisi dosen):                                   --}}
+{{--   1. Status "Sedang Disewa" hanya muncul jika tanggal      --}}
+{{--      hari ini berada di antara tanggal mulai dan selesai   --}}
+{{--      rental yang aktif (unpaid atau completed)             --}}
+{{--   2. Jika ada booking di masa depan tetapi tanggal sewa    --}}
+{{--      belum dimulai, status tetap "Tersedia"                --}}
+{{--   3. Kolom "Foto" tetap ada dengan preview modal           --}}
 @extends('layouts.admin')
 @section('title', 'Data Armada - Admin RodaGo')
 
@@ -71,8 +73,6 @@
                         if (!empty($mobil->gambar)) {
                             if (str_starts_with($mobil->gambar, 'http')) {
                                 // Data lama → pakai URL apa adanya
-                                // (akan tetap muncul selama ngrok masih aktif,
-                                //  setelah owner edit+simpan ulang otomatis pakai path baru)
                                 $gambarUrl = $mobil->gambar;
                             } else {
                                 // Data baru → bangun URL dari storage
@@ -80,12 +80,23 @@
                             }
                         }
 
-                        // ── Status badge ────────────────────────────────────
-                        $sedangDisewa = in_array($mobil->id, $activeBookingIds);
+                        // ── Status badge BERDASARKAN JADWAL HARI INI ────────
+                        // Logika sama seperti di MobilController:
+                        //   - Cek apakah ada booking aktif (unpaid/completed) yang
+                        //     tanggal_mulai <= today <= tanggal_selesai
+                        //   - Jika ya → "Sedang Disewa"
+                        //   - Jika tidak → "Tersedia" (meskipun tersedia=false tetap "Nonaktif")
+                        $today = \Carbon\Carbon::today();
+                        $sedangDisewaHariIni = \App\Models\Booking::where('mobil_id', $mobil->id)
+                            ->whereIn('status', ['unpaid', 'completed'])
+                            ->whereDate('tanggal_mulai', '<=', $today)
+                            ->whereDate('tanggal_selesai', '>=', $today)
+                            ->exists();
+
                         if (!$mobil->tersedia) {
                             $badgeClass = 'bg-red-50 text-red-500';
                             $badgeText  = 'Nonaktif';
-                        } elseif ($sedangDisewa) {
+                        } elseif ($sedangDisewaHariIni) {
                             $badgeClass = 'bg-amber-50 text-amber-600';
                             $badgeText  = 'Sedang Disewa';
                         } else {

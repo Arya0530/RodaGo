@@ -1,11 +1,16 @@
 <?php
 // LOKASI: app/Http/Controllers/Api/MobilController.php
 //
-// FIX v2:
-//   1. buildGambarUrl() sekarang deteksi 3 tipe gambar:
-//      a. URL eksternal (Unsplash, dll) → kembalikan apa adanya
-//      b. URL ngrok lama (/storage/ ada di path) → ekstrak path, rebuild pakai APP_URL
-//      c. Path relatif baru ("mobil/xxx.jpg") → rebuild pakai APP_URL
+// PERUBAHAN (revisi dosen):
+//   1. publicIndex()     → tampilkan SEMUA mobil (tidak filter tersedia=true lagi)
+//   2. searchAvailable() → hanya exclude mobil yang TANGGAL BENTROK, bukan semua booking
+//   3. Tambah field status_hari_ini di setiap response mobil:
+//      - "Disewa"   → ada booking aktif hari ini (tanggal_mulai <= today <= tanggal_selesai)
+//      - "Tersedia" → tidak ada booking aktif hari ini
+//   4. pay() di BookingController tidak lagi ubah tersedia=false (dihapus dari sini,
+//      status mobil murni dari jadwal booking)
+//
+// Semua fungsi lain TIDAK BERUBAH.
 
 namespace App\Http\Controllers\Api;
 
@@ -19,12 +24,25 @@ use Illuminate\Support\Facades\Storage;
 class MobilController extends Controller
 {
     // ── GET /api/mobil/public ─────────────────────────────────────────────────
+    // REVISI: Tampilkan SEMUA mobil (tidak filter tersedia=true).
+    // Field status_hari_ini ditambahkan agar Flutter tahu apakah
+    // mobil sedang disewa HARI INI atau tidak.
     public function publicIndex()
     {
+        $today = now()->toDateString();
+
+        // ID mobil yang sedang aktif disewa HARI INI
+        $mobilDisewaHariIni = DB::table('bookings')
+            ->whereIn('status', ['unpaid', 'completed'])
+            ->whereDate('tanggal_mulai',   '<=', $today)
+            ->whereDate('tanggal_selesai', '>=', $today)
+            ->pluck('mobil_id')
+            ->unique()
+            ->toArray();
+
         $mobils = DB::table('mobils')
             ->leftJoin('users',   'users.id',        '=', 'mobils.user_id')
             ->leftJoin('rentals', 'rentals.user_id', '=', 'users.id')
-            ->where('mobils.tersedia', true)
             ->select(
                 'mobils.id', 'mobils.nama', 'mobils.slug', 'mobils.tipe',
                 'mobils.harga', 'mobils.kursi', 'mobils.transmisi',
@@ -35,15 +53,44 @@ class MobilController extends Controller
             )
             ->get();
 
-        $mobils = $mobils->map(function ($mobil) {
-            $mobil->gambar = $this->buildGambarUrl($mobil->gambar);
+        $mobils = $mobils->map(function ($mobil) use ($mobilDisewaHariIni) {
+            $mobil->gambar          = $this->buildGambarUrl($mobil->gambar);
+            // Status berdasarkan apakah ada booking aktif hari ini
+            $mobil->status_hari_ini = in_array($mobil->id, $mobilDisewaHariIni)
+                ? 'Disewa'
+                : 'Tersedia';
             return $mobil;
         });
 
         return response()->json($mobils, 200);
     }
 
+    // ── GET /api/mobil/{id}/booked-dates ──────────────────────────────────────
+    // TAMBAHAN: Ambil semua rentang tanggal yang sudah dibooking untuk mobil ini
+    // Digunakan untuk disable tanggal di date picker Flutter
+    public function getBookedDates($id)
+    {
+        $bookedRanges = DB::table('bookings')
+            ->where('mobil_id', $id)
+            ->whereIn('status', ['pending', 'unpaid', 'completed'])
+            ->select('tanggal_mulai', 'tanggal_selesai')
+            ->get()
+            ->map(function ($booking) {
+                return [
+                    'start' => $booking->tanggal_mulai,
+                    'end'   => $booking->tanggal_selesai,
+                ];
+            });
+
+        return response()->json([
+            'success' => true,
+            'data'    => $bookedRanges,
+        ]);
+    }
+
     // ── GET /api/mobil/search ─────────────────────────────────────────────────
+    // REVISI: Exclude hanya mobil yang TANGGAL BENTROK dengan input user.
+    // Mobil dengan booking di luar rentang tersebut tetap tampil.
     public function searchAvailable(Request $request)
     {
         $request->validate([
@@ -55,19 +102,30 @@ class MobilController extends Controller
         $cityName       = $request->city_name;
         $tanggalMulai   = $request->tanggal_mulai;
         $tanggalSelesai = $request->tanggal_selesai;
+        $today          = now()->toDateString();
 
-        $mobilDipesan = DB::table('bookings')
-            ->whereIn('status', ['pending', 'unpaid', 'active'])
+        // Mobil yang booking-nya BENTROK dengan rentang tanggal yang dicari user
+        $mobilBentrok = DB::table('bookings')
+            ->whereIn('status', ['pending', 'unpaid', 'completed'])
             ->where('tanggal_mulai',   '<=', $tanggalSelesai)
             ->where('tanggal_selesai', '>=', $tanggalMulai)
             ->pluck('mobil_id')
+            ->unique()
+            ->toArray();
+
+        // ID mobil disewa HARI INI (untuk field status_hari_ini)
+        $mobilDisewaHariIni = DB::table('bookings')
+            ->whereIn('status', ['unpaid', 'completed'])
+            ->whereDate('tanggal_mulai',   '<=', $today)
+            ->whereDate('tanggal_selesai', '>=', $today)
+            ->pluck('mobil_id')
+            ->unique()
             ->toArray();
 
         $query = DB::table('mobils')
             ->leftJoin('users',   'users.id',        '=', 'mobils.user_id')
             ->leftJoin('rentals', 'rentals.user_id', '=', 'users.id')
-            ->where('mobils.tersedia', true)
-            ->whereNotIn('mobils.id', $mobilDipesan)
+            ->whereNotIn('mobils.id', $mobilBentrok)  // exclude yang bentrok tanggal
             ->select(
                 'mobils.id', 'mobils.nama', 'mobils.slug', 'mobils.tipe',
                 'mobils.harga', 'mobils.kursi', 'mobils.transmisi',
@@ -81,8 +139,11 @@ class MobilController extends Controller
             $query->where('rentals.city', $cityName);
         }
 
-        $results = $query->orderBy('mobils.nama')->get()->map(function ($mobil) {
-            $mobil->gambar = $this->buildGambarUrl($mobil->gambar);
+        $results = $query->orderBy('mobils.nama')->get()->map(function ($mobil) use ($mobilDisewaHariIni) {
+            $mobil->gambar          = $this->buildGambarUrl($mobil->gambar);
+            $mobil->status_hari_ini = in_array($mobil->id, $mobilDisewaHariIni)
+                ? 'Disewa'
+                : 'Tersedia';
             return $mobil;
         });
 
@@ -93,14 +154,32 @@ class MobilController extends Controller
     }
 
     // ── GET /api/mobil ────────────────────────────────────────────────────────
+    // REVISI: Tambah field status_hari_ini untuk dashboard owner.
     public function index(Request $request)
     {
         $user = $request->user();
         if ($user) {
-            $mobils = Mobil::where('user_id', $user->id)->get()->map(function ($mobil) {
-                $mobil->gambar = $this->buildGambarUrl($mobil->gambar);
+            $today = now()->toDateString();
+
+            // Mobil milik owner yang sedang disewa HARI INI
+            $mobilDisewaHariIni = DB::table('bookings')
+                ->join('mobils', 'mobils.id', '=', 'bookings.mobil_id')
+                ->where('mobils.user_id', $user->id)
+                ->whereIn('bookings.status', ['unpaid', 'completed'])
+                ->whereDate('bookings.tanggal_mulai',   '<=', $today)
+                ->whereDate('bookings.tanggal_selesai', '>=', $today)
+                ->pluck('bookings.mobil_id')
+                ->unique()
+                ->toArray();
+
+            $mobils = Mobil::where('user_id', $user->id)->get()->map(function ($mobil) use ($mobilDisewaHariIni) {
+                $mobil->gambar          = $this->buildGambarUrl($mobil->gambar);
+                $mobil->status_hari_ini = in_array($mobil->id, $mobilDisewaHariIni)
+                    ? 'Disewa'
+                    : 'Tersedia';
                 return $mobil;
             });
+
             return response()->json($mobils);
         }
         return response()->json([]);
@@ -145,7 +224,8 @@ class MobilController extends Controller
             'tersedia'    => true,
         ]);
 
-        $mobil->gambar = $this->buildGambarUrl($mobil->gambar);
+        $mobil->gambar          = $this->buildGambarUrl($mobil->gambar);
+        $mobil->status_hari_ini = 'Tersedia'; // mobil baru pasti belum disewa
         return response()->json($mobil, 201);
     }
 

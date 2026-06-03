@@ -10,12 +10,13 @@ use App\Models\Notification;
 use Carbon\Carbon;
 
 // Simpan di: app/Http/Controllers/Api/BookingController.php
-// PERUBAHAN dari versi lama:
-//   - terima()  → kirim notifikasi ke USER  (booking_accepted)
-//   - tolak()   → kirim notifikasi ke USER  (booking_cancelled)
-//   - pay()     → kirim notifikasi ke OWNER (booking_paid)
-//   - cancel()  → kirim notifikasi ke OWNER (booking_cancelled)
-// Semua fungsi lain TIDAK BERUBAH.
+//
+// PERUBAHAN (revisi dosen):
+//   - pay() → HAPUS baris $booking->mobil->update(['tersedia' => false])
+//             Status ketersediaan mobil kini murni berdasarkan jadwal booking,
+//             bukan flag tersedia di tabel mobils.
+//   - Validasi bentrok tanggal di store() TETAP ADA (tidak berubah).
+//   - Semua fungsi lain TIDAK BERUBAH.
 
 class BookingController extends Controller
 {
@@ -52,6 +53,7 @@ class BookingController extends Controller
 
     // =========================================================================
     // POST /api/bookings
+    // Validasi bentrok tanggal TETAP ADA sesuai revisi dosen poin 4–6.
     // =========================================================================
     public function store(Request $request)
     {
@@ -63,30 +65,23 @@ class BookingController extends Controller
 
         $mobil = Mobil::findOrFail($request->mobil_id);
 
-        if (!$mobil->tersedia) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Maaf, mobil ini sedang tidak tersedia.',
-            ], 422);
-        }
-
         $mulai      = Carbon::parse($request->tanggal_mulai);
         $selesai    = Carbon::parse($request->tanggal_selesai);
         $jumlahHari = $mulai->diffInDays($selesai);
         $totalHarga = $jumlahHari * $mobil->harga;
 
+        // Cek bentrok tanggal dengan booking yang sudah ada
+        // (pending, unpaid, completed = booking aktif yang sudah/sedang berjalan)
         $bentrok = Booking::where('mobil_id', $request->mobil_id)
             ->whereIn('status', ['pending', 'unpaid', 'completed'])
-            ->where(function ($q) use ($request) {
-                $q->whereBetween('tanggal_mulai',    [$request->tanggal_mulai, $request->tanggal_selesai])
-                  ->orWhereBetween('tanggal_selesai', [$request->tanggal_mulai, $request->tanggal_selesai]);
-            })
+            ->where('tanggal_mulai',   '<=', $request->tanggal_selesai)
+            ->where('tanggal_selesai', '>=', $request->tanggal_mulai)
             ->exists();
 
         if ($bentrok) {
             return response()->json([
                 'success' => false,
-                'message' => 'Mobil sudah dipesan di tanggal tersebut.',
+                'message' => 'Mobil tidak tersedia pada tanggal yang dipilih. Silakan pilih tanggal lain.',
             ], 422);
         }
 
@@ -135,7 +130,7 @@ class BookingController extends Controller
             'cancelled_at' => now(),
         ]);
 
-        // ✅ NOTIFIKASI: beritahu owner bahwa user cancel
+        // Notifikasi: beritahu owner bahwa user cancel
         if ($booking->mobil && $booking->mobil->user_id) {
             $namaMobil   = $booking->mobil->nama ?? 'mobil';
             $namaPenyewa = $request->user()->name ?? 'Penyewa';
@@ -202,7 +197,7 @@ class BookingController extends Controller
             'accepted_at' => $now,
         ]);
 
-        // ✅ NOTIFIKASI: beritahu user bahwa pesanannya diterima
+        // Notifikasi: beritahu user bahwa pesanannya diterima
         $namaMobil    = $booking->mobil->nama ?? 'mobil';
         $deadlineStr  = $now->copy()->addHours(24)->format('d M Y H:i');
 
@@ -238,7 +233,7 @@ class BookingController extends Controller
             'cancelled_at' => now(),
         ]);
 
-        // ✅ NOTIFIKASI: beritahu user bahwa pesanannya ditolak
+        // Notifikasi: beritahu user bahwa pesanannya ditolak
         $namaMobil = $booking->mobil->nama ?? 'mobil';
 
         Notification::create([
@@ -282,6 +277,7 @@ class BookingController extends Controller
 
     // =========================================================================
     // POST /api/bookings/{id}/pay
+    // REVISI: HAPUS update tersedia=false — status mobil kini dari jadwal booking
     // User bayar → notifikasi ke OWNER
     // =========================================================================
     public function pay(Request $request, $id)
@@ -301,11 +297,12 @@ class BookingController extends Controller
 
         $booking->update(['status' => 'completed']);
 
-        if ($booking->mobil) {
-            $booking->mobil->update(['tersedia' => false]);
-        }
+        // REVISI: Baris berikut DIHAPUS karena status mobil kini murni dari jadwal booking.
+        // if ($booking->mobil) {
+        //     $booking->mobil->update(['tersedia' => false]);
+        // }
 
-        // ✅ NOTIFIKASI: beritahu owner bahwa user sudah bayar
+        // Notifikasi: beritahu owner bahwa user sudah bayar
         if ($booking->mobil && $booking->mobil->user_id) {
             $namaMobil   = $booking->mobil->nama ?? 'mobil';
             $namaPenyewa = $request->user()->name ?? 'Penyewa';
@@ -338,25 +335,11 @@ class BookingController extends Controller
     // =========================================================================
     public function autoComplete()
     {
-        $bookings = Booking::with('mobil')
-            ->where('status', 'completed')
-            ->whereDate('tanggal_selesai', '<', now()->toDateString())
-            ->whereHas('mobil', function ($q) {
-                $q->where('tersedia', false);
-            })
-            ->get();
-
-        $count = 0;
-        foreach ($bookings as $booking) {
-            if ($booking->mobil) {
-                $booking->mobil->update(['tersedia' => true]);
-                $count++;
-            }
-        }
-
+        // REVISI: Tidak perlu ubah tersedia lagi karena status dari jadwal.
+        // Fungsi ini tetap ada untuk kompatibilitas route yang sudah ada.
         return response()->json([
             'success' => true,
-            'message' => "Auto complete dijalankan: $count mobil dikembalikan ke tersedia",
+            'message' => 'Auto complete dijalankan (status mobil kini berbasis jadwal booking).',
         ]);
     }
 }

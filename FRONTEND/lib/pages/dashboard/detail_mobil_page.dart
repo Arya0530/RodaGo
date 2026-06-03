@@ -305,8 +305,23 @@ class DetailMobilPage extends StatelessWidget {
     );
   }
 
-  // ── Form jadwal sewa (tidak berubah dari versi lama) ─────────────
-  void _tampilkanFormJadwal(BuildContext pageContext) {
+  // ── Form jadwal sewa dengan disable tanggal yang sudah dibooking ──────────
+  void _tampilkanFormJadwal(BuildContext pageContext) async {
+    // Ambil daftar tanggal yang sudah dibooking untuk mobil ini
+    final bookedDates = await ApiService.getBookedDates(carData['id']);
+    
+    // Parse booking ranges menjadi set tanggal yang tidak bisa dipilih
+    Set<DateTime> disabledDates = {};
+    for (var booking in bookedDates) {
+      final start = DateTime.parse(booking['start'].toString());
+      final end = DateTime.parse(booking['end'].toString());
+      
+      // Tambahkan semua tanggal dalam rentang booking (termasuk start dan end)
+      for (var date = start; date.isBefore(end.add(Duration(days: 1))); date = date.add(Duration(days: 1))) {
+        disabledDates.add(DateTime(date.year, date.month, date.day));
+      }
+    }
+
     final ambilController   = TextEditingController();
     final kembaliController = TextEditingController();
     DateTime? tanggalAmbil;
@@ -335,7 +350,32 @@ class DetailMobilPage extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                         color: Colors.black87),
                   ),
-                  SizedBox(height: 24),
+                  SizedBox(height: 8),
+                  Container(
+                    padding: EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.orange[50],
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.orange[200]!),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.info_outline, color: Colors.orange[700], size: 18),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Tanggal yang sudah dibooking tidak dapat dipilih',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.orange[700],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 16),
 
                   // Input tanggal ambil
                   TextField(
@@ -347,12 +387,32 @@ class DetailMobilPage extends StatelessWidget {
                         initialDate: DateTime.now(),
                         firstDate: DateTime.now(),
                         lastDate: DateTime(2030),
+                        selectableDayPredicate: (DateTime date) {
+                          // Disable tanggal yang sudah dibooking
+                          final normalizedDate = DateTime(date.year, date.month, date.day);
+                          return !disabledDates.contains(normalizedDate);
+                        },
+                        builder: (context, child) {
+                          return Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: ColorScheme.light(
+                                primary: Colors.teal,
+                                onPrimary: Colors.white,
+                                onSurface: Colors.black,
+                              ),
+                            ),
+                            child: child!,
+                          );
+                        },
                       );
                       if (pickedDate != null) {
                         setState(() {
                           tanggalAmbil       = pickedDate;
                           ambilController.text =
                               '${pickedDate.day}/${pickedDate.month}/${pickedDate.year}';
+                          // Reset tanggal kembali jika sudah diisi
+                          tanggalKembali = null;
+                          kembaliController.clear();
                         });
                       }
                     },
@@ -373,11 +433,47 @@ class DetailMobilPage extends StatelessWidget {
                     controller: kembaliController,
                     readOnly: true,
                     onTap: () async {
+                      if (tanggalAmbil == null) {
+                        ScaffoldMessenger.of(sheetContext).showSnackBar(
+                          SnackBar(
+                            content: Text('Pilih tanggal ambil terlebih dahulu'),
+                            backgroundColor: Colors.orange,
+                          ),
+                        );
+                        return;
+                      }
+
                       DateTime? pickedDate = await showDatePicker(
                         context: sheetContext,
-                        initialDate: tanggalAmbil ?? DateTime.now(),
-                        firstDate: tanggalAmbil ?? DateTime.now(),
+                        initialDate: tanggalAmbil!.add(Duration(days: 1)),
+                        firstDate: tanggalAmbil!.add(Duration(days: 1)),
                         lastDate: DateTime(2030),
+                        selectableDayPredicate: (DateTime date) {
+                          // Disable tanggal yang sudah dibooking
+                          final normalizedDate = DateTime(date.year, date.month, date.day);
+                          if (disabledDates.contains(normalizedDate)) return false;
+                          
+                          // Cek apakah ada booking yang menghalangi rentang dari tanggalAmbil ke date ini
+                          for (var checkDate = tanggalAmbil!.add(Duration(days: 1)); 
+                               checkDate.isBefore(date.add(Duration(days: 1))); 
+                               checkDate = checkDate.add(Duration(days: 1))) {
+                            final normalized = DateTime(checkDate.year, checkDate.month, checkDate.day);
+                            if (disabledDates.contains(normalized)) return false;
+                          }
+                          return true;
+                        },
+                        builder: (context, child) {
+                          return Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: ColorScheme.light(
+                                primary: Colors.teal,
+                                onPrimary: Colors.white,
+                                onSurface: Colors.black,
+                              ),
+                            ),
+                            child: child!,
+                          );
+                        },
                       );
                       if (pickedDate != null) {
                         setState(() {
@@ -395,6 +491,7 @@ class DetailMobilPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(16)),
                       filled: true,
                       fillColor: Colors.grey[50],
+                      enabled: tanggalAmbil != null,
                     ),
                   ),
                   SizedBox(height: 32),

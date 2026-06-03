@@ -28,6 +28,7 @@ Route::post('/forgot-password', [PasswordResetController::class, 'reset']); // �
 
 Route::get('/mobil/public', [MobilController::class, 'publicIndex']);
 Route::get('/mobil/search', [MobilController::class, 'searchAvailable']);
+Route::get('/mobil/{id}/booked-dates', [MobilController::class, 'getBookedDates']); // ← TAMBAHAN
 Route::get('/cities',       [CityController::class, 'index']);
 
 // ── Butuh Token (auth:sanctum) ────────────────────────────────────────────────

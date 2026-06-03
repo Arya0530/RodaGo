@@ -296,6 +296,29 @@ class ApiService {
   }
 
   // ══════════════════════════════════════════════════════════════
+  // MOBIL - BOOKED DATES
+  // ══════════════════════════════════════════════════════════════
+
+  /// GET /api/mobil/{id}/booked-dates
+  /// Ambil semua rentang tanggal yang sudah dibooking untuk mobil tertentu
+  /// Response data: [{ start: '2026-06-10', end: '2026-06-15' }, ...]
+  static Future<List<dynamic>> getBookedDates(int mobilId) async {
+    try {
+      final res = await http
+          .get(Uri.parse('$baseUrl/api/mobil/$mobilId/booked-dates'), headers: _headers)
+          .timeout(const Duration(seconds: 15));
+      if (res.statusCode == 200) {
+        final body = jsonDecode(res.body) as Map<String, dynamic>;
+        return (body['data'] ?? []) as List<dynamic>;
+      }
+      return [];
+    } catch (e) {
+      debugPrint('getBookedDates error: $e');
+      return [];
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════════
   // BOOKING — USER
   // ══════════════════════════════════════════════════════════════
 

@@ -141,6 +141,7 @@ class AdminController extends Controller
 
     // =========================================================
     // CARS — query DB, tampilkan di view blade (tanpa AJAX)
+    // REVISI: Status "Sedang Disewa" hanya untuk booking aktif HARI INI
     // =========================================================
     public function cars()
     {
@@ -165,21 +166,27 @@ class AdminController extends Controller
             ->orderBy('mobils.nama')
             ->paginate(15);
 
-        // ID mobil yang sedang ada booking aktif
-        $activeBookingIds = DB::table('bookings')
-            ->whereIn('status', ['pending', 'unpaid', 'active'])
+        // REVISI: Hitung mobil yang SEDANG DISEWA HARI INI saja
+        // (bukan semua booking pending/unpaid)
+        $today = \Carbon\Carbon::today();
+        $mobilDisewaHariIni = DB::table('bookings')
+            ->whereIn('status', ['unpaid', 'completed'])
+            ->whereDate('tanggal_mulai', '<=', $today)
+            ->whereDate('tanggal_selesai', '>=', $today)
             ->pluck('mobil_id')
             ->unique()
-            ->toArray();
+            ->count();
 
         // Statistik untuk header
         $stats = [
             'total'    => DB::table('mobils')->count(),
             'tersedia' => DB::table('mobils')->where('tersedia', true)->count(),
-            'disewa'   => count($activeBookingIds),
+            'disewa'   => $mobilDisewaHariIni, // ← PERUBAHAN: hanya yang aktif hari ini
         ];
 
-        return view('admin.cars', compact('mobils', 'stats', 'activeBookingIds'));
+        // Tidak perlu kirim activeBookingIds lagi ke view
+        // karena view akan query sendiri untuk setiap mobil
+        return view('admin.cars', compact('mobils', 'stats'));
     }
 
     // POST /admin/cars/{id}/toggle
