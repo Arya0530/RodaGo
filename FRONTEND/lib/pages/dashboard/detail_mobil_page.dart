@@ -310,15 +310,89 @@ class DetailMobilPage extends StatelessWidget {
     // Ambil daftar tanggal yang sudah dibooking untuk mobil ini
     final bookedDates = await ApiService.getBookedDates(carData['id']);
     
+    // Debug: Print raw data dari API
+    print('=== DEBUG BOOKED DATES ===');
+    print('Mobil ID: ${carData['id']}');
+    print('Mobil Nama: ${carData['nama']}');
+    print('Total bookings: ${bookedDates.length}');
+    
     // Parse booking ranges menjadi set tanggal yang tidak bisa dipilih
     Set<DateTime> disabledDates = {};
-    for (var booking in bookedDates) {
-      final start = DateTime.parse(booking['start'].toString());
-      final end = DateTime.parse(booking['end'].toString());
-      
-      // Tambahkan semua tanggal dalam rentang booking (termasuk start dan end)
-      for (var date = start; date.isBefore(end.add(Duration(days: 1))); date = date.add(Duration(days: 1))) {
-        disabledDates.add(DateTime(date.year, date.month, date.day));
+    
+    try {
+      for (var i = 0; i < bookedDates.length; i++) {
+        var booking = bookedDates[i];
+        print('\nBooking #${i + 1}:');
+        print('  Raw start: ${booking['start']}');
+        print('  Raw end: ${booking['end']}');
+        
+        try {
+          // Parse tanggal secara manual untuk menghindari timezone issue
+          final startStr = booking['start'].toString().trim();
+          final endStr = booking['end'].toString().trim();
+          
+          // Skip jika string kosong atau null
+          if (startStr.isEmpty || endStr.isEmpty) continue;
+          
+          // Parse dengan berbagai cara (fallback)
+          DateTime? start;
+          DateTime? end;
+          
+          // Cara 1: Manual split (YYYY-MM-DD)
+          if (startStr.contains('-')) {
+            final startParts = startStr.split('-');
+            if (startParts.length >= 3) {
+              start = DateTime(
+                int.parse(startParts[0]), 
+                int.parse(startParts[1]), 
+                int.parse(startParts[2].split(' ')[0]) // Ambil hanya tanggal, buang jam jika ada
+              );
+            }
+          }
+          
+          if (endStr.contains('-')) {
+            final endParts = endStr.split('-');
+            if (endParts.length >= 3) {
+              end = DateTime(
+                int.parse(endParts[0]), 
+                int.parse(endParts[1]), 
+                int.parse(endParts[2].split(' ')[0]) // Ambil hanya tanggal, buang jam jika ada
+              );
+            }
+          }
+          
+          // Cara 2: Fallback ke DateTime.parse jika cara 1 gagal
+          if (start == null) {
+            final parsed = DateTime.parse(startStr);
+            start = DateTime(parsed.year, parsed.month, parsed.day);
+          }
+          if (end == null) {
+            final parsed = DateTime.parse(endStr);
+            end = DateTime(parsed.year, parsed.month, parsed.day);
+          }
+          
+          // Tambahkan semua tanggal dalam rentang booking
+          if (start != null && end != null) {
+            for (var date = start; date.isBefore(end.add(Duration(days: 1))); date = date.add(Duration(days: 1))) {
+              disabledDates.add(DateTime(date.year, date.month, date.day));
+            }
+          }
+        } catch (e) {
+          // Skip booking yang error parsing
+          print('Error parsing booking date: $e');
+          continue;
+        }
+      }
+    } catch (e) {
+      print('Error processing booked dates: $e');
+      // Jika ada error, tampilkan dialog peringatan tapi tetap lanjut
+      if (pageContext.mounted) {
+        ScaffoldMessenger.of(pageContext).showSnackBar(
+          SnackBar(
+            content: Text('Tidak dapat memuat data booking. Silakan coba lagi.'),
+            backgroundColor: Colors.orange,
+          ),
+        );
       }
     }
 
@@ -382,14 +456,45 @@ class DetailMobilPage extends StatelessWidget {
                     controller: ambilController,
                     readOnly: true,
                     onTap: () async {
+                      // Normalisasi tanggal hari ini (set jam ke 00:00:00)
+                      final today = DateTime.now();
+                      final normalizedToday = DateTime(today.year, today.month, today.day);
+                      
+                      // Cari tanggal pertama yang available (tidak disabled)
+                      DateTime firstAvailableDate = normalizedToday;
+                      while (disabledDates.contains(firstAvailableDate)) {
+                        firstAvailableDate = firstAvailableDate.add(Duration(days: 1));
+                        // Safety: jangan loop lebih dari 1 tahun
+                        if (firstAvailableDate.difference(normalizedToday).inDays > 365) {
+                          firstAvailableDate = normalizedToday.add(Duration(days: 365));
+                          break;
+                        }
+                      }
+                      
+                      // Debug: Print untuk troubleshoot
+                      print('\n=== DATE PICKER OPENED ===');
+                      print('Today: ${normalizedToday.year}-${normalizedToday.month}-${normalizedToday.day}');
+                      print('Total disabled dates: ${disabledDates.length}');
+                      print('Is today disabled? ${disabledDates.contains(normalizedToday)}');
+                      print('First available date: ${firstAvailableDate.year}-${firstAvailableDate.month}-${firstAvailableDate.day}');
+                      
                       DateTime? pickedDate = await showDatePicker(
                         context: sheetContext,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime.now(),
+                        initialDate: firstAvailableDate,  // Mulai dari tanggal yang available
+                        firstDate: normalizedToday,        // Minimum tetap hari ini
                         lastDate: DateTime(2030),
                         selectableDayPredicate: (DateTime date) {
-                          // Disable tanggal yang sudah dibooking
+                          // Normalisasi tanggal yang dicek
                           final normalizedDate = DateTime(date.year, date.month, date.day);
+                          
+                          // Debug: Print setiap pengecekan (hanya untuk 10 hari pertama)
+                          final daysDiff = normalizedDate.difference(normalizedToday).inDays;
+                          if (daysDiff < 10) {
+                            final isDisabled = disabledDates.contains(normalizedDate);
+                            print('  Day +$daysDiff (${normalizedDate.month}/${normalizedDate.day}): ${isDisabled ? "DISABLED" : "AVAILABLE"}');
+                          }
+                          
+                          // Return true jika tanggal DAPAT dipilih (tidak ada di disabledDates)
                           return !disabledDates.contains(normalizedDate);
                         },
                         builder: (context, child) {
@@ -443,19 +548,30 @@ class DetailMobilPage extends StatelessWidget {
                         return;
                       }
 
+                      // Normalisasi tanggal ambil
+                      final normalizedTanggalAmbil = DateTime(
+                        tanggalAmbil!.year, 
+                        tanggalAmbil!.month, 
+                        tanggalAmbil!.day
+                      );
+                      final firstSelectableDate = normalizedTanggalAmbil.add(Duration(days: 1));
+
                       DateTime? pickedDate = await showDatePicker(
                         context: sheetContext,
-                        initialDate: tanggalAmbil!.add(Duration(days: 1)),
-                        firstDate: tanggalAmbil!.add(Duration(days: 1)),
+                        initialDate: firstSelectableDate,
+                        firstDate: firstSelectableDate,
                         lastDate: DateTime(2030),
                         selectableDayPredicate: (DateTime date) {
-                          // Disable tanggal yang sudah dibooking
+                          // Normalisasi tanggal yang dicek
                           final normalizedDate = DateTime(date.year, date.month, date.day);
+                          
+                          // Jika tanggal ini sudah dibooking, tidak bisa dipilih
                           if (disabledDates.contains(normalizedDate)) return false;
                           
                           // Cek apakah ada booking yang menghalangi rentang dari tanggalAmbil ke date ini
-                          for (var checkDate = tanggalAmbil!.add(Duration(days: 1)); 
-                               checkDate.isBefore(date.add(Duration(days: 1))); 
+                          // Loop dari hari setelah tanggal ambil sampai tanggal yang dicek
+                          for (var checkDate = normalizedTanggalAmbil.add(Duration(days: 1)); 
+                               checkDate.isBefore(normalizedDate); 
                                checkDate = checkDate.add(Duration(days: 1))) {
                             final normalized = DateTime(checkDate.year, checkDate.month, checkDate.day);
                             if (disabledDates.contains(normalized)) return false;

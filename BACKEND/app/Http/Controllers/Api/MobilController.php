@@ -180,9 +180,9 @@ class MobilController extends Controller
                 return $mobil;
             });
 
-            return response()->json($mobils);
+            return response()->json(['success' => true, 'data' => $mobils]);
         }
-        return response()->json([]);
+        return response()->json(['success' => true, 'data' => []]);
     }
 
     // ── POST /api/mobil ───────────────────────────────────────────────────────

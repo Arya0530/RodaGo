@@ -10,6 +10,13 @@
 @extends('layouts.admin')
 @section('title', 'Data Armada - Admin RodaGo')
 
+@push('head')
+<!-- Prevent caching untuk data realtime -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+@endpush
+
 @section('content')
 
 {{-- Flash message --}}
@@ -30,7 +37,17 @@
         <h1 class="text-2xl font-extrabold text-gray-900">Data Armada</h1>
         <p class="text-gray-400 text-sm mt-1">Seluruh mobil yang terdaftar di sistem RodaGo.</p>
     </div>
-    <div class="flex gap-3 flex-wrap">
+    <div class="flex gap-3 flex-wrap items-center">
+        <!-- Tombol Refresh -->
+        <button onclick="window.location.reload()" 
+                class="px-4 py-2 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition flex items-center gap-2 shadow-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            <span class="text-sm font-semibold">Refresh</span>
+        </button>
+        
+        <!-- Stats -->
         <div class="bg-white border border-gray-100 rounded-2xl px-5 py-3 text-center shadow-sm">
             <p class="text-2xl font-black text-gray-800">{{ $stats['total'] }}</p>
             <p class="text-xs text-gray-400 font-semibold mt-0.5">Total Mobil</p>
