@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\KycController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PasswordResetController; // ← TAMBAHAN BARU
 use App\Http\Controllers\AdminBookingController;
+use App\Http\Controllers\ChatController;
 
 // ── Publik (tanpa token) ──────────────────────────────────────────────────────
 
@@ -25,6 +26,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login',    [AuthController::class, 'login']);
 
 Route::post('/forgot-password', [PasswordResetController::class, 'reset']); // ← TAMBAHAN BARU
+Route::post('/chat/send', [ChatController::class, 'sendToAI']);
 
 Route::get('/mobil/public', [MobilController::class, 'publicIndex']);
 Route::get('/mobil/search', [MobilController::class, 'searchAvailable']);
@@ -70,5 +72,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/notifications/read-all',      [NotificationController::class, 'markAllRead']);
 
     // ── Admin ─────────────────────────────────────────────────────────────────
-    Route::post('/admin/bookings/{id}/force-cancel', [AdminBookingController::class, 'forceCancel']);
+    Route::post('/admin/bookings/{id}/force-cancel', [AdminBookingController::class, 'forceCancel']);   
 });

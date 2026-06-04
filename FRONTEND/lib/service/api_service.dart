@@ -15,7 +15,7 @@ class ApiService {
   // ══════════════════════════════════════════════════════════════
   // GANTI URL INI DENGAN URL NGROK KAMU — tanpa slash di akhir
   // ══════════════════════════════════════════════════════════════
-  static const String baseUrl = 'https://yi-unplayful-undevastatingly.ngrok-free.dev';
+  static const String baseUrl = 'https://afflictively-subsensuous-ingrid.ngrok-free.dev';
 
   // ── Headers ────────────────────────────────────────────────────
   static Map<String, String> get _headers => {
@@ -560,6 +560,28 @@ class ApiService {
       return {'success': false, 'message': body['message'] ?? 'Gagal mengubah password'};
     } catch (e) {
       return {'success': false, 'message': 'Gagal konek ke server: $e'};
+    }
+  }
+  static Future<String> sendMessageToAI(String message) async {
+    try {
+      final res = await http
+          .post(
+            Uri.parse('$baseUrl/api/chat/send'),
+            headers: _authHeaders, 
+            body: jsonEncode({'message': message}),
+          )
+          .timeout(const Duration(seconds: 20)); // AI kadang butuh waktu mikir agak lama
+
+      final body = jsonDecode(res.body) as Map<String, dynamic>;
+      
+      if (res.statusCode == 200) {
+        // Mengambil 'reply' dari JSON Laravel
+        return body['reply'] ?? 'Maaf, AI tidak memberikan balasan.';
+      }
+      return 'Maaf, server AI RodaGo sedang gangguan. (Kode: ${res.statusCode})';
+    } catch (e) {
+      debugPrint('Error Chatbot: $e');
+      return 'Koneksi terputus. Pastikan server lokal dan Python menyala. Error: $e';
     }
   }
 }
