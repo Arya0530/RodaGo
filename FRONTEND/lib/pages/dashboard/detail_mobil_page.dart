@@ -305,8 +305,97 @@ class DetailMobilPage extends StatelessWidget {
     );
   }
 
-  // ── Form jadwal sewa (tidak berubah dari versi lama) ─────────────
-  void _tampilkanFormJadwal(BuildContext pageContext) {
+  // ── Form jadwal sewa dengan disable tanggal yang sudah dibooking ──────────
+  void _tampilkanFormJadwal(BuildContext pageContext) async {
+    // Ambil daftar tanggal yang sudah dibooking untuk mobil ini
+    final bookedDates = await ApiService.getBookedDates(carData['id']);
+    
+    // Debug: Print raw data dari API
+    print('=== DEBUG BOOKED DATES ===');
+    print('Mobil ID: ${carData['id']}');
+    print('Mobil Nama: ${carData['nama']}');
+    print('Total bookings: ${bookedDates.length}');
+    
+    // Parse booking ranges menjadi set tanggal yang tidak bisa dipilih
+    Set<DateTime> disabledDates = {};
+    
+    try {
+      for (var i = 0; i < bookedDates.length; i++) {
+        var booking = bookedDates[i];
+        print('\nBooking #${i + 1}:');
+        print('  Raw start: ${booking['start']}');
+        print('  Raw end: ${booking['end']}');
+        
+        try {
+          // Parse tanggal secara manual untuk menghindari timezone issue
+          final startStr = booking['start'].toString().trim();
+          final endStr = booking['end'].toString().trim();
+          
+          // Skip jika string kosong atau null
+          if (startStr.isEmpty || endStr.isEmpty) continue;
+          
+          // Parse dengan berbagai cara (fallback)
+          DateTime? start;
+          DateTime? end;
+          
+          // Cara 1: Manual split (YYYY-MM-DD)
+          if (startStr.contains('-')) {
+            final startParts = startStr.split('-');
+            if (startParts.length >= 3) {
+              start = DateTime(
+                int.parse(startParts[0]), 
+                int.parse(startParts[1]), 
+                int.parse(startParts[2].split(' ')[0]) // Ambil hanya tanggal, buang jam jika ada
+              );
+            }
+          }
+          
+          if (endStr.contains('-')) {
+            final endParts = endStr.split('-');
+            if (endParts.length >= 3) {
+              end = DateTime(
+                int.parse(endParts[0]), 
+                int.parse(endParts[1]), 
+                int.parse(endParts[2].split(' ')[0]) // Ambil hanya tanggal, buang jam jika ada
+              );
+            }
+          }
+          
+          // Cara 2: Fallback ke DateTime.parse jika cara 1 gagal
+          if (start == null) {
+            final parsed = DateTime.parse(startStr);
+            start = DateTime(parsed.year, parsed.month, parsed.day);
+          }
+          if (end == null) {
+            final parsed = DateTime.parse(endStr);
+            end = DateTime(parsed.year, parsed.month, parsed.day);
+          }
+          
+          // Tambahkan semua tanggal dalam rentang booking
+          if (start != null && end != null) {
+            for (var date = start; date.isBefore(end.add(Duration(days: 1))); date = date.add(Duration(days: 1))) {
+              disabledDates.add(DateTime(date.year, date.month, date.day));
+            }
+          }
+        } catch (e) {
+          // Skip booking yang error parsing
+          print('Error parsing booking date: $e');
+          continue;
+        }
+      }
+    } catch (e) {
+      print('Error processing booked dates: $e');
+      // Jika ada error, tampilkan dialog peringatan tapi tetap lanjut
+      if (pageContext.mounted) {
+        ScaffoldMessenger.of(pageContext).showSnackBar(
+          SnackBar(
+            content: Text('Tidak dapat memuat data booking. Silakan coba lagi.'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    }
+
     final ambilController   = TextEditingController();
     final kembaliController = TextEditingController();
     DateTime? tanggalAmbil;
@@ -335,24 +424,100 @@ class DetailMobilPage extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                         color: Colors.black87),
                   ),
-                  SizedBox(height: 24),
+                  SizedBox(height: 8),
+                  Container(
+                    padding: EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.orange[50],
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.orange[200]!),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.info_outline, color: Colors.orange[700], size: 18),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Tanggal yang sudah dibooking tidak dapat dipilih',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.orange[700],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 16),
 
                   // Input tanggal ambil
                   TextField(
                     controller: ambilController,
                     readOnly: true,
                     onTap: () async {
+                      // Normalisasi tanggal hari ini (set jam ke 00:00:00)
+                      final today = DateTime.now();
+                      final normalizedToday = DateTime(today.year, today.month, today.day);
+                      
+                      // Cari tanggal pertama yang available (tidak disabled)
+                      DateTime firstAvailableDate = normalizedToday;
+                      while (disabledDates.contains(firstAvailableDate)) {
+                        firstAvailableDate = firstAvailableDate.add(Duration(days: 1));
+                        // Safety: jangan loop lebih dari 1 tahun
+                        if (firstAvailableDate.difference(normalizedToday).inDays > 365) {
+                          firstAvailableDate = normalizedToday.add(Duration(days: 365));
+                          break;
+                        }
+                      }
+                      
+                      // Debug: Print untuk troubleshoot
+                      print('\n=== DATE PICKER OPENED ===');
+                      print('Today: ${normalizedToday.year}-${normalizedToday.month}-${normalizedToday.day}');
+                      print('Total disabled dates: ${disabledDates.length}');
+                      print('Is today disabled? ${disabledDates.contains(normalizedToday)}');
+                      print('First available date: ${firstAvailableDate.year}-${firstAvailableDate.month}-${firstAvailableDate.day}');
+                      
                       DateTime? pickedDate = await showDatePicker(
                         context: sheetContext,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime.now(),
+                        initialDate: firstAvailableDate,  // Mulai dari tanggal yang available
+                        firstDate: normalizedToday,        // Minimum tetap hari ini
                         lastDate: DateTime(2030),
+                        selectableDayPredicate: (DateTime date) {
+                          // Normalisasi tanggal yang dicek
+                          final normalizedDate = DateTime(date.year, date.month, date.day);
+                          
+                          // Debug: Print setiap pengecekan (hanya untuk 10 hari pertama)
+                          final daysDiff = normalizedDate.difference(normalizedToday).inDays;
+                          if (daysDiff < 10) {
+                            final isDisabled = disabledDates.contains(normalizedDate);
+                            print('  Day +$daysDiff (${normalizedDate.month}/${normalizedDate.day}): ${isDisabled ? "DISABLED" : "AVAILABLE"}');
+                          }
+                          
+                          // Return true jika tanggal DAPAT dipilih (tidak ada di disabledDates)
+                          return !disabledDates.contains(normalizedDate);
+                        },
+                        builder: (context, child) {
+                          return Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: ColorScheme.light(
+                                primary: Colors.teal,
+                                onPrimary: Colors.white,
+                                onSurface: Colors.black,
+                              ),
+                            ),
+                            child: child!,
+                          );
+                        },
                       );
                       if (pickedDate != null) {
                         setState(() {
                           tanggalAmbil       = pickedDate;
                           ambilController.text =
                               '${pickedDate.day}/${pickedDate.month}/${pickedDate.year}';
+                          // Reset tanggal kembali jika sudah diisi
+                          tanggalKembali = null;
+                          kembaliController.clear();
                         });
                       }
                     },
@@ -373,11 +538,58 @@ class DetailMobilPage extends StatelessWidget {
                     controller: kembaliController,
                     readOnly: true,
                     onTap: () async {
+                      if (tanggalAmbil == null) {
+                        ScaffoldMessenger.of(sheetContext).showSnackBar(
+                          SnackBar(
+                            content: Text('Pilih tanggal ambil terlebih dahulu'),
+                            backgroundColor: Colors.orange,
+                          ),
+                        );
+                        return;
+                      }
+
+                      // Normalisasi tanggal ambil
+                      final normalizedTanggalAmbil = DateTime(
+                        tanggalAmbil!.year, 
+                        tanggalAmbil!.month, 
+                        tanggalAmbil!.day
+                      );
+                      final firstSelectableDate = normalizedTanggalAmbil.add(Duration(days: 1));
+
                       DateTime? pickedDate = await showDatePicker(
                         context: sheetContext,
-                        initialDate: tanggalAmbil ?? DateTime.now(),
-                        firstDate: tanggalAmbil ?? DateTime.now(),
+                        initialDate: firstSelectableDate,
+                        firstDate: firstSelectableDate,
                         lastDate: DateTime(2030),
+                        selectableDayPredicate: (DateTime date) {
+                          // Normalisasi tanggal yang dicek
+                          final normalizedDate = DateTime(date.year, date.month, date.day);
+                          
+                          // Jika tanggal ini sudah dibooking, tidak bisa dipilih
+                          if (disabledDates.contains(normalizedDate)) return false;
+                          
+                          // Cek apakah ada booking yang menghalangi rentang dari tanggalAmbil ke date ini
+                          // Loop dari hari setelah tanggal ambil sampai tanggal yang dicek
+                          for (var checkDate = normalizedTanggalAmbil.add(Duration(days: 1)); 
+                               checkDate.isBefore(normalizedDate); 
+                               checkDate = checkDate.add(Duration(days: 1))) {
+                            final normalized = DateTime(checkDate.year, checkDate.month, checkDate.day);
+                            if (disabledDates.contains(normalized)) return false;
+                          }
+                          return true;
+                        },
+                        builder: (context, child) {
+                          return Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: ColorScheme.light(
+                                primary: Colors.teal,
+                                onPrimary: Colors.white,
+                                onSurface: Colors.black,
+                              ),
+                            ),
+                            child: child!,
+                          );
+                        },
                       );
                       if (pickedDate != null) {
                         setState(() {
@@ -395,6 +607,7 @@ class DetailMobilPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(16)),
                       filled: true,
                       fillColor: Colors.grey[50],
+                      enabled: tanggalAmbil != null,
                     ),
                   ),
                   SizedBox(height: 32),

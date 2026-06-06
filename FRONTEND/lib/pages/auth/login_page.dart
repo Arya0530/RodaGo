@@ -1,5 +1,15 @@
+// ============================================================
+// LOKASI FILE: lib/pages/auth/login_page.dart
+// ============================================================
+// PERUBAHAN dari versi lama:
+//   - Tambah import forgot_password_page.dart
+//   - Tombol "Forgot Password?" sekarang navigasi ke ForgotPasswordPage
+//   - SEMUA yang lain TIDAK DIUBAH
+// ============================================================
+
 import 'package:flutter/material.dart';
 import 'register_page.dart';
+import 'forgot_password_page.dart';        // ← TAMBAHAN BARU
 import '../dashboard/main_layout.dart';
 import '../../service/api_service.dart';
 import '../../service/user_session.dart';
@@ -22,8 +32,6 @@ class _LoginPageState extends State<LoginPage> {
     _passwordController.dispose();
     super.dispose();
   }
-
-  
 
   Future<void> _handleLogin() async {
     // Validasi kosong di sisi Flutter (sebelum hit API)
@@ -141,14 +149,16 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
 
-              // Lupa Password
+              // ── PERUBAHAN: Forgot Password sekarang fungsional ──────
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () {
-                    _showSnackBar(
-                      'Fitur ini sedang maintenance. Hubungi Admin.',
-                      Colors.orange,
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ForgotPasswordPage(),
+                      ),
                     );
                   },
                   child: Text("Forgot Password?",

@@ -1,6 +1,12 @@
 // LOKASI: lib/pages/owner/kelola_mobil_page.dart
 //
-// PERUBAHAN DARI VERSI LAMA:
+// PERUBAHAN TERBARU (revisi dosen):
+//   1. Status mobil sekarang menggunakan field status_hari_ini dari backend
+//   2. Status "Disewa" hanya muncul jika ada booking AKTIF HARI INI
+//      (tanggal_mulai <= today <= tanggal_selesai)
+//   3. Jika ada booking di masa depan, status tetap "Tersedia"
+//
+// PERUBAHAN SEBELUMNYA:
 //   1. Kirim gambarUrl ke EditMobilPage agar preview foto lama tampil
 //   2. Kirim deskripsi ke EditMobilPage agar field terisi
 
@@ -145,12 +151,15 @@ class _KelolaMobilPageState extends State<KelolaMobilPage> {
     final String price    = 'Rp ${_formatCurrency(mobil['harga'])} / hari';
     final String imageUrl = mobil['gambar'] ?? '';
 
-    final isAvailable = mobil['tersedia'] == true ||
-        mobil['tersedia'] == 1 ||
-        mobil['tersedia'].toString() == '1';
+    // REVISI: Gunakan status_hari_ini dari backend (bukan field tersedia)
+    // status_hari_ini datang dari MobilController backend:
+    //   - "Tersedia" → tidak ada booking aktif hari ini
+    //   - "Disewa"   → ada booking aktif hari ini (tanggal_mulai <= today <= tanggal_selesai)
+    final String statusHariIni = mobil['status_hari_ini'] ?? 'Tersedia';
+    final bool isDisewaHariIni = statusHariIni == 'Disewa';
 
-    final String status     = isAvailable ? 'Tersedia' : 'Disewa';
-    final Color statusColor = isAvailable ? Colors.green : Colors.orange;
+    final String status     = isDisewaHariIni ? 'Disewa' : 'Tersedia';
+    final Color statusColor = isDisewaHariIni ? Colors.orange : Colors.green;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),

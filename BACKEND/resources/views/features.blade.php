@@ -41,7 +41,7 @@
             <div class="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-emerald-100 transition-colors">
                 <span class="text-2xl">📍</span>
             </div>
-            <h3 class="text-xl font-extrabold text-gray-900 mb-3">Live GPS Tracking</h3>
+            <h3 class="text-xl font-extrabold text-gray-900 mb-3">Pencarian Kota</h3>
             <p class="text-gray-500 text-sm leading-relaxed">Lacak koordinat pasti setiap armada yang sedang disewa untuk mencegah penggelapan dan memastikan keamanan aset kendaraan.</p>
         </div>
 
