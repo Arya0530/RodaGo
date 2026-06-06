@@ -1,0 +1,95 @@
+{
+  "intents": [
+    {
+      "tag": "salam",
+      "patterns": [
+        "halo", "hai", "p", "ping", "selamat pagi", "siang", "malam", "min", "admin", "woy", "assalamualaikum", "halo admin"
+      ],
+      "responses": [
+        "Halo Kak! Saya asisten AI RodaGo. Ada yang bisa saya bantu terkait penyewaan mobil hari ini?",
+        "Hai! Selamat datang di RodaGo. Mau cari mobil untuk tanggal berapa Kak?"
+      ]
+    },
+    {
+      "tag": "cara_sewa",
+      "patterns": [
+        "cara sewa", "gimana cara sewa", "caranya", "cara pesan", "booking gimana", "mau nyewa", "gimana pesennya", "langkah sewa", "cara rental"
+      ],
+      "responses": [
+        "Untuk menyewa mobil, Kakak cukup masuk ke menu 'Beranda', masukkan Lokasi Rental dan Tanggal, pilih mobil yang diinginkan, lalu klik 'Pesan'. Pastikan profil Kakak sudah terverifikasi ya!"
+      ]
+    },
+    {
+      "tag": "syarat_lepas_kunci",
+      "patterns": [
+        "syarat", "sarat", "ktp", "sim", "lepas kunci", "syarat lepas kunci", "butuh jaminan?", "harus ada ktp?", "syarat nyewa", "syarat rental"
+      ],
+      "responses": [
+        "Syarat lepas kunci di RodaGo sangat mudah! Kakak hanya perlu menyiapkan:\n1. E-KTP Asli\n2. SIM A aktif\n3. Melakukan verifikasi akun (KYC) di halaman Profil.\nTidak perlu jaminan uang tunai!"
+      ]
+    },
+    {
+      "tag": "pakai_supir",
+      "patterns": [
+        "pakai supir", "dengan supir", "ada supir", "sama driver", "plus supir", "bisa pakai supir", "sewa supir"
+      ],
+      "responses": [
+        "Tentu bisa! Kami menyediakan layanan sewa mobil dengan supir. Kakak bisa memilih opsi 'Tambahkan Supir' pada saat proses *checkout* pesanan. Biaya supir mulai dari Rp 150.000/hari."
+      ]
+    },
+    {
+      "tag": "tanya_harga",
+      "patterns": [
+        "harga", "biaya", "tarif", "berapa sewa", "murah", "pricelist", "daftar harga", "berapaan", "harga sewanya berapa"
+      ],
+      "responses": [
+        "Harga sewa di RodaGo sangat bersahabat! \n- Economy (Brio/Agya): mulai Rp 250rb/hari\n- MPV (Avanza/Xpander): mulai Rp 350rb/hari\n- Luxury (Camry/Alphard): mulai Rp 1,5jt/hari\nCek harga real-time di menu 'Beranda' ya!"
+      ]
+    },
+    {
+      "tag": "tanya_mobil",
+      "patterns": [
+        "mobil apa aja", "ready", "avanza", "brio", "xpander", "camry", "list mobil", "mobilnya ada apa aja", "sedia mobil apa", "innova ready"
+      ],
+      "responses": [
+        "Kami memiliki berbagai pilihan mobil untuk Kakak!\n- Kategori Economy: Honda Brio, Toyota Agya\n- Kategori MPV: Mitsubishi Xpander, Toyota Avanza, Innova Reborn\n- Kategori Luxury: Toyota Camry Hybrid\nKakak bisa cek ketersediaan langsung di aplikasi!"
+      ]
+    },
+    {
+      "tag": "pembayaran",
+      "patterns": [
+        "bayar", "transfer", "pembayaran", "ewallet", "metode", "cara bayar", "bisa pake qris", "pembayaran lewat apa"
+      ],
+      "responses": [
+        "Pembayaran bisa dilakukan dengan aman langsung di aplikasi RodaGo! Kami menerima:\n1. Transfer Bank (BCA, Mandiri, BNI, BRI)\n2. E-Wallet (GoPay, OVO, Dana)\n3. Kartu Kredit.\nPembayaran dilakukan setelah pesanan dikonfirmasi."
+      ]
+    },
+    {
+      "tag": "lokasi_pengambilan",
+      "patterns": [
+        "lokasi", "alamat", "dimana", "ambil mobil dimana", "kantor dimana", "cabang", "titik kumpul"
+      ],
+      "responses": [
+        "Mobil bisa diambil langsung di pool RodaGo yang terdekat dengan lokasi Kakak, atau Kakak bisa memilih opsi 'Antar ke Lokasi Saya' dengan tambahan biaya pengiriman yang disesuaikan dengan jarak."
+      ]
+    },
+    {
+      "tag": "pembatalan",
+      "patterns": [
+        "batal", "cancel", "refund", "cara batalin", "batalin pesanan", "uang kembali"
+      ],
+      "responses": [
+        "Pesanan dapat dibatalkan melalui menu 'Pesanan'. Jika dibatalkan H-1 sebelum penyewaan, uang akan di-refund 100%. Untuk info lebih lanjut, silakan masuk ke 'Pusat Bantuan' di halaman Profil."
+      ]
+    },
+    {
+      "tag": "penutup",
+      "patterns": [
+        "oke", "terima kasih", "makasih", "ok", "sip", "mantap", "thanks"
+      ],
+      "responses": [
+        "Sama-sama Kak! Jika ada pertanyaan lain, jangan ragu untuk chat saya lagi. Selamat memesan di RodaGo!"
+      ]
+    }
+  ]
+}

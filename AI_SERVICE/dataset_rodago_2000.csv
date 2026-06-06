@@ -1,0 +1,1861 @@
+text,intent
+bro siang,salam
+saya booking mobil minggu depan,booking_mobil
+wajib deposit doang,syarat_lepas_kunci
+include driver ga?,pakai_supir
+assalamualaikum bro?,salam
+butuh kyc gmn,syarat_lepas_kunci
+mobil pajero sisa apa,tanya_mobil
+kena brio mahal ga,tanya_harga
+paling murah alphard murah ga,tanya_harga
+harus npwp min,syarat_lepas_kunci
+ok bro,penutup
+tarif alphard mahal ga,tanya_harga
+koleksi matic ready ga,tanya_mobil
+sarat deposit apa,syarat_lepas_kunci
+harganya berapa,tanya_harga
+include driver bisa?,pakai_supir
+pricelist brio mahal ga,tanya_harga
+sore kak woy!,salam
+gmn byr mbanking ya,pembayaran
+butuh npwp gmn,syarat_lepas_kunci
+byr pake cash?,pembayaran
+cara byr spay ya,pembayaran
+mobil keluaran taun brp,tanya_mobil
+kalo pembayaran di akhir,pembayaran
+gw pesen xpander buat besok,booking_mobil
+sarat sim ga,syarat_lepas_kunci
+mau order mobil buat besok,booking_mobil
+siang sore!,salam
+ada jasa driver ga?,pakai_supir
+mobil agya yg ready,tanya_mobil
+pilihan manual ada ga,tanya_mobil
+cancel pesenan,pembatalan
+bisa pembayaran cc,pembayaran
+paling murah brio buat besok brp,tanya_harga
+wajib lepas kunci ribet ga,syarat_lepas_kunci
+tarif camry buat besok brp,tanya_harga
+cabang nya dimana,lokasi_pool
+thanks bro,penutup
+sewa mahal ga,tanya_harga
+bot,salam
+cara sewa brio weekend,booking_mobil
+bayarnya langsung di app?,pembayaran
+siang assalamualaikum?,salam
+cara pesen mbl,booking_mobil
+perlu kyc apa aja,syarat_lepas_kunci
+bot woy sore,salam
+titik kumpul jauh ga,lokasi_pool
+kalo sama supir biayanya brp,pakai_supir
+paling mahal brio brp,tanya_harga
+kak malam mbak!,salam
+dengan supir ga?,pakai_supir
+dokumen buat lepas kunci ribet ga,syarat_lepas_kunci
+dokumen buat verif apa aja,syarat_lepas_kunci
+aku pesen mbl weekend,booking_mobil
+harga brio perhari brp,tanya_harga
+sama driver ada ga?,pakai_supir
+harus lepas kunci min,syarat_lepas_kunci
+stok pajero ready ga,tanya_mobil
+paling mahal alphard listnya mana,tanya_harga
+brio ready ga buat besok,tanya_mobil
+stok avanza apa aja,tanya_mobil
+sore,salam
+bisa tf langsung,pembayaran
+hai bot!,salam
+min siang kak,salam
+ada fortuner ga buat sewa,tanya_mobil
+bisa pembayaran spay?,pembayaran
+min nerima gopay ga,pembayaran
+cara pembayaran pake dana,pembayaran
+butuh jaminan ga,syarat_lepas_kunci
+nyicil pake cash,pembayaran
+bot p nih,salam
+gw nyewa mbl weekend,booking_mobil
+pengen pesen mbl ntar,booking_mobil
+gmn byr pake cash,pembayaran
+lewat mbanking bca bs ga,pembayaran
+cara pesan mbl tgl 10,booking_mobil
+koleksi apa aja,tanya_mobil
+lokasi alamatnya apa,lokasi_pool
+mau booking kendaraan minggu depan,booking_mobil
+paling mahal gmn,tanya_harga
+bisa sewa avanza buat besok,booking_mobil
+tarif avanza listnya mana,tanya_harga
+mbl agya ada ga,tanya_mobil
+mbak mas euy,salam
+mobil matic yg ready,tanya_mobil
+sipp makasih bos,penutup
+saya sewa mbl,booking_mobil
+syarat kyc ga,syarat_lepas_kunci
+woy siang halo euy,salam
+kalo byr pake bca ya,pembayaran
+pengen pesen mbl buat besok,booking_mobil
+gimana transfer di akhir,pembayaran
+sarat npwp gmn,syarat_lepas_kunci
+pengen order avanza hari ini,booking_mobil
+min byr langsung ga?,pembayaran
+mau sewa plus driver,pakai_supir
+assalamualaikum pagi p dong,salam
+pricelist nya dmn min,tanya_harga
+kalo byr pake dana min?,pembayaran
+bro malam?,salam
+sarat sim ribet ga,syarat_lepas_kunci
+yowes bang,penutup
+perlu ktp gmn,syarat_lepas_kunci
+gimana byr via qris min?,pembayaran
+harus deposit apa aja,syarat_lepas_kunci
+tf mbanking,pembayaran
+syarat kk min,syarat_lepas_kunci
+cara nyewa xpander minggu depan,booking_mobil
+pricelist mobil perhari brp,tanya_harga
+kalo pembayaran cc min?,pembayaran
+pengen pesen mbl weekend,booking_mobil
+mau pesen avanza buat besok,booking_mobil
+suwun kak,penutup
+saya pesan brio tgl 10,booking_mobil
+mbl matic apa aja,tanya_mobil
+gw pesan kendaraan buat besok,booking_mobil
+wajib npwp min,syarat_lepas_kunci
+butuh kyc ribet ga,syarat_lepas_kunci
+dengan sopir ga?,pakai_supir
+pilihan brio ada ga,tanya_mobil
+perlu lepas kunci apa aja,syarat_lepas_kunci
+aku order mbl weekend,booking_mobil
+gmn dp di akhir?,pembayaran
+kalo nyicil pake cash min?,pembayaran
+assalamualaikum hai euy,salam
+koleksi mobilnya apa aja,tanya_mobil
+sewa mbl hari ini,booking_mobil
+ubah jadwal uang kembali ga,pembatalan
+saya pesan expander hari ini,booking_mobil
+mas halo min,salam
+order brio buat besok,booking_mobil
+biaya camry brp,tanya_harga
+batalin gmn caranya,pembatalan
+pilihan innova apa aja,tanya_mobil
+cara bayar cc,pembayaran
+klo pesenan di batalin admin yg urus?,pembatalan
+include supir bisa?,pakai_supir
+min dp via qris,pembayaran
+stok agya ready ga,tanya_mobil
+mau booking buat weekend ini,booking_mobil
+mbl expander apa aja,tanya_mobil
+mobil yg ready apa skrg,tanya_mobil
+mbak assalamualaikum,salam
+paling murah mobil mahal ga,tanya_harga
+pilihan pajero apa aja,tanya_mobil
+tarif avanza perhari brp,tanya_harga
+pilihan apa aja,tanya_mobil
+bro euy,salam
+min byr pake dana,pembayaran
+lokasi jauh ga,lokasi_pool
+butuh npwp ga,syarat_lepas_kunci
+admin mbak hai?,salam
+titik kumpul nya dimana,lokasi_pool
+wajib kyc min,syarat_lepas_kunci
+dokumen buat npwp ribet ga,syarat_lepas_kunci
+dokumen buat verif doang,syarat_lepas_kunci
+pool di mana,lokasi_pool
+mau rental mbl hari ini,booking_mobil
+yg mahal brio brp,tanya_harga
+bisa booking mobil weekend,booking_mobil
+bisa dp pake cash,pembayaran
+uang sewanya diserahin kpn,pembayaran
+bisa pesen expander,booking_mobil
+byr di akhir,pembayaran
+byr spay min?,pembayaran
+sewa alphard murah ga,tanya_harga
+butuh sopir harganya gmn?,pakai_supir
+pilihan ada ga,tanya_mobil
+aku pesen innova tgl 10,booking_mobil
+gw booking avanza hari ini,booking_mobil
+mbak euy,salam
+cara rental innova buat besok,booking_mobil
+ganti tgl kena denda ga,pembatalan
+ping sore mas euy,salam
+mbak kak woy?,salam
+sama sopir ada ga?,pakai_supir
+gw sewa kendaraan weekend,booking_mobil
+pengen pesen mobil hari ini,booking_mobil
+bs pake cc ga min,pembayaran
+sip bos,penutup
+cara dp mbanking,pembayaran
+yg murah camry listnya mana,tanya_harga
+ada diskon sewa ga min,tanya_harga
+gmn pembayaran via qris?,pembayaran
+minimal umur brp buat sewa,syarat_lepas_kunci
+gw booking brio tgl 10,booking_mobil
+min tf cc min?,pembayaran
+aku rental mobil tgl 10,booking_mobil
+harganya mahal gaa,tanya_harga
+pengen rental brio hari ini,booking_mobil
+sewa mbl brp,tanya_harga
+bro mbak p,salam
+gmn byr ovo ya,pembayaran
+sarat kk ga,syarat_lepas_kunci
+mobil avanza sisa apa,tanya_mobil
+perlu kyc ribet ga,syarat_lepas_kunci
+butuh ktp gmn,syarat_lepas_kunci
+malam bot ping nih,salam
+titik kumpul dmn klo mau ngambil,lokasi_pool
+mau order avanza buat besok,booking_mobil
+makasih bro,penutup
+dokumen buat verif gmn,syarat_lepas_kunci
+paling mahal buat besok brp,tanya_harga
+yowes,penutup
+nyewa mbl ntar,booking_mobil
+mau ngerental mobil,booking_mobil
+lepas kunci syaratnya apa,syarat_lepas_kunci
+biaya mobil listnya mana,tanya_harga
+assalamualaikum p,salam
+mobilnya baru baru ga,tanya_mobil
+stok brio sisa apa,tanya_mobil
+siang admin,salam
+batalin sewa kena denda ga,pembatalan
+avanza manual ready?,tanya_mobil
+cara penuhi syarat lepas kunci gmn,syarat_lepas_kunci
+butuh supir harganya gmn?,pakai_supir
+cara byr pake cash,pembayaran
+perlu verif ribet ga,syarat_lepas_kunci
+admin,salam
+harus deposit doang,syarat_lepas_kunci
+order mbl tgl 10,booking_mobil
+thanks min,penutup
+cara byr pake bca ga?,pembayaran
+batalin orderan,pembatalan
+paling mahal avanza brp,tanya_harga
+stok brio ada ga,tanya_mobil
+kak siang,salam
+stok expander apa aja,tanya_mobil
+hai?,salam
+dokumen buat sim gmn,syarat_lepas_kunci
+ambil mbl di stasiun bs?,lokasi_pool
+mw pesen brio,booking_mobil
+pool dmn,lokasi_pool
+stok expander ready ga,tanya_mobil
+bayar pke shopeepay bisa ga,pembayaran
+siang woy p,salam
+mas halo kak,salam
+syarat ktp gmn,syarat_lepas_kunci
+bisa dp spay,pembayaran
+harus deposit min,syarat_lepas_kunci
+min transfer pake dana,pembayaran
+halo woy siang!,salam
+kena buat besok brp,tanya_harga
+bro!,salam
+nyewa avanza minggu depan,booking_mobil
+cara bayarnya gmn nih,pembayaran
+nuhun bang,penutup
+biaya avanza perhari brp,tanya_harga
+harga brio berapa,tanya_harga
+mau rental mbl buat besok,booking_mobil
+koleksi pajero sisa apa,tanya_mobil
+cara sewa innova minggu depan,booking_mobil
+woy sore bot,salam
+alamat jauh ga,lokasi_pool
+pake sopir harganya gmn?,pakai_supir
+harus kk doang,syarat_lepas_kunci
+harus sim gmn,syarat_lepas_kunci
+gmn pembayaran via qris ya,pembayaran
+stok innova sisa apa,tanya_mobil
+sehari kena brp min,tanya_harga
+syaratnya dmn bs dibaca,syarat_lepas_kunci
+ada jasa driver brp?,pakai_supir
+kalo byr langsung,pembayaran
+kantor nya dimana,lokasi_pool
+gimana transfer via qris ga?,pembayaran
+cara booking avanza tgl 10,booking_mobil
+min bot sore?,salam
+sore malam ping,salam
+gw pesan expander buat besok,booking_mobil
+harus sim doang,syarat_lepas_kunci
+stok brio apa aja,tanya_mobil
+bisa byr cc min?,pembayaran
+agya ready warna apa,tanya_mobil
+min tf di akhir,pembayaran
+tarif camry berapa,tanya_harga
+admin sore bot euy,salam
+saya pesan mbl ntar,booking_mobil
+harus jaminan ribet ga,syarat_lepas_kunci
+sarat kk doang,syarat_lepas_kunci
+syarat sim ribet ga,syarat_lepas_kunci
+yg mahal alphard gmn,tanya_harga
+stok agya ada ga,tanya_mobil
+bro sore!,salam
+mbl matic ready ga,tanya_mobil
+brio sehari kena brp?,tanya_harga
+byr di akhir ya,pembayaran
+ambil mbl bs dianter ga,lokasi_pool
+mau nyewa mbl,booking_mobil
+biaya avanza brp,tanya_harga
+cabang alamatnya apa,lokasi_pool
+mau order brio ntar,booking_mobil
+yg murah mobil berapa,tanya_harga
+pake supir bisa ga?,pakai_supir
+yg mahal alphard mahal ga,tanya_harga
+ping woy?,salam
+mobil avanza apa aja,tanya_mobil
+pricelist alphard perhari brp,tanya_harga
+admin!,salam
+mbl pajero yg ready,tanya_mobil
+punya alphard ga,tanya_mobil
+koleksi ready ga,tanya_mobil
+bayar via qris,pembayaran
+tarif mbl murah ga,tanya_harga
+pengen rental avanza weekend,booking_mobil
+mbl manual ready ga,tanya_mobil
+p malam euy,salam
+booking avanza tgl 10,booking_mobil
+plus driver ada ga?,pakai_supir
+gw order expander weekend,booking_mobil
+saya pesan mbl tgl 10,booking_mobil
+harganya brio perhari brp,tanya_harga
+halo nih,salam
+wajib ktp ribet ga,syarat_lepas_kunci
+mbl expander ada ga,tanya_mobil
+mobil manual yg ready,tanya_mobil
+stok matic ada ga,tanya_mobil
+halo mas malam dong,salam
+gimana pembayaran mbanking,pembayaran
+dokumen buat ktp doang,syarat_lepas_kunci
+bisa pembayaran pake cash,pembayaran
+syarat lepas kunci gmn,syarat_lepas_kunci
+sore halo kak,salam
+cara byr ovo ga?,pembayaran
+woy bot,salam
+aku sewa avanza hari ini,booking_mobil
+ok,penutup
+bisa pesen mbl weekend,booking_mobil
+stok innova apa aja,tanya_mobil
+gimana dp mbanking,pembayaran
+min mau pesen kendaraan tgl 10,booking_mobil
+alamat alamatnya apa,lokasi_pool
+min nyicil pake dana ga?,pembayaran
+ada mobil kecil ga kayak agya,tanya_mobil
+kalo nyicil langsung?,pembayaran
+kak admin bot,salam
+harus pake jaminan ga,syarat_lepas_kunci
+kak mbak!,salam
+dengan driver ada ga?,pakai_supir
+wajib lepas kunci apa aja,syarat_lepas_kunci
+halo ping,salam
+pilihan avanza sisa apa,tanya_mobil
+gw sewa kendaraan ntar,booking_mobil
+kalo byr mbanking?,pembayaran
+min bayar pake cash,pembayaran
+syarat npwp apa aja,syarat_lepas_kunci
+tarif brio berapa,tanya_harga
+pesen innova tgl 10,booking_mobil
+harus ktp doang,syarat_lepas_kunci
+stok brio yg ready,tanya_mobil
+transfer via qris,pembayaran
+paham bang,penutup
+dengan driver brp?,pakai_supir
+mbl sisa apa,tanya_mobil
+xpander cross rdy min?,tanya_mobil
+pesan expander weekend,booking_mobil
+dokumen buat npwp apa,syarat_lepas_kunci
+min mau booking kendaraan weekend,booking_mobil
+bisa nyewa kendaraan buat besok,booking_mobil
+mbl pajero ready ga,tanya_mobil
+ada harga paketan ga,tanya_harga
+yg murah gmn,tanya_harga
+yowes kak,penutup
+cancel orderan,pembatalan
+bot admin euy,salam
+butuh ktp min,syarat_lepas_kunci
+saya nyewa avanza hari ini,booking_mobil
+cara tf pake dana,pembayaran
+min bot siang,salam
+p euy,salam
+mobil yg kapasitas 7 org apa aja,tanya_mobil
+kalo tf pake cash min?,pembayaran
+p nih,salam
+kena alphard listnya mana,tanya_harga
+pake supir bisa?,pakai_supir
+paling mahal avanza gmn,tanya_harga
+sewa mobil buat besok brp,tanya_harga
+yg mahal brio buat besok brp,tanya_harga
+pengen sewa avanza minggu depan,booking_mobil
+gimana pembayaran di akhir,pembayaran
+sama driver bisa?,pakai_supir
+butuh sim ribet ga,syarat_lepas_kunci
+harus kyc apa aja,syarat_lepas_kunci
+mas sore dong,salam
+gw nyewa kendaraan weekend,booking_mobil
+harganya gmn,tanya_harga
+cara pesan brio,booking_mobil
+gmn pembayaran pake cash ga?,pembayaran
+woy bot bro,salam
+wajib jaminan gmn,syarat_lepas_kunci
+kak hai bot!,salam
+harus ktp gmn,syarat_lepas_kunci
+cara nyewa mbl,booking_mobil
+cara rental kendaraan,booking_mobil
+gw pesan mbl weekend,booking_mobil
+bisa byr mbanking,pembayaran
+gimana nyicil spay,pembayaran
+harus kyc ribet ga,syarat_lepas_kunci
+butuh verif apa aja,syarat_lepas_kunci
+sedia mobil box ga buat pindahan,tanya_mobil
+mobil apa aja yg ready skrg,tanya_mobil
+admin ping malam,salam
+saya nyewa brio buat besok,booking_mobil
+pesan avanza tgl 10,booking_mobil
+admin siang hai nih,salam
+batal orderan,pembatalan
+gimana bayar mbanking,pembayaran
+perlu verif gmn,syarat_lepas_kunci
+bisa nyicil langsung,pembayaran
+lokasi nya dimana,lokasi_pool
+stok avanza yg ready,tanya_mobil
+koleksi brio sisa apa,tanya_mobil
+syarat ktp ga,syarat_lepas_kunci
+mbak hai!,salam
+tf pake bca,pembayaran
+bisa pembayaran via qris?,pembayaran
+harganya brio brp,tanya_harga
+bisa dp via qris ga?,pembayaran
+ambil mobil jauh ga,lokasi_pool
+ada mobil bak ga?,tanya_mobil
+cancel gmn caranya,pembatalan
+kalo bayar via qris ya,pembayaran
+mbl pajero apa aja,tanya_mobil
+saya nyewa innova buat besok,booking_mobil
+pagi halo kak,salam
+cara byr pake cash?,pembayaran
+gw sewa mobil buat besok,booking_mobil
+paling murah mbl buat besok brp,tanya_harga
+byr pake dana,pembayaran
+harus kyc apa,syarat_lepas_kunci
+include supir brp?,pakai_supir
+paling mahal camry buat besok brp,tanya_harga
+supirnya tau jalan ga,pakai_supir
+aku mau sewa buat besok,booking_mobil
+p!,salam
+cara pembayaran pake dana?,pembayaran
+tf langsung ya,pembayaran
+cara byr cc min?,pembayaran
+cara order expander hari ini,booking_mobil
+bisa tf pake dana ga?,pembayaran
+stok innova yg ready,tanya_mobil
+bisa byr cc,pembayaran
+booking xpander ntar,booking_mobil
+bisa tf ovo,pembayaran
+pengen rental mbl ntar,booking_mobil
+jasa supir perhari knp brp,pakai_supir
+stok pajero ada ga,tanya_mobil
+koleksi pajero apa aja,tanya_mobil
+pembayaran pake bca min?,pembayaran
+biaya mobil murah ga,tanya_harga
+bayar mbanking ga?,pembayaran
+sama sopir ga?,pakai_supir
+harga brio listnya mana,tanya_harga
+bisa nyicil pake dana min?,pembayaran
+paling murah avanza murah ga,tanya_harga
+saya booking expander ntar,booking_mobil
+pesan kendaraan weekend,booking_mobil
+gimana byr di akhir min?,pembayaran
+assalamualaikum bro woy dong,salam
+harus ninggalin motor ga,syarat_lepas_kunci
+mobil xpander ready ga,tanya_mobil
+bisa pesan xpander,booking_mobil
+yg mahal brio mahal ga,tanya_harga
+bisa dp mbanking,pembayaran
+aku pesan mobil hari ini,booking_mobil
+paling murah mobil apa dan brp,tanya_harga
+bisa cicilan 0% ga min,pembayaran
+bro mbak,salam
+plus sopir brp?,pakai_supir
+mas pagi nih,salam
+pembayaran via ovo ad?,pembayaran
+mbl agya apa aja,tanya_mobil
+pembayaran di akhir min?,pembayaran
+bs pk qris ga,pembayaran
+kantor jauh ga,lokasi_pool
+thanks bos,penutup
+harus deposit ribet ga,syarat_lepas_kunci
+bayar di akhir ya,pembayaran
+ada jasa driver bisa?,pakai_supir
+mbl manual ada ga,tanya_mobil
+sewa gmn,tanya_harga
+siang euy,salam
+yg mahal brio berapa,tanya_harga
+biaya avanza murah ga,tanya_harga
+minta pricelist lengkap dong,tanya_harga
+butuh lepas kunci gmn,syarat_lepas_kunci
+bisa nyewa avanza tgl 10,booking_mobil
+harganya brio mahal ga,tanya_harga
+syarat lepas kunci ga,syarat_lepas_kunci
+thx kak,penutup
+yg murah murah ga,tanya_harga
+aku sewa innova minggu depan,booking_mobil
+bisa order innova hari ini,booking_mobil
+bisa rental kendaraan tgl 10,booking_mobil
+pembayaran spay min?,pembayaran
+cara transfer via qris,pembayaran
+kalo tf spay,pembayaran
+min mau sewa mbl tgl 10,booking_mobil
+syarat sim doang,syarat_lepas_kunci
+gmn byr cc ya,pembayaran
+suwun min,penutup
+gw order mobil buat besok,booking_mobil
+dokumen buat ktp apa aja,syarat_lepas_kunci
+perlu lepas kunci doang,syarat_lepas_kunci
+harus jaminan apa aja,syarat_lepas_kunci
+paling mahal brio listnya mana,tanya_harga
+byr cc,pembayaran
+dp pake cash ya,pembayaran
+admin mbak bot dong,salam
+butuh lepas kunci ribet ga,syarat_lepas_kunci
+koleksi agya sisa apa,tanya_mobil
+bisa dp via qris,pembayaran
+gw order kendaraan weekend,booking_mobil
+harga listnya mana,tanya_harga
+kak,salam
+sip makasih infonya,penutup
+stok ready ga,tanya_mobil
+tf via qris ga?,pembayaran
+perlu kk doang,syarat_lepas_kunci
+bisa byr via qris min?,pembayaran
+harus npwp ga,syarat_lepas_kunci
+klo gapunya sim a gmn,syarat_lepas_kunci
+yg murah camry brp,tanya_harga
+stok innova ada ga,tanya_mobil
+pilihan xpander apa aja,tanya_mobil
+sarat sim gmn,syarat_lepas_kunci
+gmn tf mbanking,pembayaran
+aku nyewa mobil minggu depan,booking_mobil
+ok bang,penutup
+syarat kyc apa,syarat_lepas_kunci
+tarif camry mahal ga,tanya_harga
+nyicil langsung ya,pembayaran
+bot bro pagi euy,salam
+mbl manual sisa apa,tanya_mobil
+pake driver ga?,pakai_supir
+gw sewa mbl,booking_mobil
+stok manual yg ready,tanya_mobil
+ambil mobil alamatnya apa,lokasi_pool
+min byr spay,pembayaran
+sewa camry gmn,tanya_harga
+pengen sewa mbl hari ini,booking_mobil
+biaya avanza berapa,tanya_harga
+mau sewa mbl weekend,booking_mobil
+dokumen buat jaminan ribet ga,syarat_lepas_kunci
+gimana pembayaran langsung ya,pembayaran
+pembayaran spay ga?,pembayaran
+perlu ktp min,syarat_lepas_kunci
+syarat verif ribet ga,syarat_lepas_kunci
+min bayar cc,pembayaran
+min mau rental mbl hari ini,booking_mobil
+harganya alphard listnya mana,tanya_harga
+hai,salam
+include sopir ada ga?,pakai_supir
+sore malam ping!,salam
+pricelist mbl murah ga,tanya_harga
+malam,salam
+aku booking avanza minggu depan,booking_mobil
+refund pesenan,pembatalan
+cara dp pake cash?,pembayaran
+min mau cancel bs ga?,pembatalan
+pake driver brp?,pakai_supir
+titik kumpul bs dianter ga,lokasi_pool
+syaratnya ribet ga min,syarat_lepas_kunci
+mobil innova apa aja,tanya_mobil
+stok innova ready ga,tanya_mobil
+assalamualaikum malam,salam
+bisa byr ovo ga?,pembayaran
+cara pesan mobil tgl 10,booking_mobil
+sip kak,penutup
+pilihan yg ready,tanya_mobil
+paling murah avanza mahal ga,tanya_harga
+dokumen buat deposit apa,syarat_lepas_kunci
+bisa tf pake cash,pembayaran
+nuhun bro,penutup
+min tf nya berhasil ga,pembayaran
+ganti tgl uang kembali ga,pembatalan
+yg murah alphard perhari brp,tanya_harga
+aku order innova ntar,booking_mobil
+min mau nyewa xpander hari ini,booking_mobil
+min ajarin cara sewa dong,booking_mobil
+cara nyewa mbl weekend,booking_mobil
+dp mbanking,pembayaran
+mas halo,salam
+pilihan agya yg ready,tanya_mobil
+pesannya dari mana aplikasinya,booking_mobil
+stok pajero apa aja,tanya_mobil
+ping pagi,salam
+ada jasa supir brp?,pakai_supir
+saya order xpander weekend,booking_mobil
+wajib deposit apa aja,syarat_lepas_kunci
+pembayaran ovo,pembayaran
+pricelist alphard brp,tanya_harga
+cara rental kendaraan buat besok,booking_mobil
+min mau order avanza buat besok,booking_mobil
+syarat kk gmn,syarat_lepas_kunci
+mas,salam
+min pembayaran di akhir min?,pembayaran
+sip bang,penutup
+perlu deposit doang,syarat_lepas_kunci
+paling murah mobil gmn,tanya_harga
+min mau pesan mobil tgl 10,booking_mobil
+min mau sewa kendaraan hari ini,booking_mobil
+min dp mbanking ya,pembayaran
+gimana transfer mbanking,pembayaran
+pricelist brio brp,tanya_harga
+mobil matic ready ga,tanya_mobil
+kak p hai,salam
+min tf pake cash,pembayaran
+gw sewa avanza minggu depan,booking_mobil
+kalo nyicil ovo ga?,pembayaran
+cara transfer mbanking ya,pembayaran
+kena alphard brp,tanya_harga
+list mobil matic min,tanya_mobil
+stok agya sisa apa,tanya_mobil
+min mau rental kendaraan buat besok,booking_mobil
+cara rntal dmn,booking_mobil
+sarat ktp apa aja,syarat_lepas_kunci
+batalin pesenan,pembatalan
+pesan kendaraan hari ini,booking_mobil
+min syarat nyewa apa aja,syarat_lepas_kunci
+sarat lepas kunci ga,syarat_lepas_kunci
+lokasi cabangnya ada dmn aja,lokasi_pool
+bayar pke kartu kredit limitnya brp,pembayaran
+yowes bos,penutup
+biaya avanza buat besok brp,tanya_harga
+cara dp di akhir ga?,pembayaran
+mobil matic yg plg murah apa,tanya_mobil
+ambil mbl di mana,lokasi_pool
+min mau rental innova hari ini,booking_mobil
+perlu kk apa aja,syarat_lepas_kunci
+min mau nyewa avanza dong,booking_mobil
+mas admin kak!,salam
+syarat deposit apa,syarat_lepas_kunci
+min sore bot!,salam
+koleksi agya ada ga,tanya_mobil
+bot mas?,salam
+wajib verif ribet ga,syarat_lepas_kunci
+kena brio buat besok brp,tanya_harga
+pembayaran bisa di akhir?,pembayaran
+koleksi avanza sisa apa,tanya_mobil
+biaya alphard brp,tanya_harga
+alamat pool nya dmn min,lokasi_pool
+pilihan pajero ready ga,tanya_mobil
+kak?,salam
+saya order kendaraan minggu depan,booking_mobil
+kena avanza perhari brp,tanya_harga
+butuh verif ga,syarat_lepas_kunci
+yg murah mbl murah ga,tanya_harga
+ping halo nih,salam
+saya booking brio minggu depan,booking_mobil
+harus punya npwp ga buat sewa,syarat_lepas_kunci
+halo malam,salam
+bisa booking lwt chat ga,booking_mobil
+spill harga sewa brio min,tanya_harga
+mau nyewa expander tgl 10,booking_mobil
+syarat kyc nya butuh brp lama,syarat_lepas_kunci
+sewa camry murah ga,tanya_harga
+lokasi bs dianter ga,lokasi_pool
+butuh deposit ga,syarat_lepas_kunci
+mbl brio apa aja,tanya_mobil
+bisa booking mbl tgl 10,booking_mobil
+innova zenix ada ngga,tanya_mobil
+pembayaran pake dana,pembayaran
+bisa byr pake cash min?,pembayaran
+sip,penutup
+mbl avanza apa aja,tanya_mobil
+bisa sewa innova minggu depan,booking_mobil
+bro assalamualaikum malam!,salam
+wajib kyc apa,syarat_lepas_kunci
+paham,penutup
+mau sewa innova weekend,booking_mobil
+nyicil pake bca,pembayaran
+plus driver harganya gmn?,pakai_supir
+pengen sewa avanza ntar,booking_mobil
+harga avanza gmn,tanya_harga
+kak pagi euy,salam
+cara tf pake dana ga?,pembayaran
+ambil mobil bs dianter ga,lokasi_pool
+sarat jaminan apa,syarat_lepas_kunci
+pagi,salam
+min kak assalamualaikum,salam
+batalin dmn,pembatalan
+paling murah camry brp,tanya_harga
+min,salam
+mas hai halo euy,salam
+cara order mbl minggu depan,booking_mobil
+pagi ping siang!,salam
+bisa sewa kendaraan,booking_mobil
+lokasi dmn,lokasi_pool
+mobilnya ada plat genap ganjil ga,tanya_mobil
+min nyicil ovo,pembayaran
+saya booking brio,booking_mobil
+refund gmn caranya,pembatalan
+pricelist brio murah ga,tanya_harga
+cabang jauh ga,lokasi_pool
+nuhun,penutup
+min dong,salam
+cancel kena denda ga,pembatalan
+min mau booking avanza,booking_mobil
+harganya avanza perhari brp,tanya_harga
+harga mobil perhari brp,tanya_harga
+admin kak,salam
+paling mahal camry gmn,tanya_harga
+harus dp dulu ga min,pembayaran
+tarif sewa avanza terbaru,tanya_harga
+kena alphard murah ga,tanya_harga
+yg mahal gmn,tanya_harga
+assalamualaikum ping,salam
+mbl avanza ada ga,tanya_mobil
+bisa rental mbl ntar,booking_mobil
+mobil manual sisa apa,tanya_mobil
+bisa nyicil ovo ya,pembayaran
+cara narik uang refund gmn,pembatalan
+yg murah berapa,tanya_harga
+biaya sewa dihitung per jam / perhari,tanya_harga
+dokumen buat kyc doang,syarat_lepas_kunci
+makasih bang,penutup
+harganya buat besok brp,tanya_harga
+stok matic sisa apa,tanya_mobil
+paling mahal avanza buat besok brp,tanya_harga
+koleksi innova ada ga,tanya_mobil
+cara pesan mbl weekend,booking_mobil
+yg mahal mbl brp,tanya_harga
+gimana pembayaran pake cash ga?,pembayaran
+dp pake bca,pembayaran
+admin aktif?,salam
+sama supir harganya gmn?,pakai_supir
+pilihan xpander yg ready,tanya_mobil
+woy malam nih,salam
+bot dong,salam
+gw pesan avanza buat besok,booking_mobil
+min tf mbanking?,pembayaran
+gmn byr pake dana,pembayaran
+sewa innova per jam brp,tanya_harga
+harganya mbl gmn,tanya_harga
+mbak sore siang dong,salam
+pake supir brp?,pakai_supir
+mantap min,penutup
+alamat dmn,lokasi_pool
+batal dmn,pembatalan
+tf spay min?,pembayaran
+min pembayaran pake cash,pembayaran
+cara pesen brio weekend,booking_mobil
+syarat deposit gmn,syarat_lepas_kunci
+yg mahal alphard buat besok brp,tanya_harga
+bth jaminan ktp doang kan?,syarat_lepas_kunci
+gmn nyicil spay ga?,pembayaran
+mau nyewa xpander hari ini,booking_mobil
+bisa pesen expander tgl 10,booking_mobil
+wajib npwp gmn,syarat_lepas_kunci
+min mau pesen brio weekend,booking_mobil
+ada jasa driver ga,pakai_supir
+sama supir ada ga?,pakai_supir
+harganya camry mahal ga,tanya_harga
+mbak halo kak dong,salam
+cara ambil mbl nya gmn,booking_mobil
+bisa pembayaran pake dana,pembayaran
+butuh lepas kunci doang,syarat_lepas_kunci
+kalo mhs syarat sewanya apa,syarat_lepas_kunci
+woy mas p nih,salam
+cara bayar pake dana min?,pembayaran
+sewa innova hari ini,booking_mobil
+nuhun min,penutup
+cara order kendaraan ntar,booking_mobil
+dengan sopir bisa?,pakai_supir
+pilihan brio ready ga,tanya_mobil
+harus kk ga,syarat_lepas_kunci
+pesan mbl minggu depan,booking_mobil
+mbl expander yg ready,tanya_mobil
+camry nya hybrid kan?,tanya_mobil
+mas malam,salam
+aku sewa mobil weekend,booking_mobil
+cara nyicil via qris,pembayaran
+koleksi expander yg ready,tanya_mobil
+pilihan expander ada ga,tanya_mobil
+mbl matic yg ready,tanya_mobil
+bisa byr via qris?,pembayaran
+cara dp pake bca,pembayaran
+biaya brp,tanya_harga
+stok brio ready ga,tanya_mobil
+bisa sewa mbl tgl 10,booking_mobil
+klo nambah driver jd brp harganya,tanya_harga
+pilihan manual sisa apa,tanya_mobil
+dokumen buat lepas kunci apa,syarat_lepas_kunci
+ping admin halo euy,salam
+gw pesan mobil minggu depan,booking_mobil
+syarat sim min,syarat_lepas_kunci
+cara transfer pake cash,pembayaran
+saya booking avanza ntar,booking_mobil
+halo woy?,salam
+pricelist murah ga,tanya_harga
+titik kumpul dmn,lokasi_pool
+bikin pesenan gmn,booking_mobil
+harga rental avanza berapa,tanya_harga
+butuh driver bisa?,pakai_supir
+ambil mbl dmn,lokasi_pool
+brp hrg sewa xpander d kota ini,tanya_harga
+sarat verif ribet ga,syarat_lepas_kunci
+koleksi pajero ada ga,tanya_mobil
+pilihan manual apa aja,tanya_mobil
+sama supir brp?,pakai_supir
+sarat kyc apa aja,syarat_lepas_kunci
+kalo ktp luar kota bs sewa g,syarat_lepas_kunci
+pengen pesan mbl,booking_mobil
+mas min,salam
+refund uang kembali ga,pembatalan
+cancel dmn,pembatalan
+kalo pembayaran spay min?,pembayaran
+dp ovo?,pembayaran
+p mas malam?,salam
+bisa booking mbl ntar,booking_mobil
+syarat npwp apa,syarat_lepas_kunci
+ubah jadwal kena denda ga,pembatalan
+yg murah brio brp,tanya_harga
+mbl yg ready,tanya_mobil
+stok manual ready ga,tanya_mobil
+syarat kyc gmn,syarat_lepas_kunci
+aku pesan avanza tgl 10,booking_mobil
+kak sore bot,salam
+mbak pagi dong,salam
+yg murah brp,tanya_harga
+dengan sopir brp?,pakai_supir
+wajib npwp apa,syarat_lepas_kunci
+pembayaran via qris,pembayaran
+sewa listnya mana,tanya_harga
+mbl ada ga,tanya_mobil
+include supir harganya gmn?,pakai_supir
+tf pake bca ga?,pembayaran
+kantor di mana,lokasi_pool
+sarat sim min,syarat_lepas_kunci
+ping admin,salam
+sarat deposit doang,syarat_lepas_kunci
+min kak bot,salam
+harus lepas kunci doang,syarat_lepas_kunci
+stok xpander apa aja,tanya_mobil
+mobil sisa apa,tanya_mobil
+hrus bawa ktp asli ga,syarat_lepas_kunci
+halo admin rodago,salam
+stok mobil sisa apa min,tanya_mobil
+gw pesan mobil tgl 10,booking_mobil
+halo,salam
+harus ktp min,syarat_lepas_kunci
+perlu sim apa,syarat_lepas_kunci
+bisa rental avanza buat besok,booking_mobil
+bro,salam
+gmn pembayaran di akhir ga?,pembayaran
+paling mahal avanza murah ga,tanya_harga
+sewa mobil murah ada ga,tanya_harga
+dengan supir ada ga?,pakai_supir
+saya sewa brio buat besok,booking_mobil
+perlu sim ribet ga,syarat_lepas_kunci
+wajib verif gmn,syarat_lepas_kunci
+kena mobil murah ga,tanya_harga
+harus ktp apa aja,syarat_lepas_kunci
+pengen pesan brio tgl 10,booking_mobil
+spill harga agya,tanya_harga
+pilihan matic ready ga,tanya_mobil
+min mau pesan mbl tgl 10,booking_mobil
+makasih banyak ya min,penutup
+saya pesan expander,booking_mobil
+kalo tf pake bca min?,pembayaran
+koleksi agya yg ready,tanya_mobil
+mbl brio yg ready,tanya_mobil
+ping malam,salam
+assalamualaikum halo min,salam
+paling mahal mobil murah ga,tanya_harga
+ping bro min?,salam
+kena mbl perhari brp,tanya_harga
+paling murah brio murah ga,tanya_harga
+bisa byr via qris,pembayaran
+pake driver ada ga?,pakai_supir
+aku rental mobil minggu depan,booking_mobil
+butuh sopir ga?,pakai_supir
+pengen liat foto mobilnya dmn,tanya_mobil
+bisa pesan innova minggu depan,booking_mobil
+saya sewa avanza buat besok,booking_mobil
+saya order mbl hari ini,booking_mobil
+bisa nyewa brio ntar,booking_mobil
+paling mahal mbl listnya mana,tanya_harga
+butuh driver brp?,pakai_supir
+kalo tf pake dana,pembayaran
+hai admin rodago,salam
+butuh sopir bisa?,pakai_supir
+kena mbl brp,tanya_harga
+min mau order mobil weekend,booking_mobil
+siang ping,salam
+siang min,salam
+mbl bs di ambil lgsg ke kantor ga,lokasi_pool
+cara pesan innova minggu depan,booking_mobil
+oke mantap min,penutup
+pricelist brio dong,tanya_harga
+bisa rental innova weekend,booking_mobil
+mbak assalamualaikum nih,salam
+kena camry berapa,tanya_harga
+harga sewa naik ga pas lebaran,tanya_harga
+harus jaminan min,syarat_lepas_kunci
+pilihan expander sisa apa,tanya_mobil
+pilihan brio sisa apa,tanya_mobil
+pilihan manual ready ga,tanya_mobil
+kalo byr mbanking ga?,pembayaran
+cara nyewa mbl minggu depan,booking_mobil
+nyicil cc,pembayaran
+dokumen buat deposit apa aja,syarat_lepas_kunci
+wajib npwp ga,syarat_lepas_kunci
+dokumen buat kyc apa aja,syarat_lepas_kunci
+ada jasa sopir brp?,pakai_supir
+pengen rental expander minggu depan,booking_mobil
+plus supir ga?,pakai_supir
+oke min,penutup
+mau pesan expander buat besok,booking_mobil
+gw order avanza,booking_mobil
+dengan supir bisa?,pakai_supir
+bot hai mas dong,salam
+sarat verif gmn,syarat_lepas_kunci
+titik kumpul alamatnya apa,lokasi_pool
+mbak admin,salam
+cara pesen xpander,booking_mobil
+harga murah ga,tanya_harga
+admin mbak,salam
+mas dong,salam
+cara pembayaran via qris ya,pembayaran
+harganya murah ga,tanya_harga
+pilihan expander yg ready,tanya_mobil
+woy pagi ping nih,salam
+mau pesen innova weekend,booking_mobil
+saya sewa avanza weekend,booking_mobil
+mantap bang,penutup
+bro pagi siang!,salam
+dokumen buat kyc apa,syarat_lepas_kunci
+biaya perhari brp,tanya_harga
+paling mahal avanza mahal ga,tanya_harga
+pilihan agya ready ga,tanya_mobil
+perlu ktp doang,syarat_lepas_kunci
+thx ya,penutup
+harganya mobil mahal ga,tanya_harga
+paling murah brio mahal ga,tanya_harga
+yg murah avanza buat besok brp,tanya_harga
+perlu kyc gmn,syarat_lepas_kunci
+list mobilnya mana min,tanya_mobil
+mbak woy,salam
+bisa nyewa brio minggu depan,booking_mobil
+klo mau sewa pencet apa,booking_mobil
+mau ubah tgl sewa bs ga,pembatalan
+sarat npwp min,syarat_lepas_kunci
+brp biaya sewa nya kak,tanya_harga
+saya order brio buat besok,booking_mobil
+kalo tf pake bca ya,pembayaran
+wajib kk apa aja,syarat_lepas_kunci
+paling murah listnya mana,tanya_harga
+min mau sewa lepas kunci gmn,booking_mobil
+pake supir ga?,pakai_supir
+bot assalamualaikum min,salam
+cara nyicil di akhir,pembayaran
+harga avanza mahal ga,tanya_harga
+harganya avanza brp,tanya_harga
+cara transfer cc,pembayaran
+plus supir brp?,pakai_supir
+mau order brio,booking_mobil
+dokumen buat deposit gmn,syarat_lepas_kunci
+ubah jadwal dmn,pembatalan
+min pembayaran pake bca,pembayaran
+sarat kk ribet ga,syarat_lepas_kunci
+sarat ktp gmn,syarat_lepas_kunci
+pengen order expander,booking_mobil
+mbak,salam
+order expander buat besok,booking_mobil
+sarat kyc apa,syarat_lepas_kunci
+malam sore,salam
+thanks,penutup
+paling murah avanza gmn,tanya_harga
+aku pesen innova,booking_mobil
+ping,salam
+malam kak,salam
+pricelist camry listnya mana,tanya_harga
+pagi siang,salam
+sarat npwp apa,syarat_lepas_kunci
+kalo byr via qris ga?,pembayaran
+sewa brio weekend,booking_mobil
+ping assalamualaikum,salam
+nuhun kak,penutup
+ngambil mobilnya dmn,lokasi_pool
+yg mahal brio listnya mana,tanya_harga
+bayarnya harus cash atau bisa qris,pembayaran
+dokumen buat sim ribet ga,syarat_lepas_kunci
+saya pesan innova ntar,booking_mobil
+plus sopir harganya gmn?,pakai_supir
+tarif camry gmn,tanya_harga
+gw pesen xpander hari ini,booking_mobil
+admin woy euy,salam
+pengen pesen xpander hari ini,booking_mobil
+mau rental mbl,booking_mobil
+syarat jaminan ga,syarat_lepas_kunci
+syarat deposit apa aja,syarat_lepas_kunci
+mau pesen innova,booking_mobil
+assalamualaikum,salam
+min bot,salam
+min tf ovo?,pembayaran
+min cara pesennya ajarin dong,booking_mobil
+hai mas dong,salam
+min mau rental expander tgl 10,booking_mobil
+tarif sewa per hari brp,tanya_harga
+mbl expander sisa apa,tanya_mobil
+bayarnya full dimuka atau gmn,pembayaran
+hai kak,salam
+wajib punya sim a ga,syarat_lepas_kunci
+admin siang dong,salam
+cancel bookingan dmn pencetnya,pembatalan
+klo pake gopay kena admin ga,pembayaran
+paling mahal brio mahal ga,tanya_harga
+pilihan avanza ada ga,tanya_mobil
+gimana pembayaran via qris min?,pembayaran
+cek ketersediaan mobil dimana,tanya_mobil
+gimana dp ovo ga?,pembayaran
+bisa nyicil spay?,pembayaran
+stok ada ga,tanya_mobil
+boking mobil gmn,booking_mobil
+bisa tf pake bca,pembayaran
+cabang di mana,lokasi_pool
+harganya brp ya buat camry,tanya_harga
+pilihan ready ga,tanya_mobil
+gw pesen kendaraan tgl 10,booking_mobil
+min p sore,salam
+sewa mbl weekend,booking_mobil
+harus ktp ribet ga,syarat_lepas_kunci
+sama sopir bisa?,pakai_supir
+gw pesen mbl weekend,booking_mobil
+wajib ktp ga,syarat_lepas_kunci
+mau sewa xpander minggu depan,booking_mobil
+pilihan avanza apa aja,tanya_mobil
+ktp doang bisa ga,syarat_lepas_kunci
+ada jasa supir ga?,pakai_supir
+pesan xpander buat sabtu mnggu,booking_mobil
+aku sewa kendaraan hari ini,booking_mobil
+assalamualaikum min?,salam
+tarif avanza brp,tanya_harga
+bot nih,salam
+ada jasa sopir harganya gmn?,pakai_supir
+sewa alphard gmn,tanya_harga
+tf cc,pembayaran
+sarat npwp apa aja,syarat_lepas_kunci
+metode byr nya gmn aja,pembayaran
+ada daftar harganya ga,tanya_harga
+harga buat seminggu brp,tanya_harga
+batalin pesenan gmn,pembatalan
+klo mau lepas kunci butuh ktp?,syarat_lepas_kunci
+saya nyewa brio ntar,booking_mobil
+mobil matic ada apa aja,tanya_mobil
+harganya brio berapa,tanya_harga
+koleksi xpander ready ga,tanya_mobil
+koleksi mbl luxury nya apa aja,tanya_mobil
+tarif agya brp min,tanya_harga
+cara pembayaran cc?,pembayaran
+nyicil pake dana ya,pembayaran
+kalo sewa sebulan brp duit,tanya_harga
+cara order mobil di aplikasi,booking_mobil
+sarat kyc min,syarat_lepas_kunci
+bisa pesan mobil hari ini,booking_mobil
+dengan driver bisa?,pakai_supir
+min pembayaran langsung?,pembayaran
+syaratnya berat ga,syarat_lepas_kunci
+assalamualaikum bot sore!,salam
+aku rental mbl minggu depan,booking_mobil
+wajib sim apa aja,syarat_lepas_kunci
+nyicil cc min?,pembayaran
+makasih bos,penutup
+mau order skrg,booking_mobil
+thx bang,penutup
+bisa bayar spay ya,pembayaran
+paling mahal mobil mahal ga,tanya_harga
+cara byrnya dmn,pembayaran
+pagi bot,salam
+caranya gmn min,booking_mobil
+include sopir brp?,pakai_supir
+yg mahal mobil brp,tanya_harga
+min dp pake cash,pembayaran
+mobil matic sisa apa,tanya_mobil
+koleksi avanza yg ready,tanya_mobil
+ambil mbl jauh ga,lokasi_pool
+kalo byr pake bca,pembayaran
+cara nyicil langsung,pembayaran
+siang bro ping dong,salam
+mbak admin halo,salam
+harus kyc doang,syarat_lepas_kunci
+p bro,salam
+paling murah mobil berapa,tanya_harga
+cara konfirmasi pembayaran dmn,pembayaran
+stok matic apa aja,tanya_mobil
+pesan innova minggu depan,booking_mobil
+halo sore?,salam
+dokumen buat kk doang,syarat_lepas_kunci
+aku mau sewa innova buat mudik,booking_mobil
+lewat dana bisa kan,pembayaran
+dokumen buat lepas kunci doang,syarat_lepas_kunci
+mbl matic sisa apa,tanya_mobil
+saya booking mbl weekend,booking_mobil
+saya sewa kendaraan,booking_mobil
+paling mahal listnya mana,tanya_harga
+mobil expander ada ga,tanya_mobil
+halo min,salam
+wajib sim ribet ga,syarat_lepas_kunci
+pengen nyewa buat liburan,booking_mobil
+pake sopir ga?,pakai_supir
+pesen brio buat besok,booking_mobil
+wajib kyc doang,syarat_lepas_kunci
+sewa alphard perhari brp,tanya_harga
+cara byr ovo ya,pembayaran
+yg mahal avanza perhari brp,tanya_harga
+harganya camry murah ga,tanya_harga
+mbl agya yg ready,tanya_mobil
+harus lepas kunci apa aja,syarat_lepas_kunci
+siang bro min!,salam
+mobil avanza ready ga,tanya_mobil
+yg mahal avanza listnya mana,tanya_harga
+bisa bayar tunai ga pas ambil mobil,pembayaran
+pengen sewa xpander buat besok,booking_mobil
+paling mahal berapa,tanya_harga
+pembayaran cc,pembayaran
+sedia mobil apa aja min,tanya_mobil
+kalo tf cc ga?,pembayaran
+harus npwp doang,syarat_lepas_kunci
+cara tau tmpt ambil mobilnya dmn,lokasi_pool
+harganya pas di kantong ga,tanya_harga
+pricelist brio gmn,tanya_harga
+min admin halo,salam
+dokumen buat jaminan gmn,syarat_lepas_kunci
+sama sopir brp?,pakai_supir
+butuh sim apa,syarat_lepas_kunci
+stok manual apa aja,tanya_mobil
+biaya brio buat besok brp,tanya_harga
+min mau nanya dong,salam
+min mau pesen mbl buat besok,booking_mobil
+mau pesen mobil weekend,booking_mobil
+woy p hai,salam
+cara byr pake dana,pembayaran
+bro admin hai!,salam
+bisa bayar pake cash,pembayaran
+cara byr ovo,pembayaran
+koleksi agya ready ga,tanya_mobil
+kena avanza listnya mana,tanya_harga
+mau booking avanza tgl 10,booking_mobil
+paling mahal camry perhari brp,tanya_harga
+bisa tf ovo ga?,pembayaran
+min mau pesan mobil,booking_mobil
+min bayar ovo ya,pembayaran
+pake supir ada ga?,pakai_supir
+bisa transfer pake bca?,pembayaran
+gmn tf ovo,pembayaran
+saya booking brio ntar,booking_mobil
+aku sewa brio ntar,booking_mobil
+dokumen buat kk apa,syarat_lepas_kunci
+wajib verif doang,syarat_lepas_kunci
+paling mahal camry mahal ga,tanya_harga
+kena camry buat besok brp,tanya_harga
+ping p nih,salam
+pengen rental kendaraan hari ini,booking_mobil
+harus verif apa aja,syarat_lepas_kunci
+kak nih,salam
+min tf langsung,pembayaran
+min bayar ovo ga?,pembayaran
+bisa bayar langsung,pembayaran
+harga avanza brp,tanya_harga
+gimana pembayaran pake dana,pembayaran
+wajib kyc ribet ga,syarat_lepas_kunci
+perlu jaminan min,syarat_lepas_kunci
+wajib jaminan doang,syarat_lepas_kunci
+pilihan agya ada ga,tanya_mobil
+plus supir harganya gmn?,pakai_supir
+tf via qris min?,pembayaran
+aku mau pesan buat tanggal 5,booking_mobil
+pembayaran pake cash,pembayaran
+harga brp,tanya_harga
+gw pesen mobil buat besok,booking_mobil
+syarat kyc apa aja,syarat_lepas_kunci
+buat verifikasi butuh dokumen apa,syarat_lepas_kunci
+mobil paling mahal brp perhari,tanya_harga
+pricelist camry buat besok brp,tanya_harga
+gimana byr pake cash,pembayaran
+stok xpander ready ga,tanya_mobil
+kalo dp via qris?,pembayaran
+mau rental brio tgl 10,booking_mobil
+butuh supir ada ga?,pakai_supir
+bot mas euy,salam
+assalamualaikum p woy euy,salam
+tarif brp,tanya_harga
+nyicil langsung min?,pembayaran
+gimana tf pake bca,pembayaran
+batal kena denda ga,pembatalan
+mau pesan avanza minggu depan,booking_mobil
+harus kk gmn,syarat_lepas_kunci
+syarat jaminan apa,syarat_lepas_kunci
+gw nyewa brio ntar,booking_mobil
+pajero ready ga?,tanya_mobil
+harganya camry listnya mana,tanya_harga
+mobil yang paling mahal apa min,tanya_harga
+cara sewa xpander buat besok,booking_mobil
+gmn sih cara sewanya,booking_mobil
+pool bs dianter ga,lokasi_pool
+bisa pembayaran langsung,pembayaran
+syarat verif gmn,syarat_lepas_kunci
+paling mahal alphard brp,tanya_harga
+paling murah gmn,tanya_harga
+syarat kyc doang,syarat_lepas_kunci
+thx,penutup
+mau pesan xpander hari ini,booking_mobil
+ping pagi p dong,salam
+yg murah mbl brp,tanya_harga
+metode pembayarannya apa aja,pembayaran
+pricelist avanza murah ga,tanya_harga
+ada jasa supir ada ga?,pakai_supir
+kalo tf langsung ga?,pembayaran
+kalo lpas kunci hrs survei rmh ga,syarat_lepas_kunci
+perlu lepas kunci ga,syarat_lepas_kunci
+yg mahal camry perhari brp,tanya_harga
+bisa tf di akhir min?,pembayaran
+mau pesan mobil buat besok,booking_mobil
+transfer spay ga?,pembayaran
+sewa avanza gmn,tanya_harga
+kena avanza buat besok brp,tanya_harga
+bisa pesen kendaraan,booking_mobil
+nyicil pake dana ga?,pembayaran
+bisa order brio hari ini,booking_mobil
+halo p,salam
+min byr mbanking,pembayaran
+koleksi xpander sisa apa,tanya_mobil
+harganya avanza murah ga,tanya_harga
+plus sopir ga?,pakai_supir
+mbl avanza ready ga,tanya_mobil
+cara byr di akhir ga?,pembayaran
+kena brio gmn,tanya_harga
+biaya camry murah ga,tanya_harga
+min nerima pembayarn dari spay ga,pembayaran
+butuh ktp apa,syarat_lepas_kunci
+min mau order mbl minggu depan,booking_mobil
+pricelist brio perhari brp,tanya_harga
+kena camry listnya mana,tanya_harga
+dp pake dana,pembayaran
+gimana dp pake dana ga?,pembayaran
+pricelist avanza buat besok brp,tanya_harga
+ambil mbl alamatnya apa,lokasi_pool
+wajib lepas kunci apa,syarat_lepas_kunci
+butuh sim min,syarat_lepas_kunci
+min tf di akhir ga?,pembayaran
+mbl innova yg ready,tanya_mobil
+bayar via qris ya,pembayaran
+kalo dp spay min?,pembayaran
+cara rental kendaraan ntar,booking_mobil
+gw order avanza ntar,booking_mobil
+hai ping min,salam
+pusing gw pesennya dmn,booking_mobil
+mau pesen mobil,booking_mobil
+mbak ping,salam
+mbl keluarga yg ready apa aja,tanya_mobil
+kena alphard berapa,tanya_harga
+koleksi expander ready ga,tanya_mobil
+butuh ktp ribet ga,syarat_lepas_kunci
+ganti tgl gmn caranya,pembatalan
+gw booking brio minggu depan,booking_mobil
+sarat rental min,syarat_lepas_kunci
+kalo byr mbanking,pembayaran
+ok bos,penutup
+ubah jadwal orderan,pembatalan
+mas?,salam
+bisa cicil ga sewanya,pembayaran
+butuh driver ada ga?,pakai_supir
+cara pesan innova tgl 10,booking_mobil
+pake supir harganya gmn?,pakai_supir
+perlu sim doang,syarat_lepas_kunci
+tf di akhir?,pembayaran
+sama driver brp?,pakai_supir
+min tf spay,pembayaran
+ada mobil listrik ga? kayak wuling,tanya_mobil
+kalo transfer mbanking,pembayaran
+aku pesen kendaraan minggu depan,booking_mobil
+gw sewa mbl weekend,booking_mobil
+cara byr via qris,pembayaran
+ada jasa sopir ga?,pakai_supir
+tf spay ya,pembayaran
+sore woy!,salam
+sewa brio perhari brp,tanya_harga
+pembayaran spay ya,pembayaran
+butuh verif gmn,syarat_lepas_kunci
+gw pesen expander ntar,booking_mobil
+gmn cr bayarnya klo ga ada atm,pembayaran
+bot sore,salam
+kantor bs dianter ga,lokasi_pool
+min nyicil spay,pembayaran
+pengen rental kendaraan ntar,booking_mobil
+lokasi di mana,lokasi_pool
+tutorial sewa mobilnya dong,booking_mobil
+bisa nyicil via qris?,pembayaran
+butuh jaminan ribet ga,syarat_lepas_kunci
+cabang dmn,lokasi_pool
+kalo transfer langsung ya,pembayaran
+bisa pesen innova ntar,booking_mobil
+dokumen buat kk ga,syarat_lepas_kunci
+woy min,salam
+pagi halo nih,salam
+woy,salam
+paling mahal brio murah ga,tanya_harga
+paling murah brio brp,tanya_harga
+mbl matic ada ga,tanya_mobil
+min mau order avanza ntar,booking_mobil
+koleksi avanza apa aja,tanya_mobil
+refund kena denda ga,pembatalan
+aku rental xpander buat besok,booking_mobil
+gmn tf langsung ya,pembayaran
+buat nyewa harus verif muka ga,syarat_lepas_kunci
+cara nyicil ovo ga?,pembayaran
+stok expander sisa apa,tanya_mobil
+min siang?,salam
+min bot siang!,salam
+refund dmn,pembatalan
+kena brp,tanya_harga
+gw booking avanza buat besok,booking_mobil
+biaya avanza gmn,tanya_harga
+bisa tf pake bca?,pembayaran
+pilihan matic yg ready,tanya_mobil
+gimana pembayaran via qris,pembayaran
+butuh npwp doang,syarat_lepas_kunci
+pricelist avanza brp,tanya_harga
+syarat verif ga,syarat_lepas_kunci
+thx min,penutup
+bisa sewa kendaraan buat besok,booking_mobil
+cara ordernya gimana yak,booking_mobil
+siang malam,salam
+dokumen buat deposit doang,syarat_lepas_kunci
+syarat jaminan apa aja,syarat_lepas_kunci
+stok expander yg ready,tanya_mobil
+woy p dong,salam
+ping malam euy,salam
+min mau booking innova minggu depan,booking_mobil
+kantor rodago dmn?,lokasi_pool
+min bayar pake bca min?,pembayaran
+kena avanza gmn,tanya_harga
+ada jasa sopir ada ga?,pakai_supir
+pricelist buat besok brp,tanya_harga
+ambil mobil dmn,lokasi_pool
+mau sewa mobil tp gatau caranya,booking_mobil
+paling murah camry listnya mana,tanya_harga
+biaya listnya mana,tanya_harga
+biaya alphard berapa,tanya_harga
+mobil avanza ada ga,tanya_mobil
+wajib npwp ribet ga,syarat_lepas_kunci
+pengen pesan xpander minggu depan,booking_mobil
+include driver ada ga?,pakai_supir
+byr langsung?,pembayaran
+perlu deposit uang ga,syarat_lepas_kunci
+harga berapa,tanya_harga
+mbl avanza sisa apa,tanya_mobil
+oke bos,penutup
+cara tf cc min?,pembayaran
+pengen rental avanza minggu depan,booking_mobil
+min mau pesan innova,booking_mobil
+harganya mbl brp,tanya_harga
+dokumen buat jaminan apa aja,syarat_lepas_kunci
+koleksi innova yg ready,tanya_mobil
+sarat sim apa aja,syarat_lepas_kunci
+gw booking mbl,booking_mobil
+order brio hari ini,booking_mobil
+tarif alphard gmn,tanya_harga
+paling murah avanza perhari brp,tanya_harga
+byr pake cash,pembayaran
+mau sewa avanza ntar,booking_mobil
+gw rental avanza ntar,booking_mobil
+pake sopir bisa?,pakai_supir
+sama supir ga?,pakai_supir
+sewa camry perhari brp,tanya_harga
+cara tf pake bca,pembayaran
+bisa cod ga min,pembayaran
+gmn tf cc,pembayaran
+koleksi xpander ada ga,tanya_mobil
+kena avanza brp,tanya_harga
+bayar pake bca,pembayaran
+udh tf nih min,pembayaran
+cara sewa mbl minggu depan,booking_mobil
+alamat bs dianter ga,lokasi_pool
+gw order kendaraan hari ini,booking_mobil
+p?,salam
+kak mas mbak!,salam
+bisa pesen innova,booking_mobil
+gimana byr mbanking?,pembayaran
+kalo nyicil pake cash,pembayaran
+min pembayaran pake dana,pembayaran
+minta list harga sewa dong,tanya_harga
+butuh kk apa,syarat_lepas_kunci
+alamat nya dimana,lokasi_pool
+cara dp di akhir?,pembayaran
+bisa dp ovo,pembayaran
+kalo pembayaran spay,pembayaran
+paling mahal mbl brp,tanya_harga
+mantap bro,penutup
+selamat pagi admin,salam
+yg murah mbl listnya mana,tanya_harga
+pilihan xpander ada ga,tanya_mobil
+sore woy pagi,salam
+perlu jaminan ga,syarat_lepas_kunci
+dengan sopir ada ga?,pakai_supir
+aku nyewa innova weekend,booking_mobil
+tarif murah ga,tanya_harga
+yg murah perhari brp,tanya_harga
+gmn dp cc,pembayaran
+plus sopir bisa?,pakai_supir
+siang!,salam
+dokumen buat lepas kunci min,syarat_lepas_kunci
+sarat sim apa,syarat_lepas_kunci
+min?,salam
+pake sim c bs ga min,syarat_lepas_kunci
+harga camry mahal ga,tanya_harga
+harganya brp,tanya_harga
+aku booking expander buat besok,booking_mobil
+syarat lepas kunci apa aja,syarat_lepas_kunci
+pilihan expander ready ga,tanya_mobil
+cara booking brio tgl 10,booking_mobil
+bisa dp cc,pembayaran
+sarat ktp doang,syarat_lepas_kunci
+yg mahal alphard murah ga,tanya_harga
+harganya avanza buat besok brp,tanya_harga
+pengen booking innova,booking_mobil
+min pembayaran cc min?,pembayaran
+min mau sewa brio,booking_mobil
+p mas,salam
+pesan mbl ntar,booking_mobil
+min halo,salam
+step by step pesen mobil gmn,booking_mobil
+gw pesen avanza buat besok,booking_mobil
+kalo mau bayar pencet mana,pembayaran
+transfer pake bca,pembayaran
+cara transfer pake bca ga?,pembayaran
+include driver brp?,pakai_supir
+malam dong,salam
+dp pake cash,pembayaran
+pengen booking mbl,booking_mobil
+min byr di akhir ga?,pembayaran
+harga mobil mahal ga,tanya_harga
+sewa brio mahal ga,tanya_harga
+mas ping euy,salam
+harus kyc ga,syarat_lepas_kunci
+harganya alphard buat besok brp,tanya_harga
+bisa nyicil langsung ya,pembayaran
+mbl xpander ada ga,tanya_mobil
+gw pesen kendaraan buat besok,booking_mobil
+saratnya cm ktp & sim aja?,syarat_lepas_kunci
+min pembayaran cc,pembayaran
+bisa nyicil spay ga?,pembayaran
+syarat lepas kunci ribet ga,syarat_lepas_kunci
+min mau booking brio buat besok,booking_mobil
+rental brio weekend,booking_mobil
+harus verif min,syarat_lepas_kunci
+aku nyewa brio hari ini,booking_mobil
+kantor alamatnya apa,lokasi_pool
+cara sewa mobil disini gimana,booking_mobil
+paling murah harganya brp,tanya_harga
+dokumen buat ktp ribet ga,syarat_lepas_kunci
+dokumen buat sim min,syarat_lepas_kunci
+thx bro,penutup
+min pembayaran mbanking,pembayaran
+bisa nyicil pake cash,pembayaran
+oke,penutup
+kondisi mbl nya bagus ga,tanya_mobil
+biaya camry berapa,tanya_harga
+byr di akhir ga?,pembayaran
+sip min,penutup
+stok pajero yg ready,tanya_mobil
+cara pesen mbl minggu depan,booking_mobil
+brio nya matic apa manual,tanya_mobil
+mbak nih,salam
+bisa order mbl ntar,booking_mobil
+mobil xpander ada ga,tanya_mobil
+koleksi innova sisa apa,tanya_mobil
+mbl apa aja,tanya_mobil
+mobil apa aja,tanya_mobil
+cara pesan brio tgl 10,booking_mobil
+oke kak,penutup
+biaya mobil mahal ga,tanya_harga
+cara order mobil ntar,booking_mobil
+syrt lpas kunci avanza,syarat_lepas_kunci
+harus jaminan gmn,syarat_lepas_kunci
+paling mahal mbl perhari brp,tanya_harga
+caranya booking alphard gimana,booking_mobil
+tarif brio listnya mana,tanya_harga
+paham min,penutup
+saya pesan avanza hari ini,booking_mobil
+pengen pesan xpander buat besok,booking_mobil
+mbl innova apa aja,tanya_mobil
+harga alphard mahal ga,tanya_harga
+koleksi brio ada ga,tanya_mobil
+kalo dp pake dana ga?,pembayaran
+batal uang kembali ga,pembatalan
+hai assalamualaikum bro,salam
+cara nyicil cc,pembayaran
+butuh supir brp?,pakai_supir
+ok min paham,penutup
+bisa tf pake bca gak?,pembayaran
+plus supir ada ga?,pakai_supir
+saya order brio minggu depan,booking_mobil
+pool jauh ga,lokasi_pool
+wajib verif apa aja,syarat_lepas_kunci
+makasih kak,penutup
+pembayaran via transfer bank apa aja,pembayaran
+kalo tf spay ya,pembayaran
+pricelist gmn,tanya_harga
+butuh jaminan apa,syarat_lepas_kunci
+aku sewa kendaraan weekend,booking_mobil
+pilihan innova ready ga,tanya_mobil
+suwun,penutup
+sewa avanza ntar,booking_mobil
+butuh supir ga?,pakai_supir
+gw rental innova weekend,booking_mobil
+mobil agya sisa apa,tanya_mobil
+paling murah avanza brp,tanya_harga
+yg murah mobil listnya mana,tanya_harga
+wajib kk min,syarat_lepas_kunci
+stok expander ada ga,tanya_mobil
+harus lepas kunci gmn,syarat_lepas_kunci
+dengan supir harganya gmn?,pakai_supir
+bayar spay ya,pembayaran
+sarat srtfkt vaksin ada g,syarat_lepas_kunci
+gmn nyicil pake bca,pembayaran
+tarif brio murah ga,tanya_harga
+gimana byr pake cash ga?,pembayaran
+stok agya yg ready,tanya_mobil
+min pembayaran di akhir?,pembayaran
+bisa transfer cc ga?,pembayaran
+harus titip kk ga,syarat_lepas_kunci
+include sopir ga?,pakai_supir
+ada jasa supir bisa?,pakai_supir
+cara pesan avanza tgl 10,booking_mobil
+harga buat besok brp,tanya_harga
+perlu lepas kunci gmn,syarat_lepas_kunci
+mbl avanza yg ready,tanya_mobil
+transfernya ke rek apa,pembayaran
+harus jaminan apa,syarat_lepas_kunci
+butuh sim doang,syarat_lepas_kunci
+mau sewa xpander ntar,booking_mobil
+plus driver ga?,pakai_supir
+paling murah brio listnya mana,tanya_harga
+syarat rental mobil disini gmn,syarat_lepas_kunci
+ktp nya harus ktp daerah sini ga,syarat_lepas_kunci
+ping p!,salam
+ambil mobil di mana,lokasi_pool
+pengen refund duit sewa,pembatalan
+ubah jadwal gmn caranya,pembatalan
+yg murah alphard buat besok brp,tanya_harga
+pilihan sisa apa,tanya_mobil
+halo bot,salam
+sewa avanza buat besok brp,tanya_harga
+butuh driver ga?,pakai_supir
+yg mahal avanza murah ga,tanya_harga
+gw sewa brio weekend,booking_mobil
+bro bot,salam
+wajib kk ribet ga,syarat_lepas_kunci
+gmn byr langsung min?,pembayaran
+koleksi pajero yg ready,tanya_mobil
+kalo tf pake dana ya,pembayaran
+ganti tgl pesenan,pembatalan
+gw nyewa brio weekend,booking_mobil
+kak assalamualaikum,salam
+cabang bs dianter ga,lokasi_pool
+pagi mbak dong,salam
+sarat verif min,syarat_lepas_kunci
+wajib deposit ribet ga,syarat_lepas_kunci
+syrt sewa mbl apa,syarat_lepas_kunci
+gw order avanza weekend,booking_mobil
+bisa pesan avanza ntar,booking_mobil
+mantap bos,penutup
+ganti tgl orderan,pembatalan
+gw sewa mbl ntar,booking_mobil
+min tf pake bca?,pembayaran
+min mau nyewa kendaraan tgl 10,booking_mobil
+butuh supir bisa?,pakai_supir
+pricelist brio buat besok brp,tanya_harga
+syarat lepas kunci ribet gak,syarat_lepas_kunci
+stok manual ada ga,tanya_mobil
+pool alamatnya apa,lokasi_pool
+p hai euy,salam
+tf via qris,pembayaran
+batal gmn caranya,pembatalan
+min mau pesen xpander hari ini,booking_mobil
+perlu kk min,syarat_lepas_kunci
+min mau sewa mobil buat besok,booking_mobil
+perlu kk gmn,syarat_lepas_kunci
+punya hiace ga min buat rombongan,tanya_mobil
+yg mahal camry murah ga,tanya_harga
+kena camry mahal ga,tanya_harga
+bisa rental innova hari ini,booking_mobil
+harga yg tertera di app udah nett?,tanya_harga
+bayar pake dana ga?,pembayaran
+koleksi yg ready,tanya_mobil
+tf pake cash,pembayaran
+bisa nyewa sm supirnya skalian?,pakai_supir
+cara nyicil pake bca min?,pembayaran
+siang pagi mas euy,salam
+sore bot nih,salam
+pake driver harganya gmn?,pakai_supir
+min sore euy,salam
+min hrga sewa alphard brpa,tanya_harga
+paling murah alphard mahal ga,tanya_harga
+supirnya dpt mkn dr kita g,pakai_supir
+wajib jaminan apa aja,syarat_lepas_kunci
+byr via qris ya,pembayaran
+bot malam assalamualaikum,salam
+perlu npwp apa aja,syarat_lepas_kunci
+titik kumpul di mana,lokasi_pool
+ubah jadwal pesenan,pembatalan
+yg murah alphard brp,tanya_harga
+syarat kk apa aja,syarat_lepas_kunci
+malam bot p dong,salam
+mobil innova ada ga,tanya_mobil
+cara nyicil pake cash ya,pembayaran
+koleksi matic sisa apa,tanya_mobil
+mobil di drop di bandara bs ga,lokasi_pool
+cara nyewa mbl buat besok,booking_mobil
+p,salam
+bisa paylater ga,pembayaran
+cara order innova hari ini,booking_mobil
+alamat di mana,lokasi_pool
+cara nyicil spay,pembayaran
+mbl pajero sisa apa,tanya_mobil
+perlu deposit gmn,syarat_lepas_kunci
+sarat kyc doang,syarat_lepas_kunci
+stok yg ready,tanya_mobil
+dokumen buat npwp apa aja,syarat_lepas_kunci
+include supir ga?,pakai_supir
+gw rental brio buat besok,booking_mobil
+koleksi brio ready ga,tanya_mobil
+tarif avanza murah ga,tanya_harga
+perlu npwp apa,syarat_lepas_kunci
+ganti tgl dmn,pembatalan
+dokumen buat jaminan min,syarat_lepas_kunci
+min mau booking mbl weekend,booking_mobil
+sama supir bisa?,pakai_supir
+butuh kk ga,syarat_lepas_kunci
+pake sopir brp?,pakai_supir
+admin woy,salam
+sewa expander ntar,booking_mobil
+wajib lepas kunci gmn,syarat_lepas_kunci
+mobil brio ready ga,tanya_mobil
+saya sewa mobil hari ini,booking_mobil
+sarat verif apa,syarat_lepas_kunci
+perlu jaminan ribet ga,syarat_lepas_kunci
+min transfer di akhir ga?,pembayaran
+bisa pesan brio ntar,booking_mobil
+bisa order expander buat besok,booking_mobil
+syarat kyc ribet ga,syarat_lepas_kunci
+harus deposit ga,syarat_lepas_kunci
+wajib lepas kunci ga,syarat_lepas_kunci
+harus deposit gmn,syarat_lepas_kunci
+makasih,penutup
+butuh npwp apa,syarat_lepas_kunci
+mbl brio sisa apa,tanya_mobil
+dokumen buat npwp gmn,syarat_lepas_kunci
+koleksi pajero ready ga,tanya_mobil
+wajib sim ga,syarat_lepas_kunci
+pool nya dimana,lokasi_pool
+batalin kena denda ga,pembatalan
+include driver harganya gmn?,pakai_supir
+ada jasa driver ada ga?,pakai_supir
+bisa dp langsung min?,pembayaran
+aku nyewa avanza tgl 10,booking_mobil
+yg mahal camry brp,tanya_harga
+dengan sopir harganya gmn?,pakai_supir
+min mau nyewa mobil buat besok,booking_mobil
+saya booking brio weekend,booking_mobil
+pengen rental mobil,booking_mobil
+kena camry brp,tanya_harga
+wajib ktp apa aja,syarat_lepas_kunci
+biaya alphard mahal ga,tanya_harga
+min mau rental mbl weekend,booking_mobil
+paling mahal mahal ga,tanya_harga
+gw pesen mbl,booking_mobil
+pricelist alphard listnya mana,tanya_harga
+gmn tf pake dana,pembayaran
+dengan driver ga?,pakai_supir
+sarat ktp ga,syarat_lepas_kunci
+aku pesan mbl tgl 10,booking_mobil
+cara dapetin mobilnya gmn,booking_mobil
+pricelist camry murah ga,tanya_harga
+min mau rental mbl buat besok,booking_mobil
+sarat verif doang,syarat_lepas_kunci
+gimana tf ovo,pembayaran
+bisa bayar ovo ga?,pembayaran
+koleksi matic apa aja,tanya_mobil
+stok apa aja,tanya_mobil
+min dp spay min?,pembayaran
+mbl agya sisa apa,tanya_mobil
+paling mahal mbl mahal ga,tanya_harga
+klo batal uang kembali g?,pembatalan
+sore woy euy,salam
+kalo nyicil di akhir?,pembayaran
+kalo byr via qris ya,pembayaran
+hai mbak mas,salam
+gmn dp langsung?,pembayaran
+sama driver harganya gmn?,pakai_supir
+syarat npwp gmn,syarat_lepas_kunci
+paling murah alphard brp,tanya_harga
+saya order kendaraan buat besok,booking_mobil
+batalin uang kembali ga,pembatalan
+aku order mobil buat besok,booking_mobil
+min tf pake dana,pembayaran
+pilihan agya sisa apa,tanya_mobil
+aku sewa expander tgl 10,booking_mobil
+cara order brio hari ini,booking_mobil
+tf pake mandiri bisa?,pembayaran
+bisa nyicil pake bca,pembayaran
+pilihan matic apa aja,tanya_mobil
+pagi assalamualaikum sore,salam
+min mau sewa expander buat besok,booking_mobil
+sewa avanza murah ga,tanya_harga
+biaya berapa,tanya_harga
+bisa pembayaran ovo ya,pembayaran
+cara byr di akhir,pembayaran
+ada driver ga min,pakai_supir
+hrg camry brp ya?,tanya_harga
+harga avanza buat besok brp,tanya_harga
+sewa xpander brp sehari,tanya_harga
+yg mahal avanza brp,tanya_harga
+okedeh min makasi,penutup
+mobil xpander apa aja,tanya_mobil
+bot hai nih,salam
+sore ping euy,salam
+pagi min,salam
+ada jasa supir harganya gmn?,pakai_supir
+mbak dong,salam
+aku pesen brio,booking_mobil
+koleksi expander sisa apa,tanya_mobil
+tarif avanza gmn,tanya_harga
+paling mahal camry murah ga,tanya_harga
+mbl innova sisa apa,tanya_mobil
+booking brio tgl 10,booking_mobil
+paling murah avanza buat besok brp,tanya_harga
+dokumen buat kyc min,syarat_lepas_kunci
+mau nyewa avanza tgl 10,booking_mobil
+ada innova reborn ga,tanya_mobil
+gimana cara pesennya min?,booking_mobil
+kena gmn,tanya_harga
+yg murah alphard gmn,tanya_harga
+min mau pesen xpander weekend,booking_mobil
+malam woy bot nih,salam
+avanza veloz ada?,tanya_mobil
+kalo byr pake cash min?,pembayaran
+bs dianter ke rumah ga mbl nya,lokasi_pool
+kalo transfer mbanking min?,pembayaran
+yg murah camry gmn,tanya_harga
+bisa tf cc?,pembayaran
+sore mas bot?,salam
+cara nyewa avanza tgl 10,booking_mobil
+assalamualaikum euy,salam
+refund orderan,pembatalan
+yg murah mbl gmn,tanya_harga
+perlu npwp gmn,syarat_lepas_kunci
+cancel uang kembali ga,pembatalan
+mbl expander ready ga,tanya_mobil
+pesen brio tgl 10,booking_mobil
+oke bang,penutup
+cara tf via qris ya,pembayaran
+kak malam,salam
+gmn byr pake dana?,pembayaran
+kalo include supir dmn pesennya,pakai_supir
+syarat jd member rodago apa,syarat_lepas_kunci
+mbl innova ready ga,tanya_mobil
+min nyicil langsung,pembayaran
+bro sore nih,salam
+min mau booking brio hari ini,booking_mobil
+pilihan matic ada ga,tanya_mobil
+yg murah brio mahal ga,tanya_harga
+pengen sewa avanza weekend,booking_mobil
+sarat jaminan ga,syarat_lepas_kunci
+kena alphard mahal ga,tanya_harga
+paling mahal brio perhari brp,tanya_harga
+syarat lepas kunci min,syarat_lepas_kunci
+mbl manual yg ready,tanya_mobil
+harganya brio gmn,tanya_harga
+cara cancel orderan min,pembatalan
+bayarnya transfer kemana,pembayaran
+min byr cc min?,pembayaran
+bisa nyewa innova buat besok,booking_mobil
+butuh verif apa,syarat_lepas_kunci
+stok matic yg ready,tanya_mobil
+paham bos,penutup
+harus deposit apa,syarat_lepas_kunci
+mau pake brio buat lusa,booking_mobil
+wajib lepas kunci doang,syarat_lepas_kunci
+cara nyicil via qris ga?,pembayaran
+min mau sewa expander ntar,booking_mobil
+butuh ktp doang,syarat_lepas_kunci
+min byr pake dana?,pembayaran
+siang,salam
+p pagi,salam
+halo mbak bro!,salam
+saya pesen expander,booking_mobil
+ping p,salam
+harus jaminan ga,syarat_lepas_kunci
+dokumen yg harus dibawa apa aja,syarat_lepas_kunci
+min byr pake dana min?,pembayaran
+pesen brio buat tgl 10 bs?,booking_mobil
+pengen booking mbl weekend,booking_mobil
+stok avanza sisa apa,tanya_mobil
+paling murah camry perhari brp,tanya_harga
+stok pajero sisa apa,tanya_mobil
+cara tf spay,pembayaran
+dokumen buat sim ga,syarat_lepas_kunci
+mobil yg ready,tanya_mobil
+min mau order xpander buat besok,booking_mobil
+kantor dmn,lokasi_pool
+pesan xpander hari ini,booking_mobil
+cara bayar mbanking,pembayaran
+mbl nya bau rokok g,tanya_mobil
+mantap,penutup
+min transfer pake cash min?,pembayaran
+saya sewa innova tgl 10,booking_mobil
+koleksi xpander apa aja,tanya_mobil
+plus sopir ada ga?,pakai_supir
+gw booking brio hari ini,booking_mobil
+yg murah mbl mahal ga,tanya_harga
+mau pesan mbl hari ini,booking_mobil
+koleksi manual apa aja,tanya_mobil
+kalo tf pake cash ya,pembayaran
+kalo tf mbanking,pembayaran
+halo pagi kak,salam
+mau ngerental mobil min,booking_mobil
+harus verif doang,syarat_lepas_kunci
+mau nyewa avanza buat besok,booking_mobil
+kena mobil buat besok brp,tanya_harga
+pagi euy,salam
+cara tf ovo ya,pembayaran
+biaya avanza listnya mana,tanya_harga
+mas assalamualaikum sore euy,salam
+tf pake dana,pembayaran
+sarat ktp apa,syarat_lepas_kunci
+koleksi brio yg ready,tanya_mobil
+kak assalamualaikum euy,salam
+kalo dp cc,pembayaran
+dokumen buat lepas kunci ga,syarat_lepas_kunci
+pake driver bisa?,pakai_supir
+harganya include bensin ga,tanya_harga
+butuh sopir ada ga?,pakai_supir
+kalo dp pake dana,pembayaran
+paling mahal mobil berapa,tanya_harga
+perlu deposit ga,syarat_lepas_kunci
+mau booking hr ini,booking_mobil
+pilihan pajero ada ga,tanya_mobil
+p hai bro,salam
+dokumen buat deposit min,syarat_lepas_kunci
+mau sewa mbl tgl 10,booking_mobil
+bayarnya ribet gaa,pembayaran
+butuh driver harganya gmn?,pakai_supir
+paling murah camry buat besok brp,tanya_harga
+batal pesenan,pembatalan
+pricelist alphard mahal ga,tanya_harga
+harganya alphard brp,tanya_harga
+dokumen buat verif ribet ga,syarat_lepas_kunci
+kalo byr cc?,pembayaran
+wajib ktp doang,syarat_lepas_kunci
+harga alphard berapa,tanya_harga
+text,intent
+apakah bisa membatalkan pesanan setelah membayar,pembatalan
+cara cancel orderan yang sudah dibayar,pembatalan
+kalau sudah bayar apa bisa dibatalkan,pembatalan
+refund dana setelah pembayaran karena batal sewa,pembatalan
+batal sewa mobil padahal udah ditransfer uangnya,pembatalan
