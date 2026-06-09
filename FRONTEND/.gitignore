@@ -1,45 +1,44 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
+# =========================
+# AI SERVICE
+# =========================
+AI_SERVICE/__pycache__/
+AI_SERVICE/*.pkl
+AI_SERVICE/*.joblib
+AI_SERVICE/*.h5
+AI_SERVICE/*.pt
+AI_SERVICE/*.pth
+
+AI_SERVICE/rodago_bert_model/
+AI_SERVICE/rodago_bert_model_final/
+
+# =========================
+# FLUTTER GENERATED
+# =========================
+FRONTEND/build/
+FRONTEND/.dart_tool/
+FRONTEND/.flutter-plugins
+FRONTEND/.flutter-plugins-dependencies
+FRONTEND/.pub-cache/
+FRONTEND/.pub/
+
+# =========================
+# LARAVEL
+# =========================
+BACKEND/vendor/
+BACKEND/node_modules/
+BACKEND/storage/logs/*
+BACKEND/storage/framework/cache/*
+BACKEND/storage/framework/sessions/*
+BACKEND/storage/framework/views/*
+BACKEND/bootstrap/cache/*.php
+
+# ENV
+BACKEND/.env
+BACKEND/.env.backup
+BACKEND/.env.production
+
+# =========================
+# OS FILES
+# =========================
 .DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
-
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
-
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
-.dart_tool/
-.flutter-plugins-dependencies
-.pub-cache/
-.pub/
-/build/
-/coverage/
-
-# Symbolication related
-app.*.symbols
-
-# Obfuscation related
-app.*.map.json
-
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+Thumbs.db

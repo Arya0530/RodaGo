@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'laporan_keuangan_page.dart';
 import 'detail_pesanan_masuk_page.dart';
 import 'kelola_mobil_page.dart';
 import '../../service/api_service.dart';
@@ -93,25 +94,32 @@ class _OwnerDashboardPageState extends State<OwnerDashboardPage>
           ),
           const SizedBox(height: 16),
 
-          Row(children: [
-            Expanded(
-              child: _buildStatCard(
-                'Total Pendapatan',
-                _isLoading ? '...' : _totalPendapatan,
-                Icons.account_balance_wallet,
-                Colors.green,
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {},
+                  child: _buildStatCard(
+                    'Total Pendapatan',
+                    _isLoading ? '...' : _totalPendapatan,
+                    Icons.account_balance_wallet,
+                    Colors.green,
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _buildStatCard(
-                'Pesanan Masuk',
-                _isLoading ? '...' : _jumlahPesananMasuk.toString(),
-                Icons.inbox_rounded,
-                Colors.orange,
+              const SizedBox(width: 16),
+              Expanded(
+                child: _buildStatCard(
+                  'Pesanan Masuk',
+                  _isLoading
+                      ? '...'
+                      : _jumlahPesananMasuk.toString(),
+                  Icons.inbox_rounded,
+                  Colors.orange,
+                ),
               ),
-            ),
-          ]),
+            ],
+          ),
           const SizedBox(height: 16),
 
           _buildQuickAccessCard(context),

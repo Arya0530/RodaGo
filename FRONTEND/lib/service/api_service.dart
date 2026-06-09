@@ -61,13 +61,14 @@ class ApiService {
       final body = jsonDecode(res.body) as Map<String, dynamic>;
       if (res.statusCode == 200 && body['success'] == true) {
         // Simpan sesi ke memory + SharedPreferences (persistent)
-        await UserSession.simpan(
-          token: body['token']              ?? '',
-          nama : body['user']?['name']      ?? '',
-          email: body['user']?['email']     ?? '',
-          phone: body['user']?['phone']     ?? '',
-          role : body['user']?['role']      ?? 'user',
-        );
+      await UserSession.simpan(
+        id: body['user']?['id'] ?? 0,
+        token: body['token'] ?? '',
+        nama : body['user']?['name'] ?? '',
+        email: body['user']?['email'] ?? '',
+        phone: body['user']?['phone'] ?? '',
+        role : body['user']?['role'] ?? 'user',
+      );
         return {'success': true};
       }
       return {'success': false, 'message': body['message'] ?? 'Login gagal'};

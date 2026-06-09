@@ -11,6 +11,7 @@ import '../auth/login_page.dart';
 import '../notifikasi/notifikasi_page.dart'; // ← TAMBAHAN
 import '../../service/api_service.dart';     // ← TAMBAHAN
 import '../../service/user_session.dart';
+import 'laporan_keuangan_page.dart';
 
 class OwnerMainLayout extends StatefulWidget {
   @override
@@ -32,9 +33,10 @@ class _OwnerMainLayoutState extends State<OwnerMainLayout> {
   late final List<Widget> _pages = [
     OwnerDashboardPage(onNavigate: changeTab),
     KelolaMobilPage(),
+    LaporanKeuanganPage(),
   ];
 
-  final List<String> _titles = ['Dashboard Owner', 'Kelola Armada'];
+  final List<String> _titles = ['Dashboard Owner', 'Kelola Armada', 'Laporan Keuangan'];
 
   @override
   void initState() {
@@ -164,6 +166,7 @@ class _OwnerMainLayoutState extends State<OwnerMainLayout> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Dashboard'),
           BottomNavigationBarItem(icon: Icon(Icons.car_rental), label: 'Armada'),
+          BottomNavigationBarItem(icon: Icon(Icons.analytics_rounded), label: 'Laporan'),
         ],
       ),
     );

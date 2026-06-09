@@ -9,9 +9,40 @@ use App\Models\City;
 use App\Models\Mobil;
 use App\Models\Booking;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth; // Tambahan biar auth()->id() gak error di VS Code
 
 class AdminController extends Controller
 {
+    public function store(Request $request)
+    {
+        // Ambil data mobil
+        $mobil = Mobil::findOrFail($request->mobil_id);
+
+        // Tambahkan pengecekan ini: (Gembok Owner)
+        if ($mobil->user_id == Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda tidak bisa menyewa mobil milik sendiri!'
+            ], 403);
+        }
+
+        // Lanjutkan proses simpan booking...
+        $booking = Booking::create([
+            'user_id' => Auth::id(),
+            'mobil_id' => $request->mobil_id,
+            'tanggal_mulai' => $request->tanggal_mulai ?? now(),
+            'tanggal_selesai' => $request->tanggal_selesai ?? now()->addDays(1),
+            'total_harga' => $request->total_harga ?? 0,
+            'status' => 'pending',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Booking berhasil dibuat',
+            'data' => $booking
+        ], 201);
+    }
+
     public function dashboard()
     {
         $totalUsers   = User::count();
@@ -67,7 +98,7 @@ class AdminController extends Controller
         return back()->with('success', 'User berhasil ditambahkan!');
     }
 
-    public function updateUser(Request $request, $id)
+    public function updateUser(Request $request, string $id)
     {
         $user = User::find($id);
         $user->name = $request->name; $user->email = $request->email; $user->role = $request->role;
@@ -76,7 +107,7 @@ class AdminController extends Controller
         return back()->with('success', 'Data user berhasil diperbarui!');
     }
 
-    public function destroyUser($id)
+    public function destroyUser(string $id)
     {
         User::find($id)->delete();
         return back()->with('success', 'User berhasil dihapus!');
@@ -100,13 +131,13 @@ class AdminController extends Controller
         return back()->with('success', 'Mitra Rental baru berhasil didaftarkan!');
     }
 
-    public function updateRental(Request $request, $id)
+    public function updateRental(Request $request, string $id)
     {
         Rental::find($id)->update($request->all());
         return back()->with('success', 'Data mitra berhasil diperbarui!');
     }
 
-    public function destroyRental($id)
+    public function destroyRental(string $id)
     {
         Rental::find($id)->delete();
         return back()->with('success', 'Mitra berhasil dihapus!');
@@ -127,13 +158,13 @@ class AdminController extends Controller
         return back()->with('success', 'Area operasional baru berhasil dibuka!');
     }
 
-    public function updateCity(Request $request, $id)
+    public function updateCity(Request $request, string $id)
     {
         City::find($id)->update($request->validate(['name' => 'required', 'province' => 'required']));
         return back()->with('success', 'Data kota diperbarui!');
     }
 
-    public function destroyCity($id)
+    public function destroyCity(string $id)
     {
         City::find($id)->delete();
         return back()->with('success', 'Area operasional ditutup!');
@@ -191,7 +222,7 @@ class AdminController extends Controller
 
     // POST /admin/cars/{id}/toggle
     // Aktifkan atau nonaktifkan ketersediaan mobil
-    public function carToggle($id)
+    public function carToggle(string $id)
     {
         $mobil = Mobil::findOrFail($id);
 

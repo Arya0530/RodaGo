@@ -72,4 +72,8 @@ class Booking extends Model
             default     => 'gray',
         };
     }
+    public function scopeCompleted($query)
+{
+    return $query->where('status', 'completed');
+}
 }

@@ -11,6 +11,7 @@ import '../../service/api_service.dart';
 import '../pesanan/pesanan_page.dart';
 import '../dashboard/main_layout.dart';
 import '../profil/kyc_page.dart';
+import '../../service/user_session.dart';
 
 class DetailMobilPage extends StatelessWidget {
   final String namaMobil;
@@ -18,8 +19,15 @@ class DetailMobilPage extends StatelessWidget {
 
   DetailMobilPage({required this.namaMobil, this.carData});
 
-  @override
+@override
   Widget build(BuildContext context) {
+    // --- TAMBAHIN 5 BARIS INI ---
+    bool isOwner = false;
+    if (carData != null && carData['user_id'] != null) {
+      isOwner = carData['user_id'].toString() == UserSession.id.toString(); 
+    }
+    // ----------------------------
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -139,7 +147,18 @@ class DetailMobilPage extends StatelessWidget {
           width: double.infinity,
           height: 55,
           child: ElevatedButton(
-            onPressed: () => _cekKycLaluPesan(context),
+            onPressed: () {
+  if (isOwner) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Anda tidak dapat menyewa mobil milik sendiri'),
+      ),
+    );
+    return;
+  }
+
+  _cekKycLaluPesan(context);
+},
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.teal,
               shape: RoundedRectangleBorder(
